@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navLinks = [
@@ -15,22 +15,22 @@ const Header = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
-      <div className="container flex h-14 items-center justify-between">
-        <Link to="/" className="text-lg font-bold tracking-tight">
+    <header className="sticky top-0 z-50 bg-background/60 backdrop-blur-xl border-b border-border/50">
+      <div className="container flex h-16 items-center justify-between">
+        <Link to="/" className="font-display text-xl font-bold tracking-tight text-primary">
           Is This Vegan?
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`text-sm font-medium transition-colors hover:text-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm px-1 py-0.5 ${
+              className={`text-sm font-medium px-4 py-2 rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                 location.pathname === link.to
-                  ? "text-foreground underline underline-offset-4 decoration-2"
-                  : "text-muted-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
               }`}
             >
               {link.label}
@@ -43,22 +43,22 @@ const Header = () => {
           <SheetTrigger asChild className="md:hidden">
             <button
               aria-label="Open navigation menu"
-              className="p-2 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="p-2.5 rounded-2xl text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              <Menu size={20} />
+              <Menu size={22} />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-64 bg-background">
-            <nav className="flex flex-col gap-4 mt-8" aria-label="Mobile navigation">
+          <SheetContent side="right" className="w-72 bg-background/95 backdrop-blur-xl">
+            <nav className="flex flex-col gap-2 mt-8" aria-label="Mobile navigation">
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setOpen(false)}
-                  className={`text-base font-medium px-3 py-2 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                  className={`text-base font-medium px-4 py-3 rounded-2xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
                     location.pathname === link.to
-                      ? "text-foreground bg-secondary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   }`}
                 >
                   {link.label}
