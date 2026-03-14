@@ -1,24 +1,51 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import SnackCard from "@/components/SnackCard";
-import { snacksData } from "@/lib/snacks-data";
+import { type Snack } from "@/lib/snacks-data";
+import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
+  const [snacks, setSnacks] = useState<Snack[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const debouncedQuery = useDebounce(query, 300);
 
+  useEffect(() => {
+    const fetchSnacks = async () => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from<Snack>("indian-snacks")
+        .select("*")
+        .order("snack_name", { ascending: true });
+
+      if (error) {
+        setError(error.message);
+        setSnacks([]);
+      } else {
+        setSnacks(data ?? []);
+      }
+
+      setLoading(false);
+    };
+
+    fetchSnacks();
+  }, []);
+
   const filtered = useMemo(() => {
-    if (!debouncedQuery.trim()) return snacksData;
+    if (!debouncedQuery.trim()) return snacks;
     const q = debouncedQuery.toLowerCase();
-    return snacksData.filter(
+    return snacks.filter(
       (s) =>
         s.snack_name.toLowerCase().includes(q) ||
         s.brand_or_region.toLowerCase().includes(q)
     );
-  }, [debouncedQuery]);
+  }, [debouncedQuery, snacks]);
 
   return (
     <div>
@@ -39,7 +66,7 @@ const HomePage = () => {
             transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-muted-foreground mt-3 text-lg md:text-xl"
           >
-            Search {snacksData.length}+ Indian snacks & street foods.
+            Search {snacks.length}+ Indian snacks & street foods.
           </motion.p>
         </div>
       </div>
@@ -80,7 +107,34 @@ const HomePage = () => {
 
         {/* Results */}
         <AnimatePresence mode="wait">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-center py-20 botanical-watermark"
+            >
+              <p className="text-muted-foreground text-lg">Loading snacks...</p>
+            </motion.div>
+          ) : error ? (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-center py-20 botanical-watermark"
+            >
+              <p className="text-destructive text-lg">
+                Failed to load snacks from Supabase.
+              </p>
+              <p className="text-muted-foreground mt-2 text-sm break-words">
+                {error}
+              </p>
+            </motion.div>
+          ) : filtered.length === 0 ? (
             <motion.div
               key="empty"
               initial={{ opacity: 0, y: 20 }}

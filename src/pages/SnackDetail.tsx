@@ -1,13 +1,65 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Leaf, TriangleAlert, ExternalLink } from "lucide-react";
-import { snacksData } from "@/lib/snacks-data";
+import { type Snack } from "@/lib/snacks-data";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { supabase } from "@/supabaseClient";
 
 const SnackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const snack = snacksData.find((s) => s.slug === slug);
+  const [snack, setSnack] = useState<Snack | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const fetchSnack = async () => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from<Snack>("indian-snacks")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (error) {
+        setError(error.message);
+        setSnack(null);
+      } else {
+        setSnack(data ?? null);
+      }
+
+      setLoading(false);
+    };
+
+    fetchSnack();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="container py-16 text-center">
+        <p className="text-lg text-muted-foreground">Loading snack details...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-16 text-center">
+        <p className="text-lg text-destructive">
+          Failed to load snack details from Supabase.
+        </p>
+        <p className="text-sm text-muted-foreground mt-2 break-words">{error}</p>
+        <Link to="/" className="text-primary underline mt-4 inline-block">
+          ← Back to Search
+        </Link>
+      </div>
+    );
+  }
 
   if (!snack) {
     return (
