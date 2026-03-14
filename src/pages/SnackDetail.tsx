@@ -13,7 +13,7 @@ const SnackDetail = () => {
     return (
       <div className="container py-16 text-center">
         <p className="text-lg text-muted-foreground">Snack not found.</p>
-        <Link to="/" className="text-foreground underline mt-4 inline-block">
+        <Link to="/" className="text-primary underline mt-4 inline-block">
           ← Back to Search
         </Link>
       </div>
@@ -22,15 +22,15 @@ const SnackDetail = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
       className="container max-w-3xl py-8 md:py-12"
     >
       {/* Back */}
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full px-3 py-1.5 hover:bg-accent"
       >
         <ArrowLeft size={16} />
         Back to Search
@@ -38,15 +38,19 @@ const SnackDetail = () => {
 
       {/* Verdict */}
       <div
-        className={`rounded-lg p-6 md:p-8 mb-8 ${
+        className={`rounded-3xl p-6 md:p-8 mb-8 ${
           snack.is_vegan ? "bg-safe/10" : "bg-destructive/10"
         }`}
       >
         <div className="flex items-center gap-4">
           {snack.is_vegan ? (
-            <Leaf size={48} className="text-safe shrink-0" aria-hidden="true" />
+            <div className="w-14 h-14 rounded-2xl bg-safe/20 flex items-center justify-center shrink-0">
+              <Leaf size={28} className="text-safe" aria-hidden="true" />
+            </div>
           ) : (
-            <TriangleAlert size={48} className="text-destructive shrink-0" aria-hidden="true" />
+            <div className="w-14 h-14 rounded-2xl bg-destructive/20 flex items-center justify-center shrink-0">
+              <TriangleAlert size={28} className="text-destructive" aria-hidden="true" />
+            </div>
           )}
           <div>
             <span
@@ -64,7 +68,7 @@ const SnackDetail = () => {
 
       {/* Hidden ingredients warning */}
       {!snack.is_vegan && snack.hidden_ingredients && (
-        <Alert variant="destructive" className="mb-6">
+        <Alert variant="destructive" className="mb-6 rounded-2xl">
           <TriangleAlert size={18} />
           <AlertTitle className="font-semibold">Hidden Ingredients</AlertTitle>
           <AlertDescription className="tabular-nums">
@@ -75,7 +79,7 @@ const SnackDetail = () => {
 
       {/* Hack Box */}
       {snack.instructions_to_veganise && (
-        <div className="mb-8 p-6 bg-safe text-safe-foreground rounded-lg shadow-card">
+        <div className="mb-8 p-6 bg-safe text-safe-foreground rounded-3xl shadow-card">
           <p className="text-xs uppercase tracking-widest mb-2 opacity-80">
             Show this to the vendor:
           </p>
@@ -101,11 +105,11 @@ const SnackDetail = () => {
 
       {/* Amazon CTA */}
       {snack.amazon_search_url && (
-        <motion.div whileTap={{ scale: 0.98 }}>
+        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}>
           <Button
             asChild
             size="lg"
-            className="w-full h-14 text-base font-semibold"
+            className="w-full h-14 text-base font-semibold rounded-2xl"
           >
             <a
               href={snack.amazon_search_url}
@@ -121,7 +125,7 @@ const SnackDetail = () => {
       )}
 
       {/* Report */}
-      <div className="mt-12 text-center">
+      <div className="mt-12 text-center botanical-watermark">
         <a
           href="mailto:hello@isthisvegan.in?subject=Recipe Update Report"
           className="text-sm text-muted-foreground hover:text-foreground underline transition-colors"

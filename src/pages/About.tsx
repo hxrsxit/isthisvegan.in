@@ -11,10 +11,10 @@ const placeholderImages = [
 
 const About = () => (
   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-    className="container py-12 md:py-16"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+    className="container py-12 md:py-20"
   >
     {/* Mission */}
     <div className="max-w-prose mb-16">
@@ -34,19 +34,22 @@ const About = () => (
 
     {/* Gallery */}
     <div>
-      <h2 className="text-xl font-semibold mb-6">Our Work</h2>
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-        {placeholderImages.map((img) => (
-          <div
+      <h2 className="text-xl font-semibold mb-8">Our Work</h2>
+      <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
+        {placeholderImages.map((img, i) => (
+          <motion.div
             key={img.id}
-            className={`${img.aspect} bg-secondary rounded-lg overflow-hidden break-inside-avoid group relative`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
+            className={`${img.aspect} bg-accent rounded-3xl overflow-hidden break-inside-avoid group relative transition-all duration-300 hover:shadow-card-hover hover:scale-[1.02]`}
           >
             <div className="absolute inset-0 flex items-center justify-center p-6">
               <p className="text-center text-sm font-semibold text-muted-foreground leading-snug">
                 {img.label}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
