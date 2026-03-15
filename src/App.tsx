@@ -24,7 +24,7 @@ const AppRoutes = () => {
       <main className={!isLanding ? "pt-24 md:pt-28" : ""}>
         <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/" element={<Index />} />
+        <Route path="/snacks" element={<Index />} />
         <Route path="/snack/:slug" element={<SnackDetail />} />
         <Route path="/go-vegan" element={<GoVegan />} />
         <Route path="/about" element={<About />} />
