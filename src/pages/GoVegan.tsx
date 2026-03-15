@@ -24,21 +24,26 @@ const GoVegan = () => (
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      className="container max-w-prose mx-auto py-12 md:py-20"
+      className="container mx-auto max-w-prose py-12 md:py-20"
     >
-      <h1 className="text-3xl md:text-4xl font-bold mb-10">Go Vegan</h1>
+      <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground md:text-4xl md:leading-snug">
+        Go Vegan
+      </h1>
 
-      <div className="space-y-12 text-lg leading-[1.7] text-foreground">
+      <div className="mt-10 space-y-12 text-lg leading-[1.7] text-foreground md:mt-14">
         {sections.map((s, i) => (
           <motion.section
             key={s.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 + i * 0.1 }}
+            className="rounded-3xl border border-border/50 bg-card/60 p-6 shadow-card md:p-8"
           >
-            <h2 className="text-xl font-semibold mb-3">{s.title}</h2>
-            <p>{s.body}</p>
-            <p className="mt-3 text-muted-foreground">{s.note}</p>
+            <h2 className="font-serif text-xl font-semibold tracking-tight text-foreground md:mb-3">
+              {s.title}
+            </h2>
+            <p className="max-w-lg">{s.body}</p>
+            <p className="mt-3 max-w-lg text-muted-foreground">{s.note}</p>
           </motion.section>
         ))}
       </div>

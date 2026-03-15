@@ -82,26 +82,26 @@ const SnackDetail = () => {
       {/* Back */}
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full px-3 py-1.5 hover:bg-accent"
+        className="mb-8 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
-        <ArrowLeft size={16} />
+        <ArrowLeft size={16} strokeWidth={1.5} />
         Back to Search
       </Link>
 
       {/* Verdict */}
       <div
-        className={`rounded-3xl p-6 md:p-8 mb-8 ${
+        className={`mb-8 rounded-3xl border border-border/50 p-6 shadow-card md:p-8 ${
           snack.is_vegan ? "bg-safe/10" : "bg-destructive/10"
         }`}
       >
         <div className="flex items-center gap-4">
           {snack.is_vegan ? (
-            <div className="w-14 h-14 rounded-2xl bg-safe/20 flex items-center justify-center shrink-0">
-              <Leaf size={28} className="text-safe" aria-hidden="true" />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-safe/20">
+              <Leaf size={28} strokeWidth={1.5} className="text-safe" aria-hidden="true" />
             </div>
           ) : (
-            <div className="w-14 h-14 rounded-2xl bg-destructive/20 flex items-center justify-center shrink-0">
-              <TriangleAlert size={28} className="text-destructive" aria-hidden="true" />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-destructive/20">
+              <TriangleAlert size={28} strokeWidth={1.5} className="text-destructive" aria-hidden="true" />
             </div>
           )}
           <div>
@@ -120,7 +120,7 @@ const SnackDetail = () => {
 
       {/* Hidden ingredients warning */}
       {!snack.is_vegan && snack.hidden_ingredients && (
-        <Alert variant="destructive" className="mb-6 rounded-2xl">
+        <Alert variant="destructive" className="mb-6 rounded-2xl border-border/50">
           <TriangleAlert size={18} />
           <AlertTitle className="font-semibold">Hidden Ingredients</AlertTitle>
           <AlertDescription className="tabular-nums">
@@ -131,7 +131,7 @@ const SnackDetail = () => {
 
       {/* Hack Box */}
       {snack.instructions_to_veganise && (
-        <div className="mb-8 p-6 bg-safe text-safe-foreground rounded-3xl shadow-card">
+        <div className="mb-8 rounded-3xl border border-safe/20 bg-safe p-6 text-safe-foreground shadow-card">
           <p className="text-xs uppercase tracking-widest mb-2 opacity-80">
             Show this to the vendor:
           </p>
@@ -161,7 +161,7 @@ const SnackDetail = () => {
           <Button
             asChild
             size="lg"
-            className="w-full h-14 text-base font-semibold rounded-2xl"
+            className="h-14 w-full rounded-2xl text-base font-semibold transition-transform hover:scale-[1.01]"
           >
             <a
               href={snack.amazon_search_url}

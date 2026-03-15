@@ -10,6 +10,7 @@ import {
   Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
 const navLinks = [
   { to: "/", label: "Snack Finder" },
@@ -85,12 +86,7 @@ const Landing = () => {
           className="mx-auto flex items-center justify-between rounded-full border border-ethereal-border bg-white/80 px-6 py-3 shadow-ethereal backdrop-blur-xl"
           aria-label="Main navigation"
         >
-          <Link
-            to="/"
-            className="font-serif text-lg font-semibold tracking-tight text-ethereal-text"
-          >
-            Is This Vegan?
-          </Link>
+          <Logo size={28} textClassName="text-ethereal-text" />
           <div className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link

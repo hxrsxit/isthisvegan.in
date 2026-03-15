@@ -21,7 +21,8 @@ const AppRoutes = () => {
   return (
     <>
       {!isLanding && <Header />}
-      <Routes>
+      <main className={!isLanding ? "pt-24 md:pt-28" : ""}>
+        <Routes>
         <Route path="/landing" element={<Landing />} />
         <Route path="/" element={<Index />} />
         <Route path="/snack/:slug" element={<SnackDetail />} />
@@ -29,7 +30,8 @@ const AppRoutes = () => {
         <Route path="/about" element={<About />} />
         <Route path="/join-us" element={<JoinUs />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </main>
     </>
   );
 };

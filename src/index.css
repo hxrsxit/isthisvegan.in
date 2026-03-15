@@ -6,56 +6,57 @@
 
 @layer base {
   :root {
-    --background: 40 33% 98%;
-    --foreground: 160 30% 14%;
+    /* Ethereal Minimalism – site-wide */
+    --background: 60 20% 98%;
+    --foreground: 160 25% 12%;
 
-    --card: 40 30% 99%;
-    --card-foreground: 160 30% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 25% 12%;
 
-    --popover: 40 30% 99%;
-    --popover-foreground: 160 30% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 25% 12%;
 
-    --primary: 153 30% 28%;
-    --primary-foreground: 40 33% 98%;
+    --primary: 153 28% 24%;
+    --primary-foreground: 60 20% 98%;
 
-    --secondary: 40 25% 93%;
-    --secondary-foreground: 160 30% 14%;
+    --secondary: 60 15% 94%;
+    --secondary-foreground: 160 25% 12%;
 
-    --muted: 40 20% 94%;
-    --muted-foreground: 160 10% 45%;
+    --muted: 60 12% 94%;
+    --muted-foreground: 160 8% 42%;
 
     --accent-terracotta: 16 60% 55%;
-    --accent-terracotta-foreground: 40 33% 98%;
+    --accent-terracotta-foreground: 60 20% 98%;
     --accent-mustard: 40 80% 55%;
-    --accent-mustard-foreground: 160 30% 14%;
+    --accent-mustard-foreground: 160 25% 12%;
     --accent-sage: 145 20% 72%;
 
-    --accent: 145 20% 90%;
-    --accent-foreground: 160 30% 14%;
+    --accent: 145 18% 92%;
+    --accent-foreground: 160 25% 12%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --safe: 152 55% 38%;
+    --safe: 152 48% 36%;
     --safe-foreground: 0 0% 100%;
 
-    --border: 40 15% 88%;
-    --input: 40 15% 88%;
-    --ring: 153 30% 28%;
+    --border: 60 10% 91%;
+    --input: 60 10% 91%;
+    --ring: 153 28% 24%;
 
     --radius: 1rem;
 
-    --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
-    --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.1);
+    --shadow-card: 0 8px 30px rgb(0,0,0,0.04);
+    --shadow-card-hover: 0 12px 40px rgb(0,0,0,0.06);
 
-    --sidebar-background: 40 33% 98%;
-    --sidebar-foreground: 160 30% 14%;
-    --sidebar-primary: 153 30% 28%;
-    --sidebar-primary-foreground: 40 33% 98%;
-    --sidebar-accent: 145 20% 90%;
-    --sidebar-accent-foreground: 160 30% 14%;
-    --sidebar-border: 40 15% 88%;
-    --sidebar-ring: 153 30% 28%;
+    --sidebar-background: 60 20% 98%;
+    --sidebar-foreground: 160 25% 12%;
+    --sidebar-primary: 153 28% 24%;
+    --sidebar-primary-foreground: 60 20% 98%;
+    --sidebar-accent: 145 18% 92%;
+    --sidebar-accent-foreground: 160 25% 12%;
+    --sidebar-border: 60 10% 91%;
+    --sidebar-ring: 153 28% 24%;
   }
 }
 
@@ -86,10 +87,10 @@
   }
 
   .mesh-gradient {
-    background: 
-      radial-gradient(ellipse at 20% 50%, hsl(145 20% 72% / 0.3) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, hsl(40 80% 55% / 0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, hsl(16 60% 55% / 0.1) 0%, transparent 50%),
+    background:
+      radial-gradient(ellipse at 20% 50%, hsl(145 22% 72% / 0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, hsl(153 28% 24% / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, hsl(145 18% 92% / 0.25) 0%, transparent 50%),
       hsl(var(--background));
   }
 
