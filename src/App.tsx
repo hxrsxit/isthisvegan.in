@@ -16,15 +16,15 @@ const queryClient = new QueryClient();
 
 const AppRoutes = () => {
   const location = useLocation();
-  const isLanding = location.pathname === "/landing";
+  const isLanding = location.pathname === "/landing" || location.pathname === "/";
 
   return (
     <>
       {!isLanding && <Header />}
       <main className={!isLanding ? "pt-24 md:pt-28" : ""}>
         <Routes>
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/snacks" element={<Index />} />
         <Route path="/snack/:slug" element={<SnackDetail />} />
         <Route path="/go-vegan" element={<GoVegan />} />
         <Route path="/about" element={<About />} />
