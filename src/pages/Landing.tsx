@@ -81,12 +81,16 @@ const Landing = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className="fixed left-1/2 top-0 z-50 -translate-x-1/2 pt-4 w-full max-w-5xl px-4"
-      >
+        >
         <nav
           className="mx-auto flex items-center justify-between rounded-full border border-ethereal-border bg-white/80 px-6 py-3 shadow-ethereal backdrop-blur-xl"
           aria-label="Main navigation"
         >
-          <Logo size={40} textClassName="text-ethereal-text" className="md:gap-3" />
+          <Logo
+            size={40}
+            textClassName="text-ethereal-text text-xl md:text-2xl"
+            className="md:gap-3"
+          />
           <div className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
