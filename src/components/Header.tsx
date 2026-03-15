@@ -18,13 +18,13 @@ const Header = () => {
 
   return (
     <motion.header
-      initial={{ opacity: 0, y: -12 }}
+      initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      className="fixed left-1/2 top-0 z-50 w-full -translate-x-1/2 px-4 pt-4"
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm"
     >
       <nav
-        className="container flex h-14 items-center justify-between rounded-full border border-ethereal-border bg-white/80 px-5 shadow-ethereal backdrop-blur-xl md:h-16 md:px-6"
+        className="container flex h-16 items-center justify-between"
         aria-label="Main navigation"
       >
         <Logo size={28} />

@@ -6,6 +6,7 @@ import SnackCard from "@/components/SnackCard";
 import { type Snack } from "@/lib/snacks-data";
 import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
+import Logo from "@/components/Logo";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -52,6 +53,14 @@ const HomePage = () => {
       {/* Hero */}
       <div className="mesh-gradient py-16 md:py-20">
         <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            className="mb-6"
+          >
+            <Logo showText={false} size={40} />
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -73,7 +82,7 @@ const HomePage = () => {
 
       <div className="container py-8 md:py-10">
         {/* Search */}
-        <div className="sticky top-24 z-40 -mx-2 mb-8 py-4 md:top-28">
+        <div className="mb-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
