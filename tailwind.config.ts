@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['"DM Sans"', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['"Playfair Display"', 'Georgia', 'serif'],
+        serif: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -56,6 +57,14 @@ export default {
           foreground: "hsl(var(--accent-mustard-foreground))",
         },
         sage: "hsl(var(--accent-sage))",
+        ethereal: {
+          bg: "#FAFAF8",
+          surface: "#FFFFFF",
+          text: "#1A2E20",
+          "text-muted": "#64746A",
+          accent: "#2B4533",
+          border: "#EBECE8",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -85,6 +94,8 @@ export default {
       boxShadow: {
         card: "var(--shadow-card)",
         "card-hover": "var(--shadow-card-hover)",
+        ethereal: "0 8px 30px rgb(0,0,0,0.04)",
+        "ethereal-hover": "0 12px 40px rgb(0,0,0,0.06)",
       },
       keyframes: {
         "accordion-down": {
