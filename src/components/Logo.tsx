@@ -18,11 +18,12 @@ const Logo = ({ showText = true, className = "", textClassName, size = 32 }: Log
     aria-label="Is This Vegan? – Home"
   >
     <img
-      src="/logo.png"
+      src="/erasebg-transformed.png"
       alt=""
       width={size}
       height={size}
-      className="h-auto w-auto object-contain"
+      className="object-contain"
+      style={{ width: size, height: size }}
     />
     {showText && (
       <span className={`font-serif text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>

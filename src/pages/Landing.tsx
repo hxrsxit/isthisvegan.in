@@ -86,7 +86,7 @@ const Landing = () => {
           className="mx-auto flex items-center justify-between rounded-full border border-ethereal-border bg-white/80 px-6 py-3 shadow-ethereal backdrop-blur-xl"
           aria-label="Main navigation"
         >
-          <Logo size={28} textClassName="text-ethereal-text" />
+          <Logo size={40} textClassName="text-ethereal-text" className="md:gap-3" />
           <div className="hidden items-center gap-1 md:flex">
             {navLinks.map((link) => (
               <Link
