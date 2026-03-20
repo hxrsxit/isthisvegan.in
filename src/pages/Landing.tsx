@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ const Landing = () => {
     ["--landing-cream" as string]: "51 86% 94%",
     ["--landing-moss" as string]: "84 22% 67%",
     ["--landing-shadow" as string]: "147 97% 14% / 0.2",
-  } as React.CSSProperties;
+  } as CSSProperties;
 
   return (
     <div style={landingTheme} className="relative min-h-screen overflow-hidden bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]">
