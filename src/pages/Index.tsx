@@ -68,16 +68,8 @@ const HomePage = () => {
     <div className="relative min-h-screen bg-[#fefae0] text-[#01472e]">
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
       <div className="relative z-10">
-        <div className="rounded-t-[5rem] bg-[#ccd5ae] py-16 md:py-20">
+        <div className="rounded-t-[5rem] bg-[#ccd5ae] py-10 md:py-14">
           <div className="container">
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, ease: motionEase }}
-              className="mb-6"
-            >
-              <Logo showText={false} size={40} />
-            </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
