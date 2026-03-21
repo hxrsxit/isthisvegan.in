@@ -27,7 +27,7 @@ const Header = () => {
         className="container flex h-16 items-center justify-between gap-3"
         aria-label="Main navigation"
       >
-        <Logo showText size={28} textClassName="text-[#01472e]" />
+          <Logo showText size={40} textClassName="text-[#01472e]" />
 
         <div className="hidden rounded-full border border-white/35 bg-[#ffffff1a] p-1 md:flex md:items-center md:gap-1.5 md:backdrop-blur-[20px]">
           {navLinks.map((link) => (
