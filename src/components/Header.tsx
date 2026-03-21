@@ -29,7 +29,7 @@ const Header = () => {
       >
         <Logo size={28} />
 
-        <div className="hidden rounded-full border border-white/35 bg-[#ffffff1a] p-1 md:flex md:items-center md:gap-1 md:backdrop-blur-[20px]">
+        <div className="hidden rounded-full border border-white/35 bg-[#ffffff1a] p-1 md:flex md:items-center md:gap-1.5 md:backdrop-blur-[20px]">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -43,12 +43,6 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
-        </div>
-
-        <div className="hidden md:block">
-          <div className="rounded-full bg-white px-3 py-1.5 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.3em] text-[#01472e] shadow-[0_14px_28px_rgba(1,71,46,0.12)]">
-            Browse
-          </div>
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>

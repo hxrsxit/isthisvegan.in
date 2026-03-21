@@ -11,22 +11,25 @@ interface LogoProps {
   size?: number;
 }
 
-const Logo = ({ showText = true, className = "", textClassName, size = 32 }: LogoProps) => (
+const Logo = ({ showText = false, className = "", textClassName, size = 32 }: LogoProps) => (
   <Link
     to="/"
     className={`inline-flex items-center gap-2.5 ${className}`}
     aria-label="Is This Vegan? – Home"
   >
     <img
-      src="/erasebg-transformed.png"
+      src="/IsThisVegan_logo.png"
       alt=""
       width={size}
       height={size}
       className="object-contain"
       style={{ width: size, height: size }}
+      onError={(e) => {
+        e.currentTarget.src = "/erasebg-transformed.png";
+      }}
     />
     {showText && (
-      <span className={`font-serif text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
+      <span className={`font-['Inter'] text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
         Is This Vegan?
       </span>
     )}
