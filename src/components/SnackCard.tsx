@@ -13,7 +13,7 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.6, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link
         to={`/snack/${snack.slug}`}
@@ -22,15 +22,15 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
         <div className="flex flex-col gap-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="truncate text-base font-semibold leading-tight text-foreground">
+              <h3 className="truncate font-['Inter'] text-[1.02rem] font-medium leading-tight tracking-[-0.01em] text-foreground">
                 {snack.snack_name}
               </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">
+              <p className="mt-1.5 font-['Inter'] text-sm font-normal text-muted-foreground">
                 {snack.brand_or_region}
               </p>
             </div>
             <div
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-['Inter'] text-[11px] font-medium uppercase tracking-[0.2em] ${
                 snack.is_vegan
                   ? "bg-safe/10 text-safe"
                   : "bg-destructive/10 text-destructive"

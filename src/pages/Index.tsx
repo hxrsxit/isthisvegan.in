@@ -68,7 +68,7 @@ const HomePage = () => {
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: motionEase }}
-              className="font-['Anton'] text-[min(23vw,11rem)] leading-[0.75] tracking-[-0.05em] text-[#01472e]"
+              className="max-w-6xl font-['Anton'] text-[clamp(3.2rem,13vw,9rem)] leading-[0.82] tracking-[-0.04em] text-[#01472e]"
             >
               Wondering if your Indian Snack
               <br className="hidden sm:inline" />
@@ -78,7 +78,7 @@ const HomePage = () => {
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.08, ease: motionEase }}
-              className="mt-4 max-w-2xl font-['Inter'] text-base text-[#01472e]/80 md:text-lg"
+              className="mt-5 max-w-2xl font-['Inter'] text-base text-[#01472e]/75 md:text-lg"
             >
               Search {snacks.length}+ Indian snacks & street foods.
             </motion.p>
