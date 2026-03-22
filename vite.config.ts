@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['IsThisVegan_logo.png'],
+      includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
         name: 'Is This Vegan?',
         short_name: 'IsThisVegan',
@@ -28,12 +28,12 @@ export default defineConfig(({ mode }) => ({
         display: 'standalone',
         icons: [
           {
-            src: '/IsThisVegan_logo.png',
+            src: '/pwa-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/IsThisVegan_logo.png',
+            src: '/pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
