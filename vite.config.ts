@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         maximumFileSizeToCacheInBytes: 15000000
       },
+      manifestFilename: 'manifest.json',
       manifest: {
         name: 'Is This Vegan?',
         short_name: 'IsThisVegan',
