@@ -25,7 +25,7 @@ const Logo = ({ showText = false, className = "", textClassName, size = 32 }: Lo
       className="object-contain"
       style={{ width: size, height: size }}
       onError={(e) => {
-        e.currentTarget.src = "/erasebg-transformed.png";
+        e.currentTarget.src = "/IsThisVegan_logo.png";
       }}
     />
     {showText && (
