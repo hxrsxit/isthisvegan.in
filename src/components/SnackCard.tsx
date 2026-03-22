@@ -20,8 +20,8 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
         to={`/snack/${snack.slug}`}
         className={`block rounded-3xl border p-6 shadow-card transition-all duration-300 ease-out hover:scale-[1.01] hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
           snack.is_vegan
-            ? "border-[hsl(var(--primary)/0.14)] bg-[hsl(var(--accent-sage)/0.16)]"
-            : "border-[hsl(var(--status-danger-border)/0.7)] bg-[hsl(var(--status-danger-soft)/0.52)]"
+            ? "border-emerald-200/70 bg-emerald-50/50"
+            : "border-rose-200/70 bg-rose-50/50"
         }`}
       >
         <div className="flex flex-col gap-3">
@@ -38,8 +38,8 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
               variant="outline"
               className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-['Inter'] text-[11px] font-medium uppercase tracking-[0.2em] ${
                 snack.is_vegan
-                  ? "border-[hsl(var(--primary)/0.18)] bg-[hsl(var(--accent-sage)/0.24)] text-[hsl(var(--primary)/0.92)]"
-                  : "border-[hsl(var(--status-danger-border)/0.82)] bg-[hsl(var(--status-danger-soft)/0.88)] text-[hsl(var(--status-danger))]"
+                  ? "border-emerald-300/80 bg-emerald-100/70 text-emerald-700"
+                  : "border-rose-300/80 bg-rose-100/70 text-rose-700"
               }`}
             >
               {snack.is_vegan ? (
