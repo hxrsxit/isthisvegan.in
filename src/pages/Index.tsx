@@ -76,7 +76,7 @@ const HomePage = () => {
               transition={{ duration: 1.2, ease: motionEase }}
               className="max-w-5xl font-['Playfair_Display'] text-[clamp(2.5rem,8.2vw,6.2rem)] font-semibold leading-[0.95] tracking-[-0.015em] text-[#01472e]"
             >
-              Wondering if your Indian Snack
+              Wondering if your Indian Snack{" "}
               <br className="hidden sm:inline" />
               is Vegan or Not?
             </motion.h1>
