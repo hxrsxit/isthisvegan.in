@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logoImage from "@/assets/is-this-vegan-logo.png";
 
 interface LogoProps {
   /** Show "Is This Vegan?" text next to the logo */
@@ -18,15 +19,18 @@ const Logo = ({ showText = false, className = "", textClassName, size = 32 }: Lo
     aria-label="Is This Vegan? – Home"
   >
     <img
-      src="/IsThisVegan_logo.png"
+      src={logoImage}
       alt=""
       width={size}
       height={size}
       className="object-contain"
       style={{ width: size, height: size }}
+<<<<<<< HEAD
       onError={(e) => {
         e.currentTarget.src = "/IsThisVegan_logo.png";
       }}
+=======
+>>>>>>> ed0cabe25ba1feebfbee2dd94563fe0faf5ae534
     />
     {showText && (
       <span className={`font-['Inter'] text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
