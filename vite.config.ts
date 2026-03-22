@@ -18,10 +18,15 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+      },
       manifest: {
         name: 'Is This Vegan?',
         short_name: 'IsThisVegan',
+        start_url: '/',
         description: 'Check if Indian snacks and street foods are vegan. Search by name or brand.',
         theme_color: '#ffffff',
         background_color: '#ffffff',
