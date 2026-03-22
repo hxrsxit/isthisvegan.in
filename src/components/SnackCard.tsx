@@ -36,16 +36,16 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
             </div>
             <Badge
               variant="outline"
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-['Inter'] text-[11px] font-bold uppercase tracking-wide transition-all ${
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-['Inter'] text-[10px] font-bold uppercase tracking-widest transition-all ${
                 snack.is_vegan
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-700 shadow-[0_4px_14px_0_rgba(16,185,129,0.2)]"
-                  : "border-rose-300 bg-rose-50 text-rose-700 shadow-[0_4px_14px_0_rgba(244,63,94,0.2)]"
+                  ? "border-[#01472e]/20 bg-[#ccd5ae]/30 text-[#01472e]"
+                  : "border-[#9e2a2b]/20 bg-[#9e2a2b]/[0.05] text-[#9e2a2b]"
               }`}
             >
               {snack.is_vegan ? (
-                <Leaf size={14} strokeWidth={2.5} className="text-emerald-500" aria-hidden="true" />
+                <Leaf size={13} strokeWidth={2.5} className="text-[#01472e]" aria-hidden="true" />
               ) : (
-                <TriangleAlert size={14} strokeWidth={2.5} className="text-rose-500" aria-hidden="true" />
+                <TriangleAlert size={13} strokeWidth={2.5} className="text-[#9e2a2b]" aria-hidden="true" />
               )}
               {snack.is_vegan ? "Vegan" : "Not Vegan"}
             </Badge>
