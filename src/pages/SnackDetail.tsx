@@ -55,7 +55,7 @@ const SnackDetail = () => {
           {error && <p className="font-['Inter'] text-sm text-[hsl(var(--landing-forest)/0.7)] mt-2 break-words max-w-md">{error}</p>}
           <Link
             to="/"
-            className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.42)] px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
+            className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.42)] px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
           >
             <ArrowLeft size={16} strokeWidth={1.5} />
             Back to Search
@@ -78,7 +78,7 @@ const SnackDetail = () => {
         {/* Back */}
         <Link
           to="/"
-          className="mb-8 inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.42)] px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] shadow-[0_10px_30px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
+          className="mb-8 inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.42)] px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] shadow-[0_10px_30px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
         >
           <ArrowLeft size={16} strokeWidth={1.5} />
           Back to Search
@@ -153,7 +153,7 @@ const SnackDetail = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Check price of ${snack.snack_name} on Amazon`}
-              className="flex h-14 w-full items-center justify-center rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.7)] px-4 py-2 font-['Inter'] text-[12px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest))] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[hsl(var(--landing-cream)/0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
+              className="flex h-14 w-full items-center justify-center rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.7)] px-4 py-2 font-['Inter'] text-[12px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest))] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:bg-[hsl(var(--landing-cream)/0.9)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--landing-forest)/0.3)] focus-visible:ring-offset-2"
             >
               <ExternalLink size={18} className="mr-2" />
               Check Price / Buy on Amazon
