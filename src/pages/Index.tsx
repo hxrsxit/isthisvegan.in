@@ -9,6 +9,7 @@ import { type Snack } from "@/lib/snacks-data";
 import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
+import { searchWithTypoTolerance } from "@/lib/fuzzy";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -50,15 +51,20 @@ const HomePage = () => {
 
   const filtered = useMemo(() => {
     let base = snacks;
+    
+    // Step 1: Filter by category if one is selected
     if (activeCategory !== "All") {
       base = base.filter((s) => s.brand_or_region === activeCategory);
     }
+    
+    // Step 2: Use typo-tolerant fuzzy finder for spelling matches 
+    //         if search query exists
     if (!debouncedQuery.trim()) return base;
-    const q = debouncedQuery.toLowerCase();
-    return base.filter(
-      (s) =>
-        s.snack_name.toLowerCase().includes(q) ||
-        s.brand_or_region.toLowerCase().includes(q)
+    
+    return searchWithTypoTolerance(
+      base, 
+      debouncedQuery, 
+      (s: Snack) => [s.snack_name, s.brand_or_region]
     );
   }, [activeCategory, debouncedQuery, snacks]);
 
