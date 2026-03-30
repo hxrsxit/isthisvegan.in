@@ -92,7 +92,9 @@ const HomePage = () => {
               transition={{ duration: 1.2, delay: 0.08, ease: motionEase }}
               className="mt-5 max-w-2xl font-['Inter'] text-base text-[#01472e]/75 md:text-lg"
             >
-              Search {snacks.length}+ Indian snacks & street foods.
+              Search 2000+ Indian food & beverages.
+              <br className="hidden sm:inline" />
+              Ultimate Guide for Vegans in India.
             </motion.p>
           </div>
         </div>
