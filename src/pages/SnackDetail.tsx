@@ -20,7 +20,7 @@ const SnackDetail = () => {
       setError(null);
 
       const { data, error } = await supabase
-        .from<Snack>("indian-snacks")
+        .from<Snack>("isthisvegan_db")
         .select("*")
         .eq("slug", slug)
         .maybeSingle();
@@ -65,10 +65,23 @@ const SnackDetail = () => {
     );
   }
 
+  const safelyGetArray = (arr: any): string[] => {
+    if (!arr) return [];
+    try {
+      const parsed = typeof arr === "string" ? JSON.parse(arr) : arr;
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const hiddenIngredients = safelyGetArray(snack.hidden_animal_ingredients);
+  const alternatives = safelyGetArray(snack.vegan_alternatives);
+
   return (
     <div style={landingTheme} className="relative min-h-screen overflow-hidden bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04]" style={{ backgroundImage: landingNoiseBackground }} />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -86,9 +99,8 @@ const SnackDetail = () => {
 
         {/* Verdict */}
         <div
-          className={`mb-8 overflow-hidden rounded-[2rem] border border-[hsl(var(--landing-forest)/0.08)] ${
-            snack.is_vegan ? "bg-[hsl(var(--landing-sage)/0.2)]" : "bg-destructive/5"
-          } p-6 shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] md:p-8`}
+          className={`mb-8 overflow-hidden rounded-[2rem] border border-[hsl(var(--landing-forest)/0.08)] ${snack.is_vegan ? "bg-[hsl(var(--landing-sage)/0.2)]" : "bg-destructive/5"
+            } p-6 shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] md:p-8`}
         >
           <div className="flex items-center gap-4">
             {snack.is_vegan ? (
@@ -102,46 +114,52 @@ const SnackDetail = () => {
             )}
             <div>
               <span
-                className={`inline-block font-['Inter'] text-[10px] font-bold uppercase tracking-[0.3em] mb-1 ${
-                  snack.is_vegan ? "text-[hsl(var(--landing-forest))]" : "text-destructive"
-                }`}
+                className={`inline-block font-['Inter'] text-[10px] font-bold uppercase tracking-[0.3em] mb-1 ${snack.is_vegan ? "text-[hsl(var(--landing-forest))]" : "text-destructive"
+                  }`}
               >
                 {snack.is_vegan ? "Vegan" : "Not Vegan"}
               </span>
-              <h1 className="font-['Anton'] text-3xl md:text-5xl tracking-normal">{snack.snack_name}</h1>
-              <p className="font-['Inter'] text-sm text-[hsl(var(--landing-forest)/0.7)] mt-1 tracking-wide">{snack.brand_or_region}</p>
+              <h1 className="font-['Anton'] text-3xl md:text-5xl tracking-normal">{snack.name}</h1>
+              <p className="font-['Inter'] text-sm text-[hsl(var(--landing-forest)/0.7)] mt-1 tracking-wide">{snack.brand}</p>
             </div>
           </div>
         </div>
 
+        {/* Verdict Summary */}
+        {snack.verdict_summary && (
+          <div className="mb-6 rounded-[2rem] border border-[hsl(var(--landing-forest)/0.2)] bg-[hsl(var(--landing-forest))] p-6 text-[hsl(var(--landing-cream))] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px]">
+            <p className="font-['Anton'] text-xl md:text-2xl tracking-wide">{snack.verdict_summary}</p>
+          </div>
+        )}
+
         {/* Hidden ingredients warning */}
-        {!snack.is_vegan && snack.hidden_ingredients && (
+        {!snack.is_vegan && hiddenIngredients.length > 0 && (
           <div className="mb-6 flex gap-3 rounded-[2rem] border border-destructive/20 bg-destructive/5 p-6 shadow-[0_10px_30px_hsl(var(--landing-shadow))] backdrop-blur-[20px]">
             <TriangleAlert size={20} className="text-destructive flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-['Inter'] text-sm font-bold uppercase tracking-wider text-destructive mb-1">Hidden Ingredients</h3>
-              <p className="font-['Inter'] text-base text-destructive/90">{snack.hidden_ingredients}</p>
+              <h3 className="font-['Inter'] text-sm font-bold uppercase tracking-wider text-destructive mb-1">Hidden Animal Ingredients</h3>
+              <p className="font-['Inter'] text-base text-destructive/90">{hiddenIngredients.join(", ")}</p>
             </div>
           </div>
         )}
 
-        {/* Hack Box */}
-        {snack.instructions_to_veganise && (
-          <div className="mb-8 rounded-[2rem] border border-[hsl(var(--landing-forest)/0.2)] bg-[hsl(var(--landing-forest))] p-6 text-[hsl(var(--landing-cream))] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px]">
-            <p className="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] opacity-80 mb-2">Show this to the vendor:</p>
-            <p className="font-['Anton'] text-2xl md:text-3xl tracking-wide">{snack.instructions_to_veganise}</p>
+        {/* Detailed Analysis */}
+        {snack.detailed_analysis && (
+          <div className="space-y-4 mb-8 p-6 rounded-[2rem] border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.6)] shadow-[0_10px_30px_hsl(var(--landing-shadow))]">
+            <h3 className="font-['Inter'] text-sm font-bold uppercase tracking-wider text-[hsl(var(--landing-forest))] mb-1">Detailed Analysis</h3>
+            <p className="font-['Inter'] text-base leading-relaxed text-[hsl(var(--landing-forest)/0.85)]">{snack.detailed_analysis}</p>
           </div>
         )}
 
-        {/* Description & Comments */}
-        {(snack.short_description || snack.comments) && (
-          <div className="space-y-4 mb-8">
-            {snack.short_description && (
-              <p className="font-['Inter'] text-base leading-relaxed text-[hsl(var(--landing-forest)/0.85)]">{snack.short_description}</p>
-            )}
-            {snack.comments && (
-              <p className="font-['Inter'] text-base leading-relaxed text-[hsl(var(--landing-forest)/0.65)]">{snack.comments}</p>
-            )}
+        {/* Vegan Alternatives */}
+        {alternatives.length > 0 && (
+          <div className="mb-8 p-6 rounded-[2rem] border border-[hsl(var(--landing-forest)/0.15)] bg-emerald-50/50 shadow-[0_10px_30px_hsl(var(--landing-shadow))]">
+            <h3 className="font-['Inter'] text-sm font-bold uppercase tracking-wider text-[hsl(var(--landing-forest))] mb-1">Vegan Alternatives</h3>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              {alternatives.map((alt, i) => (
+                <li key={i} className="font-['Inter'] text-base text-[hsl(var(--landing-forest)/0.85)]">{alt}</li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -164,7 +182,7 @@ const SnackDetail = () => {
         {/* Report */}
         <div className="mt-12 text-center botanical-watermark pb-8">
           <a
-            href="mailto:hello@isthisvegan.in?subject=Recipe Update Report"
+            href="mailto:info.isthisvegan@gmail.com?subject=Recipe Update Report"
             className="font-['Inter'] text-xs font-bold uppercase tracking-[0.15em] text-[hsl(var(--landing-forest)/0.4)] transition-opacity hover:opacity-80"
           >
             Did the recipe change? Report an update.

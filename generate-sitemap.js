@@ -29,7 +29,7 @@ const escapeXml = (value) =>
 
 async function generateSitemap() {
   const { data, error } = await supabase
-    .from("indian-snacks")
+    .from("isthisvegan_db")
     .select("slug")
     .not("slug", "is", null);
 

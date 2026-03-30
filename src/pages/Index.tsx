@@ -25,9 +25,9 @@ const HomePage = () => {
       setError(null);
 
       const { data, error } = await supabase
-        .from<Snack>("indian-snacks")
+        .from<Snack>("isthisvegan_db")
         .select("*")
-        .order("snack_name", { ascending: true });
+        .order("name", { ascending: true });
 
       if (error) {
         setError(error.message);
@@ -44,27 +44,27 @@ const HomePage = () => {
 
   const categories = useMemo(() => {
     const regions = Array.from(
-      new Set(snacks.map((s) => s.brand_or_region.trim()).filter(Boolean))
+      new Set(snacks.map((s) => s.main_category?.trim()).filter(Boolean))
     ).sort();
     return ["All", ...regions];
   }, [snacks]);
 
   const filtered = useMemo(() => {
     let base = snacks;
-    
+
     // Step 1: Filter by category if one is selected
     if (activeCategory !== "All") {
-      base = base.filter((s) => s.brand_or_region === activeCategory);
+      base = base.filter((s) => s.main_category === activeCategory);
     }
-    
+
     // Step 2: Use typo-tolerant fuzzy finder for spelling matches 
     //         if search query exists
     if (!debouncedQuery.trim()) return base;
-    
+
     return searchWithTypoTolerance(
-      base, 
-      debouncedQuery, 
-      (s: Snack) => [s.snack_name, s.brand_or_region]
+      base,
+      debouncedQuery,
+      (s: Snack) => [s.name, s.brand || ""]
     );
   }, [activeCategory, debouncedQuery, snacks]);
 
@@ -135,11 +135,10 @@ const HomePage = () => {
                     key={category}
                     variant="outline"
                     onClick={() => setActiveCategory(category)}
-                    className={`cursor-pointer rounded-full px-3 py-1.5 font-['Inter'] text-[11px] uppercase tracking-[0.22em] transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
-                      activeCategory === category
-                        ? "border-[#01472e] bg-[#01472e] text-[#fefae0]"
-                        : "border-[#01472e]/20 bg-[#fefae0]/70 text-[#01472e]/80 hover:border-[#01472e]/45 hover:text-[#01472e]"
-                    }`}
+                    className={`cursor-pointer rounded-full px-3 py-1.5 font-['Inter'] text-[11px] uppercase tracking-[0.22em] transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${activeCategory === category
+                      ? "border-[#01472e] bg-[#01472e] text-[#fefae0]"
+                      : "border-[#01472e]/20 bg-[#fefae0]/70 text-[#01472e]/80 hover:border-[#01472e]/45 hover:text-[#01472e]"
+                      }`}
                   >
                     {category}
                   </Badge>
@@ -196,7 +195,7 @@ const HomePage = () => {
                     asChild
                     className="mt-5 rounded-full bg-[#01472e] px-6 font-['Inter'] text-xs font-bold uppercase tracking-[0.22em] text-[#fefae0] hover:bg-[#01472e]/90"
                   >
-                    <a href="mailto:harshitmeharban@gmail.com?subject=New Snack Suggestion for IsThisVegan">
+                    <a href="mailto:info.isthisvegan@gmail.com?subject=New Snack Suggestion for IsThisVegan">
                       Suggest a Snack
                     </a>
                   </Button>

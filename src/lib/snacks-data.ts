@@ -1,11 +1,14 @@
 export interface Snack {
+  id: number;
   slug: string;
-  snack_name: string;
-  brand_or_region: string;
+  name: string;
+  brand: string | null;
   is_vegan: boolean;
-  hidden_ingredients: string | null;
-  instructions_to_veganise: string | null;
-  comments: string | null;
-  short_description: string | null;
+  main_category: string | null;
+  tags: string[] | null;
   amazon_search_url: string | null;
+  verdict_summary: string | null;
+  hidden_animal_ingredients: string[] | null;
+  detailed_analysis: string | null;
+  vegan_alternatives: string[] | null;
 }

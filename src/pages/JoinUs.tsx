@@ -59,7 +59,7 @@ const JoinUs = () => (
             size="lg"
             className="w-full h-14 justify-start gap-3 rounded-2xl mt-2 border-border/60 bg-card/80 text-base font-semibold shadow-card transition-shadow hover:border-border hover:shadow-card-hover"
           >
-            <a href="mailto:hello@isthisvegan.in" aria-label="Contact us via email">
+            <a href="mailto:info.isthisvegan@gmail.com" aria-label="Contact us via email">
               <Mail size={20} strokeWidth={1.5} />
               Contact Us
             </a>
