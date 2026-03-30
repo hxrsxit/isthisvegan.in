@@ -21,7 +21,7 @@ const AppRoutes = () => {
   return (
     <>
       {!isLanding && <Header />}
-      <main className={!isLanding ? "pt-[4.5rem] md:pt-[4.75rem]" : ""}>
+      <main className={!isLanding ? "pt-6 md:pt-8" : ""}>
         <Routes>
         <Route path="/landing" element={<Landing />} />
         <Route path="/" element={<Index />} />

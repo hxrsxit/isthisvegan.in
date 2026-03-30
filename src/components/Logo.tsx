@@ -25,6 +25,9 @@ const Logo = ({ showText = false, className = "", textClassName, size = 32 }: Lo
       height={size}
       className="object-contain"
       style={{ width: size, height: size }}
+      onError={(e) => {
+        e.currentTarget.src = "/IsThisVegan_logo.png";
+      }}
     />
     {showText && (
       <span className={`font-['Inter'] text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
