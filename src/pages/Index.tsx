@@ -252,7 +252,7 @@ const HomePage = () => {
 
                 {/* Infinite Scroll trigger target */}
                 {displayCount < filtered.length && (
-                  <div ref={observerTarget} className="w-full mt-10">
+                  <div ref={sentinelRef} className="w-full mt-10">
                     <LoadingAnimation message="Loading more snacks..." className="py-8" />
                   </div>
                 )}
