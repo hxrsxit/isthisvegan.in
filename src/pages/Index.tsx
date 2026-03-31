@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Leaf } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,73 @@ import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { searchWithTypoTolerance } from "@/lib/fuzzy";
+
+const LoadingState = () => {
+  const [msgIdx, setMsgIdx] = useState(0);
+  const loadingMessages = [
+    "Reading the ingredient lists...",
+    "Looking for hidden dairy...",
+    "Checking 2000+ Indian snacks...",
+    "Curating vegan alternatives...",
+    "Warming up the oven..."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMsgIdx((prev) => (prev + 1) % loadingMessages.length);
+    }, 1800);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      key="loading"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8 }}
+      className="py-10 flex flex-col items-center justify-center w-full"
+    >
+      <div className="relative flex items-center justify-center h-20 w-20 rounded-full bg-[#ccd5ae]/40 mb-6 shadow-[0_10px_30px_rgba(1,71,46,0.1)]">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        >
+          <Leaf size={32} strokeWidth={1.5} className="text-[#01472e]" />
+        </motion.div>
+      </div>
+      
+      <div className="h-8 mb-12">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={msgIdx}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="font-['Inter'] text-lg font-medium tracking-wide text-[#01472e]"
+          >
+            {loadingMessages[msgIdx]}
+          </motion.p>
+        </AnimatePresence>
+      </div>
+
+      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="rounded-3xl border border-[#01472e]/10 bg-white/40 p-6 shadow-sm backdrop-blur-sm animate-pulse flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="w-full">
+                <div className="h-5 w-3/4 rounded-full bg-[#01472e]/10 mb-3"></div>
+                <div className="h-4 w-1/2 rounded-full bg-[#01472e]/5"></div>
+              </div>
+              <div className="h-6 w-16 shrink-0 rounded-full bg-[#01472e]/10"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -151,16 +218,7 @@ const HomePage = () => {
 
           <AnimatePresence mode="wait">
             {loading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0, y: 100 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: motionEase }}
-                className="botanical-watermark py-20 text-center"
-              >
-                <p className="font-['Inter'] text-lg text-[#01472e]/70">Loading snacks...</p>
-              </motion.div>
+              <LoadingState />
             ) : error ? (
               <motion.div
                 key="error"
