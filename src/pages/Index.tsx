@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Search, X, Leaf } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +19,6 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [displayCount, setDisplayCount] = useState(30);
-  const observerTarget = useRef<HTMLDivElement>(null);
   const debouncedQuery = useDebounce(query, 300);
 
   // Reset display count on new search or category change
@@ -27,27 +26,20 @@ const HomePage = () => {
     setDisplayCount(30);
   }, [debouncedQuery, activeCategory]);
 
-  // Infinite scroll observer setup
-  useEffect(() => {
+  // Callback ref: attaches observer whenever the sentinel element mounts
+  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           setDisplayCount((prev) => prev + 30);
         }
       },
-      { rootMargin: "200px" } // trigger before user hits very bottom
+      { rootMargin: "300px" }
     );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    // store ref value in variable for reliable cleanup
-    const currentTarget = observerTarget.current;
-    return () => {
-      if (currentTarget) observer.unobserve(currentTarget);
-    };
-  }, [observerTarget]);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchSnacks = async () => {
