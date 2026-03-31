@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        maximumFileSizeToCacheInBytes: 15000000
+        maximumFileSizeToCacheInBytes: 15000000,
+        navigateFallbackDenylist: [/^\/sitemap\.xml$/]
       },
       manifestFilename: 'manifest.json',
       manifest: {
