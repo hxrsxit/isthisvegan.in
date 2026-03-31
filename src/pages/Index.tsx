@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, forwardRef } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Search, X, Leaf } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,75 +10,7 @@ import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { searchWithTypoTolerance } from "@/lib/fuzzy";
-
-const LoadingState = forwardRef<HTMLDivElement, any>((props, ref) => {
-  const [msgIdx, setMsgIdx] = useState(0);
-  const loadingMessages = [
-    "Reading the ingredient lists...",
-    "Looking for hidden dairy...",
-    "Checking 2000+ Indian snacks...",
-    "Curating vegan alternatives...",
-    "Warming up the oven..."
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMsgIdx((prev) => (prev + 1) % loadingMessages.length);
-    }, 1800);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <motion.div
-      ref={ref}
-      {...props}
-      key="loading"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      className="py-16 flex flex-col items-center justify-center w-full"
-    >
-      <div className="relative flex items-center justify-center h-20 w-20 rounded-full bg-[#ccd5ae]/40 mb-6 shadow-[0_10px_30px_rgba(1,71,46,0.1)]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        >
-          <Leaf size={32} strokeWidth={1.5} className="text-[#01472e]" />
-        </motion.div>
-      </div>
-
-      <div className="h-8 mb-12">
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={msgIdx}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="font-['Inter'] text-lg font-medium tracking-wide text-[#01472e]"
-          >
-            {loadingMessages[msgIdx]}
-          </motion.p>
-        </AnimatePresence>
-      </div>
-
-      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="rounded-3xl border border-[#01472e]/10 bg-white/40 p-6 shadow-sm backdrop-blur-sm animate-pulse flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <div className="w-full">
-                <div className="h-5 w-3/4 rounded-full bg-[#01472e]/10 mb-3"></div>
-                <div className="h-4 w-1/2 rounded-full bg-[#01472e]/5"></div>
-              </div>
-              <div className="h-6 w-16 shrink-0 rounded-full bg-[#01472e]/10"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </motion.div>
-  );
-});
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -105,11 +37,11 @@ const HomePage = () => {
       },
       { rootMargin: "200px" } // trigger before user hits very bottom
     );
-    
+
     if (observerTarget.current) {
       observer.observe(observerTarget.current);
     }
-    
+
     // store ref value in variable for reliable cleanup
     const currentTarget = observerTarget.current;
     return () => {
@@ -196,7 +128,6 @@ const HomePage = () => {
             >
               Search 2000+ Indian food & beverages.
               <br className="hidden sm:inline" />
-              <br className="hidden sm:inline" />
               Ultimate Guide for Vegans in India.
             </motion.p>
           </div>
@@ -254,7 +185,7 @@ const HomePage = () => {
 
           <AnimatePresence mode="wait">
             {loading ? (
-              <LoadingState key="loadingState" />
+              <LoadingAnimation key="loadingState" />
             ) : error ? (
               <motion.div
                 key="error"
@@ -326,11 +257,11 @@ const HomePage = () => {
                     </motion.div>
                   ))}
                 </div>
-                
+
                 {/* Infinite Scroll trigger target */}
                 {displayCount < filtered.length && (
-                  <div ref={observerTarget} className="h-20 w-full mt-10 flex items-center justify-center">
-                    <div className="h-6 w-6 rounded-full border-t-2 border-[#01472e] animate-spin"></div>
+                  <div ref={observerTarget} className="w-full mt-10">
+                    <LoadingAnimation message="Loading more snacks..." className="py-8" />
                   </div>
                 )}
               </motion.div>

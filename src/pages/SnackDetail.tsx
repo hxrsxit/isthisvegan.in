@@ -5,6 +5,7 @@ import { type Snack } from "@/lib/snacks-data";
 import { supabase } from "@/supabaseClient";
 import { motion } from "framer-motion";
 import { landingTheme, landingNoiseBackground } from "@/lib/theme";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 const SnackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,7 +42,7 @@ const SnackDetail = () => {
   if (loading) {
     return (
       <div style={landingTheme} className="flex min-h-screen items-center justify-center bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]">
-        <p className="font-['Inter'] text-[12px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.7)] animate-pulse">Loading details...</p>
+        <LoadingAnimation message="Fetching details..." />
       </div>
     );
   }
