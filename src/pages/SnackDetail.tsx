@@ -25,13 +25,13 @@ const SnackDetail = () => {
         .from<Snack>("isthisvegan_db")
         .select("*")
         .eq("slug", slug)
-        .maybeSingle();
+        .limit(1);
 
       if (error) {
         setError(error.message);
         setSnack(null);
       } else {
-        setSnack(data ?? null);
+        setSnack(data && data.length > 0 ? data[0] : null);
       }
 
       setLoading(false);
