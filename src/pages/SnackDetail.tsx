@@ -6,6 +6,7 @@ import { supabase } from "@/supabaseClient";
 import { motion } from "framer-motion";
 import { landingTheme, landingNoiseBackground } from "@/lib/theme";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { Helmet } from "react-helmet-async";
 
 const SnackDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -79,8 +80,28 @@ const SnackDetail = () => {
   const hiddenIngredients = safelyGetArray(snack.hidden_animal_ingredients);
   const alternatives = safelyGetArray(snack.vegan_alternatives);
 
+  const pageTitle = `${snack.name} — Is This Vegan?`;
+  const pageDescription = snack.verdict_summary
+    ? `${snack.name} by ${snack.brand} — ${snack.is_vegan ? "✅ Vegan" : "❌ Not Vegan"}. ${snack.verdict_summary}`
+    : `Is ${snack.name} by ${snack.brand} vegan? Find out on IsThisVegan.in`;
+  const pageUrl = `https://www.isthisvegan.in/snack/${snack.slug}`;
+
   return (
     <div style={landingTheme} className="relative min-h-screen overflow-hidden bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:image" content="https://www.isthisvegan.in/IsThisVegan_logo.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content="https://www.isthisvegan.in/IsThisVegan_logo.png" />
+      </Helmet>
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04]" style={{ backgroundImage: landingNoiseBackground }} />
 
       <motion.div

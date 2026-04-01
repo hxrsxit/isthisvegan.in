@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { searchWithTypoTolerance } from "@/lib/fuzzy";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { Helmet } from "react-helmet-async";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -112,6 +113,16 @@ const HomePage = () => {
 
   return (
     <div className="relative min-h-screen bg-[#fefae0] text-[#01472e]">
+      <Helmet>
+        <title>Is This Vegan? — Check if Indian Snacks are Vegan</title>
+        <meta name="description" content="Search 1600+ Indian snacks, street foods, and packaged products to instantly find out if they're vegan. Filter by brand, category, or ingredients." />
+        <link rel="canonical" href="https://www.isthisvegan.in/" />
+        <meta property="og:title" content="Is This Vegan? — Check if Indian Snacks are Vegan" />
+        <meta property="og:description" content="Search 1600+ Indian snacks, street foods, and packaged products to instantly find out if they're vegan." />
+        <meta property="og:url" content="https://www.isthisvegan.in/" />
+        <meta name="twitter:title" content="Is This Vegan? — Check if Indian Snacks are Vegan" />
+        <meta name="twitter:description" content="Search 1600+ Indian snacks and foods to check if they're vegan." />
+      </Helmet>
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
       <div className="relative z-10">
         <div className="rounded-t-[5rem] bg-[#ccd5ae] py-10 md:py-14">
