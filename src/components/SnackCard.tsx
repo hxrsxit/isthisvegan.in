@@ -28,10 +28,10 @@ const SnackCard = ({ snack, index = 0 }: SnackCardProps) => {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h3 className="truncate font-['Inter'] text-[1.02rem] font-medium leading-tight tracking-[-0.01em] text-foreground">
-                {snack.snack_name}
+                {snack.name}
               </h3>
               <p className="mt-1.5 font-['Inter'] text-sm font-normal text-muted-foreground">
-                {snack.brand_or_region}
+                {snack.brand}
               </p>
             </div>
             <Badge

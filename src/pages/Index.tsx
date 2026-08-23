@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
-import { Search, X } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Search, X, Leaf } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { supabase } from "@/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/Logo";
 import { searchWithTypoTolerance } from "@/lib/fuzzy";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { Helmet } from "react-helmet-async";
 
 const HomePage = () => {
   const [query, setQuery] = useState("");
@@ -17,25 +19,60 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [displayCount, setDisplayCount] = useState(30);
   const debouncedQuery = useDebounce(query, 300);
+
+  // Reset display count on new search or category change
+  useEffect(() => {
+    setDisplayCount(30);
+  }, [debouncedQuery, activeCategory]);
+
+  // Callback ref: attaches observer whenever the sentinel element mounts
+  const sentinelRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setDisplayCount((prev) => prev + 30);
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchSnacks = async () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase
-        .from<Snack>("indian-snacks")
-        .select("*")
-        .order("snack_name", { ascending: true });
+      const PAGE_SIZE = 1000;
+      let allData: Snack[] = [];
+      let from = 0;
 
-      if (error) {
-        setError(error.message);
-        setSnacks([]);
-      } else {
-        setSnacks(data ?? []);
+      // Paginate — Supabase caps single queries at 1000 rows
+      while (true) {
+        const { data, error } = await supabase
+          .from<Snack>("isthisvegan_db")
+          .select("*")
+          .order("name", { ascending: true })
+          .range(from, from + PAGE_SIZE - 1);
+
+        if (error) {
+          setError(error.message);
+          setSnacks([]);
+          setLoading(false);
+          return;
+        }
+
+        allData = allData.concat(data ?? []);
+
+        if (!data || data.length < PAGE_SIZE) break; // last page
+        from += PAGE_SIZE;
       }
 
+      setSnacks(allData);
       setLoading(false);
     };
 
@@ -44,34 +81,48 @@ const HomePage = () => {
 
   const categories = useMemo(() => {
     const regions = Array.from(
-      new Set(snacks.map((s) => s.brand_or_region.trim()).filter(Boolean))
+      new Set(snacks.map((s) => s.main_category?.trim()).filter(Boolean))
     ).sort();
     return ["All", ...regions];
   }, [snacks]);
 
   const filtered = useMemo(() => {
     let base = snacks;
-    
+
     // Step 1: Filter by category if one is selected
     if (activeCategory !== "All") {
-      base = base.filter((s) => s.brand_or_region === activeCategory);
+      base = base.filter((s) => s.main_category === activeCategory);
     }
-    
+
     // Step 2: Use typo-tolerant fuzzy finder for spelling matches 
     //         if search query exists
     if (!debouncedQuery.trim()) return base;
-    
+
     return searchWithTypoTolerance(
-      base, 
-      debouncedQuery, 
-      (s: Snack) => [s.snack_name, s.brand_or_region]
+      base,
+      debouncedQuery,
+      (s: Snack) => [s.name, s.brand || ""]
     );
   }, [activeCategory, debouncedQuery, snacks]);
+
+  const displayedSnacks = useMemo(() => {
+    return filtered.slice(0, displayCount);
+  }, [filtered, displayCount]);
 
   const motionEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
   return (
     <div className="relative min-h-screen bg-[#fefae0] text-[#01472e]">
+      <Helmet>
+        <title>Is This Vegan? — Check if Indian Snacks are Vegan</title>
+        <meta name="description" content="Search 1600+ Indian snacks, street foods, and packaged products to instantly find out if they're vegan. Filter by brand, category, or ingredients." />
+        <link rel="canonical" href="https://www.isthisvegan.in/" />
+        <meta property="og:title" content="Is This Vegan? — Check if Indian Snacks are Vegan" />
+        <meta property="og:description" content="Search 1600+ Indian snacks, street foods, and packaged products to instantly find out if they're vegan." />
+        <meta property="og:url" content="https://www.isthisvegan.in/" />
+        <meta name="twitter:title" content="Is This Vegan? — Check if Indian Snacks are Vegan" />
+        <meta name="twitter:description" content="Search 1600+ Indian snacks and foods to check if they're vegan." />
+      </Helmet>
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
       <div className="relative z-10">
         <div className="rounded-t-[5rem] bg-[#ccd5ae] py-10 md:py-14">
@@ -92,7 +143,9 @@ const HomePage = () => {
               transition={{ duration: 1.2, delay: 0.08, ease: motionEase }}
               className="mt-5 max-w-2xl font-['Inter'] text-base text-[#01472e]/75 md:text-lg"
             >
-              Search {snacks.length}+ Indian snacks & street foods.
+              Search 2000+ Indian food & beverages.
+              <br className="hidden sm:inline" />
+              Ultimate Guide for Vegans in India.
             </motion.p>
           </div>
         </div>
@@ -135,11 +188,10 @@ const HomePage = () => {
                     key={category}
                     variant="outline"
                     onClick={() => setActiveCategory(category)}
-                    className={`cursor-pointer rounded-full px-3 py-1.5 font-['Inter'] text-[11px] uppercase tracking-[0.22em] transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
-                      activeCategory === category
-                        ? "border-[#01472e] bg-[#01472e] text-[#fefae0]"
-                        : "border-[#01472e]/20 bg-[#fefae0]/70 text-[#01472e]/80 hover:border-[#01472e]/45 hover:text-[#01472e]"
-                    }`}
+                    className={`cursor-pointer rounded-full px-3 py-1.5 font-['Inter'] text-[11px] uppercase tracking-[0.22em] transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${activeCategory === category
+                      ? "border-[#01472e] bg-[#01472e] text-[#fefae0]"
+                      : "border-[#01472e]/20 bg-[#fefae0]/70 text-[#01472e]/80 hover:border-[#01472e]/45 hover:text-[#01472e]"
+                      }`}
                   >
                     {category}
                   </Badge>
@@ -150,16 +202,7 @@ const HomePage = () => {
 
           <AnimatePresence mode="wait">
             {loading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0, y: 100 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: motionEase }}
-                className="botanical-watermark py-20 text-center"
-              >
-                <p className="font-['Inter'] text-lg text-[#01472e]/70">Loading snacks...</p>
-              </motion.div>
+              <LoadingAnimation key="loadingState" />
             ) : error ? (
               <motion.div
                 key="error"
@@ -196,7 +239,7 @@ const HomePage = () => {
                     asChild
                     className="mt-5 rounded-full bg-[#01472e] px-6 font-['Inter'] text-xs font-bold uppercase tracking-[0.22em] text-[#fefae0] hover:bg-[#01472e]/90"
                   >
-                    <a href="mailto:harshitmeharban@gmail.com?subject=New Snack Suggestion for IsThisVegan">
+                    <a href="mailto:info.isthisvegan@gmail.com?subject=New Snack Suggestion for IsThisVegan">
                       Suggest a Snack
                     </a>
                   </Button>
@@ -215,20 +258,29 @@ const HomePage = () => {
                     transition: { staggerChildren: 0.05, delayChildren: 0.02 },
                   },
                 }}
-                className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+                className="w-full"
               >
-                {filtered.map((snack, i) => (
-                  <motion.div
-                    key={snack.slug}
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      show: { opacity: 1, y: 0 },
-                    }}
-                    transition={{ duration: 0.6, ease: motionEase }}
-                  >
-                    <SnackCard snack={snack} index={i} />
-                  </motion.div>
-                ))}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                  {displayedSnacks.map((snack, i) => (
+                    <motion.div
+                      key={snack.slug}
+                      variants={{
+                        hidden: { opacity: 0, y: 20 },
+                        show: { opacity: 1, y: 0 },
+                      }}
+                      transition={{ duration: 0.4, ease: motionEase }}
+                    >
+                      <SnackCard snack={snack} index={i} />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Infinite Scroll trigger target */}
+                {displayCount < filtered.length && (
+                  <div ref={sentinelRef} className="w-full mt-10">
+                    <LoadingAnimation message="Loading more snacks..." className="py-8" />
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
