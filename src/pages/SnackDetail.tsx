@@ -286,7 +286,7 @@ const SnackDetail = () => {
         {/* Navigation */}
         <Link
           to="/"
-          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:border-[#2d3a30]"
+          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:border-[#354338]"
         >
           <ArrowLeft size={16} strokeWidth={1.5} />
           Back to Search
@@ -296,15 +296,15 @@ const SnackDetail = () => {
         <div
           className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${
             snack.is_vegan
-              ? "border-[#b6d5bd] bg-[#edf4ee] text-[#1c211e]"
-              : "border-[#f2c7c5] bg-[#fcf0ef] text-[#1c211e]"
+              ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
+              : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
           }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
               <div
                 className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${
-                  snack.is_vegan ? "bg-[#2d3a30] text-white" : "bg-[#7d2c29] text-white"
+                  snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
                 }`}
               >
                 {snack.is_vegan ? (
@@ -316,7 +316,7 @@ const SnackDetail = () => {
               <div>
                 <span
                   className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${
-                    snack.is_vegan ? "text-[#2c4c36]" : "text-[#7d2c29]"
+                    snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
                   }`}
                 >
                   {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
@@ -335,12 +335,12 @@ const SnackDetail = () => {
             <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 border-t md:border-t-0 border-[#e3e7e2] pt-3 md:pt-0">
               {metadata.vegan_confidence_score && (
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#e3e7e2] px-3.5 py-1 text-xs font-semibold text-[#1c211e]">
-                  <ShieldCheck size={14} className="text-[#2c4c36]" />
+                  <ShieldCheck size={14} className="text-[#2c3d31]" />
                   Confidence: {metadata.vegan_confidence_score}/5
                 </div>
               )}
               {snack.last_verified_date && (
-                <span className="font-mono-data text-[11px] text-[#7a867c]">
+                <span className="font-mono-data text-[11px] text-[#5a655c]">
                   Verified: {snack.last_verified_date}
                 </span>
               )}
@@ -351,7 +351,7 @@ const SnackDetail = () => {
         {/* Verdict Summary Callout */}
         {snack.verdict_summary && (
           <div className="mb-6 rounded-2xl border border-[#e3e7e2] bg-white p-6 text-[#1c211e] shadow-xs">
-            <p className="font-mono-data text-xs uppercase tracking-wider text-[#7a867c] mb-1 font-bold">
+            <p className="font-mono-data text-xs uppercase tracking-wider text-[#5a655c] mb-1 font-bold">
               Verdict Summary
             </p>
             <p className="font-serif-fraunces text-lg md:text-2xl leading-relaxed">{snack.verdict_summary}</p>
@@ -360,10 +360,10 @@ const SnackDetail = () => {
 
         {/* Hidden Animal Ingredients Alert */}
         {!snack.is_vegan && hiddenIngredients.length > 0 && (
-          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#f2c7c5] bg-[#fcf0ef] p-5">
-            <TriangleAlert size={22} className="text-[#7d2c29] shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#e5c5bd] bg-[#f9eee9] p-5">
+            <TriangleAlert size={22} className="text-[#7d3c34] shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7d2c29]">
+              <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7d3c34]">
                 Hidden Animal Ingredients Detected
               </h3>
               <p className="mt-1 font-sans-ui text-sm text-[#1c211e] font-semibold">
@@ -376,7 +376,7 @@ const SnackDetail = () => {
         {/* SME Description */}
         {descriptionText && (
           <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
-            <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7a867c] mb-2">
+            <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-2">
               SME Ingredient Analysis & Formulation Insights
             </h3>
             <p className="font-sans-ui text-sm md:text-base leading-relaxed text-[#1c211e]">
@@ -387,9 +387,9 @@ const SnackDetail = () => {
 
         {/* DIY Vegan Hack / Ordering Tip */}
         {snack.diy_vegan_recipe_or_hack && (
-          <div className="mb-8 p-6 rounded-2xl border border-[#b6d5bd] bg-[#edf4ee] shadow-xs">
-            <div className="flex items-center gap-2 text-[#2c4c36] font-bold uppercase text-xs tracking-wider mb-2 font-mono-data">
-              <ChefHat size={18} className="text-[#2c4c36]" />
+          <div className="mb-8 p-6 rounded-2xl border border-[#b2c2b5] bg-[#e6ece7] shadow-xs">
+            <div className="flex items-center gap-2 text-[#2c3d31] font-bold uppercase text-xs tracking-wider mb-2 font-mono-data">
+              <ChefHat size={18} className="text-[#2c3d31]" />
               <span>How to Veganise / Street Ordering Hack</span>
             </div>
             <p className="font-sans-ui text-sm md:text-base text-[#1c211e] leading-relaxed">
@@ -402,7 +402,7 @@ const SnackDetail = () => {
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Dietary Compatibility */}
           <div className="p-6 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
-            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7a867c] mb-3">
+            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3">
               Dietary Compatibility
             </h4>
             {dietaryBadges.length > 0 ? (
@@ -410,9 +410,9 @@ const SnackDetail = () => {
                 {dietaryBadges.map((badge) => (
                   <span
                     key={badge}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#edf4ee] border border-[#b6d5bd] px-3 py-1 font-sans-ui text-xs font-semibold text-[#2c4c36]"
+                    className="inline-flex items-center gap-1 rounded-full bg-[#e6ece7] border border-[#b2c2b5] px-3 py-1 font-sans-ui text-xs font-semibold text-[#2c3d31]"
                   >
-                    <CheckCircle2 size={12} className="text-[#2c4c36]" />
+                    <CheckCircle2 size={12} className="text-[#2c3d31]" />
                     {badge}
                   </span>
                 ))}
@@ -426,7 +426,7 @@ const SnackDetail = () => {
 
           {/* Allergens Present */}
           <div className="p-6 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
-            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7a867c] mb-3">
+            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3">
               Allergens Present
             </h4>
             {allergens.length > 0 ? (
@@ -436,13 +436,13 @@ const SnackDetail = () => {
                     key={allergen}
                     className="inline-flex items-center gap-1 rounded-full bg-[#f5f4eb] border border-[#dfdbc7] px-3 py-1 font-sans-ui text-xs font-semibold text-[#545037]"
                   >
-                    <AlertCircle size={12} className="text-[#6b4729]" />
+                    <AlertCircle size={12} className="text-[#6b4c29]" />
                     {allergen}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="font-sans-ui text-xs text-[#2c4c36] font-semibold">
+              <p className="font-sans-ui text-xs text-[#2c3d31] font-semibold">
                 Confirmed Allergen-Free / Zero tracked allergens.
               </p>
             )}
@@ -451,43 +451,43 @@ const SnackDetail = () => {
 
         {/* Specifications Grid */}
         <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
-          <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7a867c] mb-4">
+          <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-4">
             Product Specifications & Attributes
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans-ui text-xs">
             {metadata.regional_cuisine && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Cuisine</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Cuisine</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.regional_cuisine}</span>
               </div>
             )}
             {metadata.packaging_status && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Packaging</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Packaging</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.packaging_status}</span>
               </div>
             )}
             {metadata.health_tier && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Health Tier</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Health Tier</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.health_tier}</span>
               </div>
             )}
             {metadata.cross_contamination_risk && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Cross Contamination</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Cross Contamination</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.cross_contamination_risk}</span>
               </div>
             )}
             {metadata.price_tier && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Price Tier</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Price Tier</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.price_tier}</span>
               </div>
             )}
             {metadata.target_audience && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#7a867c] block mb-0.5 font-mono-data text-[10px] uppercase">Target Audience</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Target Audience</span>
                 <span className="font-semibold text-[#1c211e]">{metadata.target_audience}</span>
               </div>
             )}
@@ -501,7 +501,7 @@ const SnackDetail = () => {
               href={snack.amazon_search_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-13 w-full items-center justify-center rounded-full bg-[#2d3a30] px-6 font-sans-ui text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#202a23]"
+              className="flex h-13 w-full items-center justify-center rounded-full bg-[#354338] px-6 font-sans-ui text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#28332a]"
             >
               <ExternalLink size={16} className="mr-2" />
               Check Price / Buy on Amazon
@@ -511,9 +511,9 @@ const SnackDetail = () => {
 
         {/* "Switch To This" Vegan Alternatives Section */}
         {!snack.is_vegan && (
-          <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#b6d5bd] bg-[#edf4ee]/60">
+          <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#b2c2b5] bg-[#e6ece7]/60">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={18} className="text-[#2c4c36]" />
+              <Sparkles size={18} className="text-[#2c3d31]" />
               <h3 className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
                 Switch To This — Vegan Alternatives for {snack.sub_type || snack.name}
               </h3>
@@ -551,8 +551,8 @@ const SnackDetail = () => {
                 disabled={hasUpvoted}
                 className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${
                   hasUpvoted
-                    ? "bg-[#2d3a30] text-white"
-                    : "bg-[#edf4ee] text-[#2c4c36] hover:bg-[#dceade]"
+                    ? "bg-[#354338] text-white"
+                    : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
                 }`}
               >
                 <ThumbsUp size={13} />
@@ -561,7 +561,7 @@ const SnackDetail = () => {
 
               <button
                 onClick={() => setShowFlagModal(true)}
-                className="flex items-center gap-1.5 rounded-full bg-[#fcf0ef] border border-[#f2c7c5] px-4 py-2 font-sans-ui text-xs font-semibold text-[#7d2c29] hover:bg-[#f9e0de]"
+                className="flex items-center gap-1.5 rounded-full bg-[#f9eee9] border border-[#e5c5bd] px-4 py-2 font-sans-ui text-xs font-semibold text-[#7d3c34] hover:bg-[#f3ded6]"
               >
                 <Flag size={13} />
                 <span>Flag Non-Vegan ({pollStats.reports_as_non_vegan})</span>
@@ -589,7 +589,7 @@ const SnackDetail = () => {
             </div>
             <button
               type="submit"
-              className="rounded-full bg-[#2d3a30] px-5 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#202a23]"
+              className="rounded-full bg-[#354338] px-5 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a]"
             >
               Post Comment
             </button>
@@ -602,7 +602,7 @@ const SnackDetail = () => {
                 <div key={i} className="p-4 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
                   <div className="flex justify-between text-xs font-semibold text-[#1c211e] mb-1">
                     <span>{c.author}</span>
-                    <span className="font-mono-data text-[#7a867c] text-[11px]">{c.date}</span>
+                    <span className="font-mono-data text-[#5a655c] text-[11px]">{c.date}</span>
                   </div>
                   <p className="text-xs text-[#5a655c] font-sans-ui">{c.text}</p>
                 </div>
@@ -627,7 +627,7 @@ const SnackDetail = () => {
               </p>
 
               {flagSubmitted ? (
-                <div className="p-3 rounded-xl bg-[#edf4ee] text-[#2c4c36] text-center font-sans-ui text-xs font-semibold">
+                <div className="p-3 rounded-xl bg-[#e6ece7] text-[#2c3d31] text-center font-sans-ui text-xs font-semibold">
                   Report submitted. Moderators will audit this product.
                 </div>
               ) : (
@@ -672,7 +672,7 @@ const SnackDetail = () => {
                     </button>
                     <button
                       type="submit"
-                      className="rounded-full bg-[#7d2c29] px-5 py-2 text-xs font-semibold text-white hover:bg-[#60211f]"
+                      className="rounded-full bg-[#8b4538] px-5 py-2 text-xs font-semibold text-white hover:bg-[#72372d]"
                     >
                       Submit Report
                     </button>

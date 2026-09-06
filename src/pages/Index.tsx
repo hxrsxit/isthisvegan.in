@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Search, X, ShieldCheck, Tag } from "lucide-react";
+import { Search, X, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -160,33 +160,33 @@ const HomePage = () => {
         <title>Is This Vegan? — Check if Indian Foods & Snacks are Vegan</title>
         <meta
           name="description"
-          content="Search 3000+ Indian packaged snacks, street foods, and drinks to instantly check if they're vegan. Japandi dietary directory for India."
+          content="Search 3000+ Indian packaged snacks, street foods, and drinks to instantly check if they're vegan. Sage green dietary directory for India."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
         <meta property="og:title" content="Is This Vegan? — Check if Indian Foods & Snacks are Vegan" />
         <meta property="og:description" content="Search 3000+ Indian snacks and foods to check if they're vegan." />
         <meta property="og:url" content="https://www.isthisvegan.in/" />
       </Helmet>
-      
+
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
 
       <div className="relative z-10">
-        {/* Editorial Hero Container */}
-        <div className="border-b border-[#e3e7e2] bg-[#f8f7f4] pt-8 pb-12 md:pt-12 md:pb-16">
+        {/* Natural Sage Green Hero Container */}
+        <div className="bg-[#354338] text-[#f8f7f4] pt-10 pb-14 md:pt-16 md:pb-20 border-b border-[#2d3a30]">
           <div className="container max-w-5xl px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: motionEase }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#e3e7e2] bg-white px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#2d3a30] shadow-2xs mb-4">
-                <ShieldCheck size={12} className="text-[#2d3a30]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#4d5d50] bg-[#435246] px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#d9e2db] shadow-2xs mb-5">
+                <ShieldCheck size={12} className="text-[#a3b5a7]" />
                 <span>India's Plant-Based Directory • 3,000+ Verified Items</span>
               </div>
-              <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#1c211e] leading-[1.12]">
-                Is Your Food Vegan or Not?
+              <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#f8f7f4] leading-[1.12]">
+                Is Your Food Plant-based or Not?
               </h1>
-              <p className="mt-4 max-w-xl font-sans-ui text-base text-[#5a655c] leading-relaxed">
+              <p className="mt-4 max-w-xl font-sans-ui text-base text-[#c5cfc8] leading-relaxed">
                 Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks.
               </p>
             </motion.div>
@@ -208,7 +208,7 @@ const HomePage = () => {
                 placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="h-12 rounded-xl border-[#e3e7e2] bg-[#f8f7f4] pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#2d3a30]"
+                className="h-12 rounded-xl border-[#e3e7e2] bg-[#f8f7f4] pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
                 aria-label="Search products"
               />
               {query && (
@@ -232,8 +232,8 @@ const HomePage = () => {
                     onClick={() => setActivePreset(filter.key)}
                     className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
                       activePreset === filter.key
-                        ? "border-[#2d3a30] bg-[#2d3a30] text-white shadow-xs"
-                        : "border-[#e3e7e2] bg-[#f0f3ef] text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#2d3a30]/30"
+                        ? "border-[#354338] bg-[#354338] text-white shadow-xs"
+                        : "border-[#e3e7e2] bg-[#f0f3ef] text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40"
                     }`}
                   >
                     {filter.label}
@@ -276,7 +276,7 @@ const HomePage = () => {
                   </p>
                   <Button
                     asChild
-                    className="mt-5 rounded-full bg-[#2d3a30] px-6 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#202a23]"
+                    className="mt-5 rounded-full bg-[#354338] px-6 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a]"
                   >
                     <a href="mailto:info.isthisvegan@gmail.com?subject=New Snack Suggestion">
                       Suggest a Product
@@ -296,7 +296,7 @@ const HomePage = () => {
                 }}
                 className="w-full"
               >
-                <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#7a867c] uppercase tracking-wider">
+                <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#5a655c] uppercase tracking-wider">
                   <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
                   {activePreset !== "All" && (
                     <button

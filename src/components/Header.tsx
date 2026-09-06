@@ -36,7 +36,7 @@ const Header = () => {
               to={link.to}
               className={`rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
                 location.pathname === link.to
-                  ? "bg-[#2d3a30] text-white shadow-xs"
+                  ? "bg-[#354338] text-white shadow-xs"
                   : "text-[#5a655c] hover:bg-[#f0f3ef] hover:text-[#1c211e]"
               }`}
             >
@@ -63,7 +63,7 @@ const Header = () => {
                   onClick={() => setOpen(false)}
                   className={`rounded-xl px-4 py-3 text-sm font-semibold tracking-wide transition-colors ${
                     location.pathname === link.to
-                      ? "bg-[#2d3a30] text-white"
+                      ? "bg-[#354338] text-white"
                       : "text-[#1c211e] hover:bg-[#e2e7e0]"
                   }`}
                 >

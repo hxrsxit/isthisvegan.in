@@ -13,26 +13,26 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
   const dietaryBadges = parseArrayField(snack.dietary_compatibility);
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
 
-  // Health tier formatting
+  // Health tier formatting with natural earth tones
   const healthTier = metadata.health_tier || "";
   let healthLabel = "";
   let healthColorClass = "";
 
   if (healthTier.startsWith("1")) {
     healthLabel = "Superfood";
-    healthColorClass = "bg-[#edf4ee] text-[#2c4c36] border-[#b6d5bd]";
+    healthColorClass = "bg-[#e6ece7] text-[#2c3d31] border-[#b2c2b5]";
   } else if (healthTier.startsWith("2")) {
     healthLabel = "Healthy";
-    healthColorClass = "bg-[#edf4ee] text-[#2c4c36] border-[#c2ddc8]";
+    healthColorClass = "bg-[#e6ece7] text-[#2c3d31] border-[#b2c2b5]";
   } else if (healthTier.startsWith("3")) {
     healthLabel = "Moderate";
     healthColorClass = "bg-[#f5f4eb] text-[#545037] border-[#dfdbc7]";
   } else if (healthTier.startsWith("4")) {
     healthLabel = "Processed";
-    healthColorClass = "bg-[#f9f4ee] text-[#6b4729] border-[#e8d1bd]";
+    healthColorClass = "bg-[#f7efe6] text-[#6b4c29] border-[#e4d4be]";
   } else if (healthTier.startsWith("5")) {
     healthLabel = "Ultra-Processed";
-    healthColorClass = "bg-[#fcf0ef] text-[#7d2c29] border-[#f2c7c5]";
+    healthColorClass = "bg-[#f9eee9] text-[#7d3c34] border-[#e5c5bd]";
   }
 
   const categoryPill = snack.sub_type || snack.food_type || snack.product_class || snack.main_category;
@@ -51,10 +51,10 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
           {/* Header Row: Brand & Status Badge */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <span className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#7a867c]">
+              <span className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#5a655c]">
                 {snack.brand || "Brand Unspecified"}
               </span>
-              <h3 className="mt-1 font-serif-fraunces text-lg font-bold leading-snug text-[#1c211e] group-hover:text-[#2d3a30] transition-colors line-clamp-1">
+              <h3 className="mt-1 font-serif-fraunces text-lg font-bold leading-snug text-[#1c211e] group-hover:text-[#354338] transition-colors line-clamp-1">
                 {snack.name}
               </h3>
             </div>
@@ -63,14 +63,14 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
               variant="outline"
               className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 font-sans-ui text-[10px] font-semibold uppercase tracking-wider transition-all ${
                 snack.is_vegan
-                  ? "border-[#b6d5bd] bg-[#edf4ee] text-[#2c4c36]"
-                  : "border-[#f2c7c5] bg-[#fcf0ef] text-[#7d2c29]"
+                  ? "border-[#b2c2b5] bg-[#e6ece7] text-[#2c3d31]"
+                  : "border-[#e5c5bd] bg-[#f9eee9] text-[#7d3c34]"
               }`}
             >
               {snack.is_vegan ? (
-                <Leaf size={11} strokeWidth={2.5} className="text-[#2c4c36]" aria-hidden="true" />
+                <Leaf size={11} strokeWidth={2.5} className="text-[#2c3d31]" aria-hidden="true" />
               ) : (
-                <TriangleAlert size={11} strokeWidth={2.5} className="text-[#7d2c29]" aria-hidden="true" />
+                <TriangleAlert size={11} strokeWidth={2.5} className="text-[#7d3c34]" aria-hidden="true" />
               )}
               {snack.is_vegan ? "Vegan" : "Not Vegan"}
             </Badge>
@@ -87,8 +87,8 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
         {/* Bottom Attributes Bar */}
         <div className="mt-5 pt-3 border-t border-[#e3e7e2] flex flex-wrap items-center gap-1.5">
           {categoryPill && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#2d3a30]">
-              <Tag size={10} className="text-[#7a867c]" />
+            <span className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#354338]">
+              <Tag size={10} className="text-[#5a655c]" />
               {categoryPill}
             </span>
           )}
@@ -105,13 +105,13 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
               key={badge}
               className="inline-flex items-center gap-1 rounded-md bg-white border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-medium text-[#5a655c]"
             >
-              <ShieldCheck size={10} className="text-[#2c4c36]" />
+              <ShieldCheck size={10} className="text-[#2c3d31]" />
               {badge}
             </span>
           ))}
 
           {dietaryBadges.length > 2 && (
-            <span className="font-sans-ui text-[10px] font-medium text-[#7a867c]">
+            <span className="font-sans-ui text-[10px] font-medium text-[#5a655c]">
               +{dietaryBadges.length - 2} more
             </span>
           )}

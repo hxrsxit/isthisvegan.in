@@ -15,24 +15,25 @@
     --popover: #ffffff;
     --popover-foreground: #1c211e;
 
-    --primary: #2d3a30;
+    --primary: #354338;
     --primary-foreground: #ffffff;
 
-    --secondary: #edf4ee;
-    --secondary-foreground: #2c4c36;
+    --secondary: #e6ece7;
+    --secondary-foreground: #2c3d31;
 
     --muted: #f0f3ef;
     --muted-foreground: #5a655c;
 
-    --accent: #e2e7e0;
+    --accent: #e0e6e1;
     --accent-foreground: #1c211e;
 
-    --destructive: #7d2c29;
+    /* Natural Earthy Terracotta Red instead of high intense red */
+    --destructive: #8b4538;
     --destructive-foreground: #ffffff;
 
     --border: #e3e7e2;
     --input: #ffffff;
-    --ring: #2d3a30;
+    --ring: #354338;
     --radius: 1rem;
   }
 
@@ -92,8 +93,8 @@
   }
 
   .linen-card:hover {
-    border-color: #2d3a30;
+    border-color: #354338;
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(45, 58, 48, 0.06);
+    box-shadow: 0 12px 32px rgba(53, 67, 56, 0.06);
   }
 }
