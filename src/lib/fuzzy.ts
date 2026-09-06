@@ -1,9 +1,5 @@
 import { Snack, parseArrayField, parseJsonObjectField, ProductMetadata } from "./snacks-data";
 
-/**
- * Helper file for typo-tolerant fuzzy matching (similar to Algolia/Elasticsearch edit distance matching)
- */
-
 // Calculates the Damerau-Levenshtein distance between two strings
 function levenshteinDistance(s1: string, s2: string): number {
   if (s1.length === 0) return s2.length;
@@ -41,6 +37,9 @@ export function getSnackSearchKeys(s: Snack): string[] {
   const hidden = parseArrayField(s.hidden_animal_ingredients);
   const tags = parseArrayField(s.tags);
 
+  const taste = meta.taste_profile;
+  const tasteKeys = taste ? [taste.sweetness ? `sweet-${taste.sweetness}` : "", taste.spiciness ? `spicy-${taste.spiciness}` : ""] : [];
+
   const keys: string[] = [
     s.name || "",
     s.brand || "",
@@ -51,7 +50,7 @@ export function getSnackSearchKeys(s: Snack): string[] {
     s.verdict_summary || "",
     s.enhanced_description || "",
     s.detailed_analysis || "",
-    s.is_vegan ? "vegan accidentally-vegan" : "non-vegan not-vegan dairy",
+    s.is_vegan ? "vegan plant-based dairy-free" : "non-vegan not-vegan milk dairy ghee",
     meta.regional_cuisine || "",
     meta.packaging_status || "",
     meta.health_tier || "",
@@ -59,35 +58,76 @@ export function getSnackSearchKeys(s: Snack): string[] {
     ...allergens,
     ...hidden,
     ...tags,
+    ...tasteKeys
   ];
 
   return keys.filter(Boolean);
 }
 
 /**
- * Searches an array of items with typo tolerance, imitating big-firm enterprise search algorithms.
+ * Enhanced semantic search with smart scoring & typo tolerance.
  */
-export function searchWithTypoTolerance<T>(
-  items: T[], 
+export function searchWithTypoTolerance(
+  items: Snack[], 
   query: string, 
-  getKeys: (item: T) => string[]
-): T[] {
+  getKeys: (item: Snack) => string[]
+): Snack[] {
   if (!query.trim()) return items;
 
-  const qWords = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const rawQuery = query.toLowerCase().trim();
+  const qWords = rawQuery.split(/[\s,]+/).filter(Boolean);
 
   const scoredItems = items.map(item => {
+    const meta = parseJsonObjectField<ProductMetadata>(item.product_metadata, {});
+    const dietary = parseArrayField(item.dietary_compatibility).map(d => d.toLowerCase());
+    const subType = (item.sub_type || "").toLowerCase();
+    const foodType = (item.food_type || "").toLowerCase();
+    const pClass = (item.product_class || "").toLowerCase();
+
     const textValues = getKeys(item).map(v => (v || '').toLowerCase());
-    
-    let totalScore = 0;
+
+    let score = 0; // Lower is better (0 = exact match, negative = bonus boost)
     let isMatch = true;
 
+    // Direct Intent Boosting
+    if (rawQuery.includes("vegan") && !item.is_vegan) {
+      score += 10; // Penalty for non-vegan if user explicitly searched "vegan"
+    }
+
+    if (rawQuery.includes("sweet")) {
+      const isSweetType = ["chocolate", "biscuit", "cookie", "cake", "candy", "sweet", "halwa", "ice-cream", "pudding", "dessert"].some(
+        st => subType.includes(st) || foodType.includes(st)
+      );
+      if (isSweetType) score -= 5; // Reward matching sweet products
+    }
+
+    if (rawQuery.includes("healthy")) {
+      if (meta.health_tier?.startsWith("1") || meta.health_tier?.startsWith("2")) {
+        score -= 5;
+      } else if (meta.health_tier?.startsWith("4") || meta.health_tier?.startsWith("5")) {
+        score += 8;
+      }
+    }
+
+    if (rawQuery.includes("jain") && dietary.some(d => d.includes("jain"))) {
+      score -= 5;
+    }
+
+    if (rawQuery.includes("gluten") && dietary.some(d => d.includes("gluten"))) {
+      score -= 5;
+    }
+
     for (const qw of qWords) {
+      // Ignore common filler search terms in scoring calculation if query has multiple words
+      if (qWords.length > 1 && ["food", "snacks", "snack", "item", "items"].includes(qw)) {
+        continue;
+      }
+
       const allowedTypos = qw.length <= 3 ? 0 : qw.length <= 6 ? 1 : 2;
       let bestWordScore = Infinity;
 
       for (const textValue of textValues) {
-        if (textValue.includes(qw)) {
+        if (textValue === qw || textValue.includes(qw)) {
           bestWordScore = 0;
           break;
         }
@@ -112,10 +152,10 @@ export function searchWithTypoTolerance<T>(
         break;
       }
       
-      totalScore += bestWordScore;
+      score += bestWordScore;
     }
 
-    return { item, score: totalScore, isMatch };
+    return { item, score, isMatch };
   });
 
   return scoredItems

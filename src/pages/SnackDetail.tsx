@@ -9,13 +9,9 @@ import {
   Flame,
   ChefHat,
   Tag,
-  MapPin,
-  Package,
   ThumbsUp,
   Flag,
-  MessageSquare,
   Sparkles,
-  DollarSign,
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
@@ -27,7 +23,7 @@ import {
   UserPollStats,
 } from "@/lib/snacks-data";
 import { supabase } from "@/supabaseClient";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { landingTheme, landingNoiseBackground } from "@/lib/theme";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { Helmet } from "react-helmet-async";
@@ -47,7 +43,7 @@ const SnackDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Alternatives for non-vegan items
+  // Smart Alternatives for non-vegan items
   const [alternatives, setAlternatives] = useState<Snack[]>([]);
   const [loadingAlternatives, setLoadingAlternatives] = useState(false);
 
@@ -90,14 +86,13 @@ const SnackDetail = () => {
         const item = data[0];
         setSnack(item);
 
-        // Parse initial poll stats
         const initialStats = parseJsonObjectField<UserPollStats>(
           item.user_poll_stats,
           { upvotes_as_vegan: 0, reports_as_non_vegan: 0, total_comments: 0 }
         );
         setPollStats(initialStats);
 
-        // Fetch alternatives if non-vegan
+        // Fetch smart alternatives if item is non-vegan
         if (!item.is_vegan) {
           fetchVeganAlternatives(item);
         }
@@ -111,37 +106,74 @@ const SnackDetail = () => {
     fetchSnack();
   }, [slug]);
 
+  /**
+   * Smart Alternatives logic matching sub_type -> food_type -> product_class
+   */
   const fetchVeganAlternatives = async (currentSnack: Snack) => {
     setLoadingAlternatives(true);
     const subType = currentSnack.sub_type;
     const foodType = currentSnack.food_type;
+    const productClass = currentSnack.product_class;
 
-    let query = supabase
-      .from<Snack>("isthisvegan_db2")
-      .select("*")
-      .eq("is_vegan", true)
-      .neq("slug", currentSnack.slug)
-      .limit(4);
+    let matched: Snack[] = [];
 
+    // Step 1: Match sub_type (e.g. Biscuit, Cookie, Chips, Namkeen, Noodle)
     if (subType) {
-      query = query.eq("sub_type", subType);
-    } else if (foodType) {
-      query = query.eq("food_type", foodType);
+      const { data: subData } = await supabase
+        .from<Snack>("isthisvegan_db2")
+        .select("*")
+        .eq("is_vegan", true)
+        .eq("sub_type", subType)
+        .neq("slug", currentSnack.slug)
+        .limit(4);
+
+      if (subData && subData.length > 0) {
+        matched = subData;
+      }
     }
 
-    const { data } = await query;
-    if (data && data.length > 0) {
-      setAlternatives(data);
-    } else {
-      // Fallback: fetch any 4 vegan snacks
+    // Step 2: Match food_type (e.g. Snack, Dessert, Meal)
+    if (matched.length === 0 && foodType) {
+      const { data: foodData } = await supabase
+        .from<Snack>("isthisvegan_db2")
+        .select("*")
+        .eq("is_vegan", true)
+        .eq("food_type", foodType)
+        .neq("slug", currentSnack.slug)
+        .limit(4);
+
+      if (foodData && foodData.length > 0) {
+        matched = foodData;
+      }
+    }
+
+    // Step 3: Match product_class (e.g. Food, Beverage)
+    if (matched.length === 0 && productClass) {
+      const { data: classData } = await supabase
+        .from<Snack>("isthisvegan_db2")
+        .select("*")
+        .eq("is_vegan", true)
+        .eq("product_class", productClass)
+        .neq("slug", currentSnack.slug)
+        .limit(4);
+
+      if (classData && classData.length > 0) {
+        matched = classData;
+      }
+    }
+
+    // Step 4: Fallback fallback to any general vegan food items
+    if (matched.length === 0) {
       const { data: fallbackData } = await supabase
         .from<Snack>("isthisvegan_db2")
         .select("*")
         .eq("is_vegan", true)
         .neq("slug", currentSnack.slug)
         .limit(4);
-      setAlternatives(fallbackData || []);
+      matched = fallbackData || [];
     }
+
+    setAlternatives(matched);
     setLoadingAlternatives(false);
   };
 
@@ -165,7 +197,7 @@ const SnackDetail = () => {
       setShowFlagModal(false);
       setFlagSubmitted(false);
       setFlagDetails("");
-    }, 2000);
+    }, 1800);
   };
 
   const handleAddComment = (e: React.FormEvent) => {
@@ -194,7 +226,7 @@ const SnackDetail = () => {
     return (
       <div
         style={landingTheme}
-        className="flex min-h-screen items-center justify-center bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]"
+        className="flex min-h-screen items-center justify-center bg-[#f8f7f4] text-[#1a1f2e]"
       >
         <LoadingAnimation message="Fetching product details..." />
       </div>
@@ -205,25 +237,16 @@ const SnackDetail = () => {
     return (
       <div
         style={landingTheme}
-        className="relative flex min-h-screen flex-col items-center justify-center bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))] px-4 text-center"
+        className="relative flex min-h-screen flex-col items-center justify-center bg-[#f8f7f4] text-[#1a1f2e] px-4 text-center"
       >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04]"
-          style={{ backgroundImage: landingNoiseBackground }}
-        />
         <div className="relative z-10">
-          <p className="font-['Anton'] text-4xl mb-2">
+          <p className="font-['Inter'] text-2xl font-bold mb-2 text-[#1a1f2e]">
             {error ? "Error Loading Data" : "Product Not Found"}
           </p>
-          {error && (
-            <p className="font-['Inter'] text-sm text-[hsl(var(--landing-forest)/0.7)] mt-2 break-words max-w-md">
-              {error}
-            </p>
-          )}
+          {error && <p className="font-['Inter'] text-xs text-[#6b7280] mt-2 max-w-md">{error}</p>}
           <Link
             to="/"
-            className="mt-8 inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.42)] px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] shadow-md backdrop-blur-md transition-all hover:scale-[1.02] hover:bg-white hover:text-[hsl(var(--landing-forest))]"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-lg border border-[#e8e6e1] bg-white px-4 py-2 font-['Inter'] text-xs font-semibold text-[#1a1f2e] shadow-xs hover:bg-[#fafaf8]"
           >
             <ArrowLeft size={16} strokeWidth={1.5} />
             Back to Search
@@ -241,14 +264,14 @@ const SnackDetail = () => {
 
   const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) — Is This Vegan?`;
   const pageDescription = snack.verdict_summary
-    ? `${snack.name} by ${snack.brand} — ${snack.is_vegan ? "✅ 100% Vegan" : "❌ Not Vegan"}. ${snack.verdict_summary}`
-    : `Is ${snack.name} by ${snack.brand} vegan? Verified ingredient analysis on IsThisVegan.in`;
+    ? `${snack.name} by ${snack.brand} — ${snack.is_vegan ? "✅ Vegan" : "❌ Not Vegan"}. ${snack.verdict_summary}`
+    : `Is ${snack.name} by ${snack.brand} vegan? Ingredient verification on IsThisVegan.in`;
   const pageUrl = `https://www.isthisvegan.in/snack/${snack.slug}`;
 
   return (
     <div
       style={landingTheme}
-      className="relative min-h-screen overflow-hidden bg-[hsl(var(--landing-cream))] text-[hsl(var(--landing-forest))]"
+      className="relative min-h-screen overflow-hidden bg-[#f8f7f4] text-[#1a1f2e]"
     >
       <Helmet>
         <title>{pageTitle}</title>
@@ -257,25 +280,20 @@ const SnackDetail = () => {
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         <meta property="og:url" content={pageUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:image" content="https://www.isthisvegan.in/IsThisVegan_logo.png" />
       </Helmet>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.04]"
-        style={{ backgroundImage: landingNoiseBackground }}
-      />
+
+      <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 container max-w-4xl py-8 md:py-12"
       >
         {/* Navigation */}
         <Link
           to="/"
-          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#01472e]/15 bg-white/70 px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.2em] text-[#01472e] shadow-xs backdrop-blur-md transition-all hover:scale-[1.02] hover:bg-white"
+          className="mb-6 inline-flex items-center gap-1.5 rounded-lg border border-[#e8e6e1] bg-white px-4 py-2 font-['Inter'] text-xs font-medium text-[#1a1f2e] shadow-xs hover:border-[#7c9082]"
         >
           <ArrowLeft size={16} strokeWidth={1.5} />
           Back to Search
@@ -283,51 +301,54 @@ const SnackDetail = () => {
 
         {/* Master Verdict Banner */}
         <div
-          className={`mb-8 overflow-hidden rounded-[2.5rem] border p-6 md:p-8 shadow-lg backdrop-blur-md ${snack.is_vegan
-            ? "border-emerald-300/70 bg-gradient-to-br from-emerald-100/70 via-emerald-50/50 to-white/80 text-[#01472e]"
-            : "border-rose-300/70 bg-gradient-to-br from-rose-100/70 via-rose-50/50 to-white/80 text-rose-950"
-            }`}
+          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${
+            snack.is_vegan
+              ? "border-[#7c9082]/30 bg-[#eaf0eb]/80 text-[#1a1f2e]"
+              : "border-[#c73e3a]/30 bg-[#fdf2f2]/80 text-[#1a1f2e]"
+          }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
               <div
-                className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] shadow-md ${snack.is_vegan ? "bg-[#01472e] text-white" : "bg-rose-600 text-white"
-                  }`}
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${
+                  snack.is_vegan ? "bg-[#7c9082] text-white" : "bg-[#c73e3a] text-white"
+                }`}
               >
                 {snack.is_vegan ? (
-                  <Leaf size={34} strokeWidth={2} aria-hidden="true" />
+                  <Leaf size={28} strokeWidth={2} aria-hidden="true" />
                 ) : (
-                  <TriangleAlert size={34} strokeWidth={2} aria-hidden="true" />
+                  <TriangleAlert size={28} strokeWidth={2} aria-hidden="true" />
                 )}
               </div>
               <div>
                 <span
-                  className={`inline-block font-['Inter'] text-xs font-bold uppercase tracking-[0.25em] ${snack.is_vegan ? "text-emerald-800" : "text-rose-700"
-                    }`}
+                  className={`inline-block font-['Inter'] text-xs font-bold uppercase tracking-wider ${
+                    snack.is_vegan ? "text-[#7c9082]" : "text-[#c73e3a]"
+                  }`}
                 >
                   {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
                 </span>
-                <h1 className="font-['Anton'] text-3xl md:text-5xl tracking-normal text-[#01472e]">
+                <h1 className="font-['Inter'] text-2xl md:text-4xl font-bold tracking-tight text-[#1a1f2e]">
                   {snack.name}
                 </h1>
-                <p className="font-['Inter'] text-sm font-medium text-[#01472e]/70 mt-1">
-                  Brand: <span className="font-semibold">{snack.brand || "Unspecified"}</span>
-                  {snack.sub_type && <span> • Sub-type: {snack.sub_type}</span>}
+                <p className="font-['Inter'] text-sm text-[#6b7280] mt-1">
+                  Brand: <span className="font-semibold text-[#1a1f2e]">{snack.brand || "Unspecified"}</span>
+                  {snack.sub_type && <span> • Category: {snack.sub_type}</span>}
                 </p>
               </div>
             </div>
 
             {/* Confidence & Verified Date */}
-            <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 border-t md:border-t-0 border-[#01472e]/10 pt-3 md:pt-0">
+            <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 border-t md:border-t-0 border-[#e8e6e1] pt-3 md:pt-0">
               {metadata.vegan_confidence_score && (
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-[#01472e] shadow-xs">
-                  <ShieldCheck size={14} className="text-emerald-600" />
-                  Confidence Score: {metadata.vegan_confidence_score}/5
+                <div className="inline-flex items-center gap-1.5 rounded-md bg-white border border-[#e8e6e1] px-3 py-1 text-xs font-semibold text-[#1a1f2e]">
+                  <ShieldCheck size={14} className="text-[#7c9082]" />
+                  Confidence: {metadata.vegan_confidence_score}/5
                 </div>
               )}
               {snack.last_verified_date && (
-                <span className="font-['Inter'] text-[11px] text-[#01472e]/60">
-                  Last verified: {snack.last_verified_date}
+                <span className="font-['Inter'] text-[11px] text-[#6b7280]">
+                  Verified: {snack.last_verified_date}
                 </span>
               )}
             </div>
@@ -336,36 +357,36 @@ const SnackDetail = () => {
 
         {/* Verdict Summary Callout */}
         {snack.verdict_summary && (
-          <div className="mb-6 rounded-[2rem] border border-[#01472e]/20 bg-[#01472e] p-6 text-[#fefae0] shadow-md">
-            <p className="font-['Inter'] text-xs uppercase tracking-widest text-[#ccd5ae] mb-1 font-semibold">
+          <div className="mb-6 rounded-2xl border border-[#7c9082]/20 bg-[#fafaf8] p-6 text-[#1a1f2e] shadow-xs">
+            <p className="font-['Inter'] text-xs uppercase tracking-wider text-[#7c9082] mb-1 font-semibold">
               Verdict Summary
             </p>
-            <p className="font-['Anton'] text-lg md:text-2xl leading-snug">{snack.verdict_summary}</p>
+            <p className="font-['Inter'] text-base md:text-lg font-medium leading-relaxed">{snack.verdict_summary}</p>
           </div>
         )}
 
         {/* Hidden Animal Ingredients Alert */}
         {!snack.is_vegan && hiddenIngredients.length > 0 && (
-          <div className="mb-6 flex items-start gap-3 rounded.3xl rounded-[2rem] border border-rose-300 bg-rose-50 p-6 shadow-xs">
-            <TriangleAlert size={24} className="text-rose-600 shrink-0 mt-0.5" />
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#c73e3a]/30 bg-[#fdf2f2] p-5">
+            <TriangleAlert size={22} className="text-[#c73e3a] shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-['Inter'] text-sm font-bold uppercase tracking-wider text-rose-800">
+              <h3 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#962b28]">
                 Hidden Animal Ingredients Detected
               </h3>
-              <p className="mt-1 font-['Inter'] text-base text-rose-950 font-medium">
+              <p className="mt-1 font-['Inter'] text-sm text-[#1a1f2e] font-semibold">
                 {hiddenIngredients.join(", ")}
               </p>
             </div>
           </div>
         )}
 
-        {/* SME Enhanced Description */}
+        {/* SME Description */}
         {descriptionText && (
-          <div className="mb-8 p-6 md:p-8 rounded-[2rem] border border-[#01472e]/10 bg-white/80 shadow-xs">
-            <h3 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#01472e]/60 mb-2">
-              SME Ingredient Analysis & Manufacturing Insights
+          <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e8e6e1] bg-white shadow-xs">
+            <h3 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#6b7280] mb-2">
+              SME Ingredient Analysis & Formulation Insights
             </h3>
-            <p className="font-['Inter'] text-base leading-relaxed text-[#01472e]/90 font-normal">
+            <p className="font-['Inter'] text-sm md:text-base leading-relaxed text-[#1a1f2e]">
               {descriptionText}
             </p>
           </div>
@@ -373,46 +394,46 @@ const SnackDetail = () => {
 
         {/* DIY Vegan Hack / Ordering Tip */}
         {snack.diy_vegan_recipe_or_hack && (
-          <div className="mb-8 p-6 rounded-[2rem] border border-emerald-300 bg-emerald-50/80 shadow-xs">
-            <div className="flex items-center gap-2 text-emerald-900 font-bold uppercase text-xs tracking-wider mb-2">
-              <ChefHat size={18} className="text-emerald-700" />
-              <span>How to Veganise / Street Ordering Hack</span>
+          <div className="mb-8 p-6 rounded-2xl border border-[#7c9082]/30 bg-[#eaf0eb] shadow-xs">
+            <div className="flex items-center gap-2 text-[#2e4033] font-bold uppercase text-xs tracking-wider mb-2">
+              <ChefHat size={18} className="text-[#7c9082]" />
+              <span>How to Veganise / Ordering Hack</span>
             </div>
-            <p className="font-['Inter'] text-base text-emerald-950 font-medium leading-relaxed">
+            <p className="font-['Inter'] text-sm md:text-base text-[#1a1f2e] leading-relaxed">
               {snack.diy_vegan_recipe_or_hack}
             </p>
           </div>
         )}
 
-        {/* Dietary & Allergen Badges Section */}
+        {/* Badges Grid */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Dietary Compatibility Badges */}
-          <div className="p-6 rounded-[2rem] border border-[#01472e]/10 bg-white/70 shadow-xs">
-            <h4 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#01472e]/60 mb-3">
-              Dietary Compatibility Badges
+          {/* Dietary Compatibility */}
+          <div className="p-6 rounded-2xl border border-[#e8e6e1] bg-white shadow-xs">
+            <h4 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#6b7280] mb-3">
+              Dietary Compatibility
             </h4>
             {dietaryBadges.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {dietaryBadges.map((badge) => (
                   <span
                     key={badge}
-                    className="inline-flex items-center gap-1 rounded-full bg-emerald-100/80 border border-emerald-300 px-3 py-1 font-['Inter'] text-xs font-semibold text-emerald-900"
+                    className="inline-flex items-center gap-1 rounded-md bg-[#eaf0eb] border border-[#7c9082]/30 px-2.5 py-1 font-['Inter'] text-xs font-medium text-[#2e4033]"
                   >
-                    <CheckCircle2 size={13} className="text-emerald-700" />
+                    <CheckCircle2 size={12} className="text-[#7c9082]" />
                     {badge}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="font-['Inter'] text-xs text-[#01472e]/50">
-                No specific dietary certifications tagged.
+              <p className="font-['Inter'] text-xs text-[#6b7280]">
+                No specific dietary badges.
               </p>
             )}
           </div>
 
           {/* Allergens Present */}
-          <div className="p-6 rounded-[2rem] border border-[#01472e]/10 bg-white/70 shadow-xs">
-            <h4 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#01472e]/60 mb-3">
+          <div className="p-6 rounded-2xl border border-[#e8e6e1] bg-white shadow-xs">
+            <h4 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#6b7280] mb-3">
               Allergens Present
             </h4>
             {allergens.length > 0 ? (
@@ -420,61 +441,61 @@ const SnackDetail = () => {
                 {allergens.map((allergen) => (
                   <span
                     key={allergen}
-                    className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 border border-amber-300 px-3 py-1 font-['Inter'] text-xs font-semibold text-amber-900"
+                    className="inline-flex items-center gap-1 rounded-md bg-[#f4f3ea] border border-[#dfdbc7] px-2.5 py-1 font-['Inter'] text-xs font-medium text-[#524e38]"
                   >
-                    <AlertCircle size={13} className="text-amber-700" />
+                    <AlertCircle size={12} className="text-[#8b9d83]" />
                     {allergen}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="font-['Inter'] text-xs text-emerald-800 font-medium">
-                ✅ Confirmed Allergen Free / Zero tracked allergens.
+              <p className="font-['Inter'] text-xs text-[#7c9082] font-medium">
+                Confirmed Allergen-Free / No tracked allergens.
               </p>
             )}
           </div>
         </div>
 
-        {/* Product Metadata Breakdown Grid */}
-        <div className="mb-8 p-6 md:p-8 rounded-[2.5rem] border border-[#01472e]/10 bg-white/80 shadow-xs">
-          <h3 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#01472e]/60 mb-4">
-            Product Specifications & Attributes
+        {/* Specifications Grid */}
+        <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e8e6e1] bg-white shadow-xs">
+          <h3 className="font-['Inter'] text-xs font-bold uppercase tracking-wider text-[#6b7280] mb-4">
+            Product Attributes & Metadata
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 font-['Inter'] text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-['Inter'] text-xs">
             {metadata.regional_cuisine && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Cuisine</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.regional_cuisine}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Cuisine</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.regional_cuisine}</span>
               </div>
             )}
             {metadata.packaging_status && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Packaging</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.packaging_status}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Packaging</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.packaging_status}</span>
               </div>
             )}
             {metadata.health_tier && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Health Tier</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.health_tier}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Health Tier</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.health_tier}</span>
               </div>
             )}
             {metadata.cross_contamination_risk && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Cross Contamination</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.cross_contamination_risk}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Cross Contamination</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.cross_contamination_risk}</span>
               </div>
             )}
             {metadata.price_tier && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Price Tier</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.price_tier}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Price Tier</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.price_tier}</span>
               </div>
             )}
             {metadata.target_audience && (
-              <div className="p-3 rounded-2xl bg-[#fefae0]/80 border border-[#01472e]/10">
-                <span className="text-[#01472e]/60 block mb-0.5">Target Audience</span>
-                <span className="font-semibold text-[#01472e] text-sm">{metadata.target_audience}</span>
+              <div className="p-3 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                <span className="text-[#6b7280] block mb-0.5">Target Audience</span>
+                <span className="font-semibold text-[#1a1f2e]">{metadata.target_audience}</span>
               </div>
             )}
           </div>
@@ -487,25 +508,25 @@ const SnackDetail = () => {
               href={snack.amazon_search_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-14 w-full items-center justify-center rounded-full bg-[#01472e] px-6 font-['Inter'] text-xs font-bold uppercase tracking-[0.22em] text-[#fefae0] shadow-lg transition-transform hover:scale-[1.01]"
+              className="flex h-12 w-full items-center justify-center rounded-xl bg-[#7c9082] px-6 font-['Inter'] text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#6b7d70]"
             >
-              <ExternalLink size={18} className="mr-2" />
-              Check Price / Buy on Amazon
+              <ExternalLink size={16} className="mr-2" />
+              Check Price on Amazon
             </a>
           </div>
         )}
 
         {/* "Switch To This" Vegan Alternatives Section */}
         {!snack.is_vegan && (
-          <div className="mb-10 p-6 md:p-8 rounded-[2.5rem] border border-emerald-300 bg-gradient-to-b from-emerald-50/80 to-white shadow-xs">
+          <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#7c9082]/30 bg-[#eaf0eb]/50">
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={20} className="text-emerald-700" />
-              <h3 className="font-['Anton'] text-2xl text-[#01472e] tracking-wide">
-                Switch To This — Vegan Alternatives
+              <Sparkles size={18} className="text-[#7c9082]" />
+              <h3 className="font-['Inter'] text-lg font-bold text-[#1a1f2e]">
+                Switch To This — Vegan Alternatives for {snack.sub_type || snack.name}
               </h3>
             </div>
             {loadingAlternatives ? (
-              <LoadingAnimation message="Finding delicious vegan alternatives..." />
+              <LoadingAnimation message="Finding matching vegan alternatives..." />
             ) : alternatives.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {alternatives.map((alt) => (
@@ -513,68 +534,69 @@ const SnackDetail = () => {
                 ))}
               </div>
             ) : (
-              <p className="font-['Inter'] text-sm text-[#01472e]/70">
-                No matching alternatives found yet.
+              <p className="font-['Inter'] text-xs text-[#6b7280]">
+                No matching alternatives found.
               </p>
             )}
           </div>
         )}
 
         {/* Community Verification & Discussion Hub */}
-        <div className="mb-10 p-6 md:p-8 rounded-[2.5rem] border border-[#01472e]/15 bg-white/90 shadow-md">
-          <div className="flex items-center justify-between border-b border-[#01472e]/10 pb-4 mb-6">
+        <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#e8e6e1] bg-white shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#e8e6e1] pb-4 mb-6 gap-4">
             <div>
-              <h3 className="font-['Anton'] text-2xl text-[#01472e]">
+              <h3 className="font-['Inter'] text-lg font-bold text-[#1a1f2e]">
                 Community Verification & Discussion
               </h3>
-              <p className="font-['Inter'] text-xs text-[#01472e]/60">
-                Lakhs of vegans rely on your input. Upvote or report recipe changes.
+              <p className="font-['Inter'] text-xs text-[#6b7280]">
+                Report ingredient changes or confirm verification.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-['Inter'] text-xs font-bold transition-all ${hasUpvoted
-                  ? "bg-emerald-600 text-white"
-                  : "bg-emerald-100 text-emerald-900 hover:bg-emerald-200"
-                  }`}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-['Inter'] text-xs font-semibold transition-all ${
+                  hasUpvoted
+                    ? "bg-[#7c9082] text-white"
+                    : "bg-[#eaf0eb] text-[#2e4033] hover:bg-[#d6e5d8]"
+                }`}
               >
-                <ThumbsUp size={14} />
+                <ThumbsUp size={13} />
                 <span>{pollStats.upvotes_as_vegan} Vegan Confirmed</span>
               </button>
 
               <button
                 onClick={() => setShowFlagModal(true)}
-                className="flex items-center gap-1.5 rounded-full bg-rose-100 px-4 py-2 font-['Inter'] text-xs font-bold text-rose-900 hover:bg-rose-200 transition-all"
+                className="flex items-center gap-1.5 rounded-lg bg-[#fdf2f2] border border-[#c73e3a]/20 px-3 py-1.5 font-['Inter'] text-xs font-semibold text-[#962b28] hover:bg-[#f9e5e5]"
               >
-                <Flag size={14} />
-                <span>Report Non-Vegan Flag ({pollStats.reports_as_non_vegan})</span>
+                <Flag size={13} />
+                <span>Flag Non-Vegan ({pollStats.reports_as_non_vegan})</span>
               </button>
             </div>
           </div>
 
           {/* Add Comment Form */}
-          <form onSubmit={handleAddComment} className="mb-8 space-y-3">
-            <div className="flex gap-3">
+          <form onSubmit={handleAddComment} className="mb-6 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 placeholder="Your Name (Optional)"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                className="w-1/3 rounded-xl border border-[#01472e]/20 bg-white px-3 py-2 text-xs font-['Inter'] text-[#01472e]"
+                className="sm:w-1/3 rounded-lg border border-[#e8e6e1] bg-[#fafaf8] px-3 py-2 text-xs font-['Inter'] text-[#1a1f2e]"
               />
               <input
                 type="text"
                 placeholder="Share ingredient update or verification comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-2/3 rounded-xl border border-[#01472e]/20 bg-white px-3 py-2 text-xs font-['Inter'] text-[#01472e]"
+                className="sm:w-2/3 rounded-lg border border-[#e8e6e1] bg-[#fafaf8] px-3 py-2 text-xs font-['Inter'] text-[#1a1f2e]"
               />
             </div>
             <button
               type="submit"
-              className="rounded-full bg-[#01472e] px-5 py-2 font-['Inter'] text-xs font-bold text-[#fefae0] hover:bg-[#01472e]/90"
+              className="rounded-lg bg-[#7c9082] px-4 py-2 font-['Inter'] text-xs font-semibold text-white hover:bg-[#6b7d70]"
             >
               Post Comment
             </button>
@@ -584,47 +606,47 @@ const SnackDetail = () => {
           {comments.length > 0 ? (
             <div className="space-y-3">
               {comments.map((c, i) => (
-                <div key={i} className="p-4 rounded-2xl bg-[#fefae0]/60 border border-[#01472e]/10">
-                  <div className="flex justify-between text-xs font-bold text-[#01472e] mb-1">
+                <div key={i} className="p-3.5 rounded-xl bg-[#fafaf8] border border-[#e8e6e1]">
+                  <div className="flex justify-between text-xs font-semibold text-[#1a1f2e] mb-1">
                     <span>{c.author}</span>
-                    <span className="font-normal text-[#01472e]/50">{c.date}</span>
+                    <span className="font-normal text-[#6b7280]">{c.date}</span>
                   </div>
-                  <p className="text-xs text-[#01472e]/80 font-['Inter']">{c.text}</p>
+                  <p className="text-xs text-[#6b7280] font-['Inter']">{c.text}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-center font-['Inter'] text-xs text-[#01472e]/50 py-4">
-              No comments yet. Be the first to share a verification note!
+            <p className="text-center font-['Inter'] text-xs text-[#6b7280] py-3">
+              No comments yet. Share your observation!
             </p>
           )}
         </div>
 
-        {/* Flag Modal */}
+        {/* Flag Report Modal */}
         {showFlagModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-              <h3 className="font-['Anton'] text-xl text-rose-950 mb-2">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="font-['Inter'] text-base font-bold text-[#1a1f2e] mb-1">
                 Report Recipe Change / Non-Vegan Flag
               </h3>
-              <p className="font-['Inter'] text-xs text-rose-900/70 mb-4">
-                Did {snack.name} update its ingredients or start using milk solids/ghee?
+              <p className="font-['Inter'] text-xs text-[#6b7280] mb-4">
+                Did {snack.name} start using milk solids or non-vegan ingredients?
               </p>
 
               {flagSubmitted ? (
-                <div className="p-4 rounded-xl bg-emerald-100 text-emerald-900 text-center font-['Inter'] text-xs font-bold">
-                  Thank you! Your flag alert has been submitted to moderators.
+                <div className="p-3 rounded-lg bg-[#eaf0eb] text-[#2e4033] text-center font-['Inter'] text-xs font-semibold">
+                  Report submitted. Moderators will audit this product.
                 </div>
               ) : (
                 <form onSubmit={handleFlagSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#01472e] mb-1">
+                    <label className="block text-xs font-semibold text-[#1a1f2e] mb-1">
                       Reason for Flag
                     </label>
                     <select
                       value={selectedFlagReason}
                       onChange={(e) => setSelectedFlagReason(e.target.value)}
-                      className="w-full rounded-xl border border-[#01472e]/20 p-2 text-xs font-['Inter']"
+                      className="w-full rounded-lg border border-[#e8e6e1] p-2 text-xs font-['Inter']"
                     >
                       {FLAG_REASONS.map((r) => (
                         <option key={r} value={r}>
@@ -635,15 +657,15 @@ const SnackDetail = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-[#01472e] mb-1">
-                      Additional Details / Batch Info
+                    <label className="block text-xs font-semibold text-[#1a1f2e] mb-1">
+                      Batch Details / Notes
                     </label>
                     <textarea
                       rows={3}
                       value={flagDetails}
                       onChange={(e) => setFlagDetails(e.target.value)}
-                      placeholder="e.g. Bought batch dated Nov 2026, ingredient list now states Milk Solids 2%..."
-                      className="w-full rounded-xl border border-[#01472e]/20 p-2 text-xs font-['Inter']"
+                      placeholder="Specify batch date or exact ingredient label change..."
+                      className="w-full rounded-lg border border-[#e8e6e1] p-2 text-xs font-['Inter']"
                     />
                   </div>
 
@@ -651,13 +673,13 @@ const SnackDetail = () => {
                     <button
                       type="button"
                       onClick={() => setShowFlagModal(false)}
-                      className="rounded-full px-4 py-2 text-xs font-bold text-[#01472e]/70 hover:bg-gray-100"
+                      className="rounded-lg px-3 py-1.5 text-xs font-medium text-[#6b7280] hover:bg-[#fafaf8]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="rounded-full bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700"
+                      className="rounded-lg bg-[#c73e3a] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#a8332f]"
                     >
                       Submit Report
                     </button>
