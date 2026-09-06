@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Search, X, CheckCircle2, ShieldCheck, Tag } from "lucide-react";
+import { Search, X, ShieldCheck, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,12 +155,12 @@ const HomePage = () => {
   const motionEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
   return (
-    <div className="relative min-h-screen bg-[#f8f7f4] text-[#1a1f2e]">
+    <div className="relative min-h-screen bg-[#f8f7f4] text-[#1c211e]">
       <Helmet>
         <title>Is This Vegan? — Check if Indian Foods & Snacks are Vegan</title>
         <meta
           name="description"
-          content="Search 3000+ Indian packaged snacks, street foods, and drinks to instantly check if they're vegan. Sage Garden dietary guide for India."
+          content="Search 3000+ Indian packaged snacks, street foods, and drinks to instantly check if they're vegan. Japandi dietary directory for India."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
         <meta property="og:title" content="Is This Vegan? — Check if Indian Foods & Snacks are Vegan" />
@@ -171,50 +171,50 @@ const HomePage = () => {
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
 
       <div className="relative z-10">
-        {/* Header Hero Section */}
-        <div className="border-b border-[#e8e6e1] bg-[#fafaf8] py-14 md:py-20">
-          <div className="container max-w-5xl">
+        {/* Editorial Hero Container */}
+        <div className="border-b border-[#e3e7e2] bg-[#f8f7f4] pt-8 pb-12 md:pt-12 md:pb-16">
+          <div className="container max-w-5xl px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: motionEase }}
+              transition={{ duration: 0.7, ease: motionEase }}
             >
-              <span className="font-mono-data text-xs font-semibold uppercase tracking-[0.25em] text-[#7c9082]">
-                IsThisVegan.in — Plant-Based Directory
-              </span>
-              <h1 className="mt-4 font-serif-editorial text-[clamp(2.4rem,5.5vw,4.5rem)] font-bold leading-[1.06] tracking-tight text-[#1a1f2e]">
-                Check if your Indian food <br className="hidden sm:inline" />
-                is Vegan or Not.
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#e3e7e2] bg-white px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#2d3a30] shadow-2xs mb-4">
+                <ShieldCheck size={12} className="text-[#2d3a30]" />
+                <span>India's Plant-Based Directory • 3,000+ Verified Items</span>
+              </div>
+              <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#1c211e] leading-[1.12]">
+                Is Your Food Vegan or Not?
               </h1>
-              <p className="mt-5 max-w-2xl font-['Inter'] text-base text-[#6b7280] leading-relaxed">
-                Instant ingredient verification across 3000+ packaged snacks, street foods, and regional delicacies in India.
+              <p className="mt-4 max-w-xl font-sans-ui text-base text-[#5a655c] leading-relaxed">
+                Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks.
               </p>
             </motion.div>
           </div>
         </div>
 
         {/* Search Bar & Filter Controls */}
-        <div className="container max-w-5xl py-8">
-          <div className="sticky top-6 z-40 mb-8 rounded-2xl border border-[#e8e6e1] bg-white/95 p-3 shadow-xs backdrop-blur-md">
+        <div className="container max-w-5xl px-4 sm:px-6 py-8">
+          <div className="sticky top-20 z-40 mb-8 rounded-2xl border border-[#e3e7e2] bg-white p-3 shadow-xs backdrop-blur-md">
             <div className="relative">
               <Search
                 size={18}
-                strokeWidth={1.5}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]"
+                strokeWidth={1.75}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
                 aria-hidden="true"
               />
               <Input
                 type="search"
-                placeholder="Search by brand, dish, 'sweet snacks', 'jain snacks', 'palm oil free'..."
+                placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="h-12 rounded-xl border-[#e8e6e1] bg-[#fafaf8] pl-11 pr-11 font-['Inter'] text-sm text-[#1a1f2e] placeholder:text-[#6b7280]/60 focus-visible:ring-2 focus-visible:ring-[#7c9082]"
+                className="h-12 rounded-xl border-[#e3e7e2] bg-[#f8f7f4] pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#2d3a30]"
                 aria-label="Search products"
               />
               {query && (
                 <button
                   onClick={() => setQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#6b7280] hover:bg-[#e8e6e1] hover:text-[#1a1f2e]"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
                   aria-label="Clear search"
                 >
                   <X size={16} strokeWidth={1.5} />
@@ -230,10 +230,10 @@ const HomePage = () => {
                     key={filter.key}
                     variant="outline"
                     onClick={() => setActivePreset(filter.key)}
-                    className={`cursor-pointer rounded-lg px-3 py-1 font-['Inter'] text-xs font-medium transition-all ${
+                    className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
                       activePreset === filter.key
-                        ? "border-[#7c9082] bg-[#7c9082] text-white"
-                        : "border-[#e8e6e1] bg-[#fafaf8] text-[#1a1f2e] hover:border-[#7c9082]/40"
+                        ? "border-[#2d3a30] bg-[#2d3a30] text-white shadow-xs"
+                        : "border-[#e3e7e2] bg-[#f0f3ef] text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#2d3a30]/30"
                     }`}
                   >
                     {filter.label}
@@ -254,10 +254,10 @@ const HomePage = () => {
                 exit={{ opacity: 0 }}
                 className="py-16 text-center"
               >
-                <p className="font-['Inter'] text-base text-[#1a1f2e]">
+                <p className="font-serif-fraunces text-lg text-[#1c211e]">
                   Failed to load products from database.
                 </p>
-                <p className="mt-2 text-xs text-[#6b7280]">{error}</p>
+                <p className="mt-2 font-sans-ui text-xs text-[#5a655c]">{error}</p>
               </motion.div>
             ) : filtered.length === 0 ? (
               <motion.div
@@ -267,16 +267,16 @@ const HomePage = () => {
                 exit={{ opacity: 0 }}
                 className="py-16 text-center"
               >
-                <div className="mx-auto max-w-md rounded-2xl border border-[#e8e6e1] bg-white p-8 shadow-xs">
-                  <p className="font-serif-editorial text-xl font-semibold text-[#1a1f2e]">
+                <div className="mx-auto max-w-md rounded-2xl border border-[#e3e7e2] bg-white p-8 shadow-xs">
+                  <p className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
                     No Matching Products Found
                   </p>
-                  <p className="mt-2 font-['Inter'] text-xs text-[#6b7280]">
+                  <p className="mt-2 font-sans-ui text-xs text-[#5a655c]">
                     Try adjusting your search terms or selecting "All Items".
                   </p>
                   <Button
                     asChild
-                    className="mt-5 rounded-lg bg-[#7c9082] px-5 py-2 font-['Inter'] text-xs font-semibold text-white hover:bg-[#6b7d70]"
+                    className="mt-5 rounded-full bg-[#2d3a30] px-6 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#202a23]"
                   >
                     <a href="mailto:info.isthisvegan@gmail.com?subject=New Snack Suggestion">
                       Suggest a Product
@@ -296,19 +296,19 @@ const HomePage = () => {
                 }}
                 className="w-full"
               >
-                <div className="mb-4 flex items-center justify-between font-['Inter'] text-xs text-[#6b7280]">
+                <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#7a867c] uppercase tracking-wider">
                   <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
                   {activePreset !== "All" && (
                     <button
                       onClick={() => setActivePreset("All")}
-                      className="underline hover:text-[#1a1f2e]"
+                      className="underline hover:text-[#1c211e]"
                     >
                       Reset Filter
                     </button>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                   {displayedSnacks.map((snack, i) => (
                     <motion.div
                       key={snack.slug}

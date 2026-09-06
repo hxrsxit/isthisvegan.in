@@ -13,7 +13,7 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
   const dietaryBadges = parseArrayField(snack.dietary_compatibility);
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
 
-  // Determine health tier label & class
+  // Health tier formatting
   const healthTier = metadata.health_tier || "";
   let healthLabel = "";
   let healthColorClass = "";
@@ -26,7 +26,7 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
     healthColorClass = "bg-[#edf4ee] text-[#2c4c36] border-[#c2ddc8]";
   } else if (healthTier.startsWith("3")) {
     healthLabel = "Moderate";
-    healthColorClass = "bg-[#f4f3ea] text-[#524e38] border-[#dfdbc7]";
+    healthColorClass = "bg-[#f5f4eb] text-[#545037] border-[#dfdbc7]";
   } else if (healthTier.startsWith("4")) {
     healthLabel = "Processed";
     healthColorClass = "bg-[#f9f4ee] text-[#6b4729] border-[#e8d1bd]";
@@ -39,38 +39,38 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.02, 0.2), ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.02, 0.2), ease: [0.16, 1, 0.3, 1] }}
     >
       <Link
         to={`/snack/${snack.slug}`}
-        className="sage-card group flex flex-col justify-between h-full p-5 md:p-6 text-[#1a1f2e]"
+        className="linen-card group flex flex-col justify-between h-full p-5 sm:p-6 text-[#1c211e]"
       >
         <div>
-          {/* Top row: Brand & Verdict badge */}
+          {/* Header Row: Brand & Status Badge */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <span className="font-['Inter'] text-[11px] font-semibold uppercase tracking-wider text-[#6b7280]">
+              <span className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#7a867c]">
                 {snack.brand || "Brand Unspecified"}
               </span>
-              <h3 className="mt-0.5 font-['Inter'] text-[1.05rem] font-bold leading-snug text-[#1a1f2e] group-hover:text-[#7c9082] transition-colors">
+              <h3 className="mt-1 font-serif-fraunces text-lg font-bold leading-snug text-[#1c211e] group-hover:text-[#2d3a30] transition-colors line-clamp-1">
                 {snack.name}
               </h3>
             </div>
 
             <Badge
               variant="outline"
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 font-['Inter'] text-[10px] font-bold uppercase tracking-wider transition-all ${
+              className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 font-sans-ui text-[10px] font-semibold uppercase tracking-wider transition-all ${
                 snack.is_vegan
-                  ? "border-[#7c9082]/40 bg-[#eaf0eb] text-[#2e4033]"
-                  : "border-[#c73e3a]/30 bg-[#fdf2f2] text-[#962b28]"
+                  ? "border-[#b6d5bd] bg-[#edf4ee] text-[#2c4c36]"
+                  : "border-[#f2c7c5] bg-[#fcf0ef] text-[#7d2c29]"
               }`}
             >
               {snack.is_vegan ? (
-                <Leaf size={12} strokeWidth={2.5} className="text-[#7c9082]" aria-hidden="true" />
+                <Leaf size={11} strokeWidth={2.5} className="text-[#2c4c36]" aria-hidden="true" />
               ) : (
-                <TriangleAlert size={12} strokeWidth={2.5} className="text-[#c73e3a]" aria-hidden="true" />
+                <TriangleAlert size={11} strokeWidth={2.5} className="text-[#7d2c29]" aria-hidden="true" />
               )}
               {snack.is_vegan ? "Vegan" : "Not Vegan"}
             </Badge>
@@ -78,23 +78,23 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
 
           {/* Verdict Summary */}
           {snack.verdict_summary && (
-            <p className="mt-3 line-clamp-2 font-['Inter'] text-xs text-[#6b7280] leading-relaxed font-normal">
+            <p className="mt-3 line-clamp-2 font-sans-ui text-xs text-[#5a655c] leading-relaxed font-normal">
               {snack.verdict_summary}
             </p>
           )}
         </div>
 
-        {/* Bottom Metadata Badges */}
-        <div className="mt-4 pt-3 border-t border-[#e8e6e1] flex flex-wrap items-center gap-1.5">
+        {/* Bottom Attributes Bar */}
+        <div className="mt-5 pt-3 border-t border-[#e3e7e2] flex flex-wrap items-center gap-1.5">
           {categoryPill && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-[#fafaf8] border border-[#e8e6e1] px-2 py-0.5 font-['Inter'] text-[10px] font-medium text-[#1a1f2e]">
-              <Tag size={10} className="text-[#7c9082]" />
+            <span className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#2d3a30]">
+              <Tag size={10} className="text-[#7a867c]" />
               {categoryPill}
             </span>
           )}
 
           {healthLabel && (
-            <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-['Inter'] text-[10px] font-medium ${healthColorClass}`}>
+            <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-sans-ui text-[10px] font-medium ${healthColorClass}`}>
               <Flame size={10} />
               {healthLabel}
             </span>
@@ -103,15 +103,15 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
           {dietaryBadges.slice(0, 2).map((badge) => (
             <span
               key={badge}
-              className="inline-flex items-center gap-1 rounded-md bg-[#fafaf8] border border-[#e8e6e1] px-2 py-0.5 font-['Inter'] text-[10px] font-medium text-[#6b7280]"
+              className="inline-flex items-center gap-1 rounded-md bg-white border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-medium text-[#5a655c]"
             >
-              <ShieldCheck size={10} className="text-[#7c9082]" />
+              <ShieldCheck size={10} className="text-[#2c4c36]" />
               {badge}
             </span>
           ))}
 
           {dietaryBadges.length > 2 && (
-            <span className="font-['Inter'] text-[10px] font-medium text-[#6b7280]/70">
+            <span className="font-sans-ui text-[10px] font-medium text-[#7a867c]">
               +{dietaryBadges.length - 2} more
             </span>
           )}

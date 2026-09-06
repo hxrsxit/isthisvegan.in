@@ -20,24 +20,24 @@ const Header = () => {
     <motion.header
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="sticky top-0 z-40 border-b border-[#e8e6e1] bg-[#fafaf8]/90 backdrop-blur-xl"
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="sticky top-0 z-50 border-b border-[#e3e7e2] bg-[#f8f7f4]/90 backdrop-blur-md"
     >
       <nav
-        className="container flex h-16 items-center justify-between gap-3"
+        className="container max-w-6xl flex h-16 items-center justify-between gap-4 px-4 sm:px-6"
         aria-label="Main navigation"
       >
-        <Logo showText size={38} textClassName="text-[#1a1f2e]" />
+        <Logo showText size={36} textClassName="text-[#1c211e] font-serif-fraunces font-bold" />
 
-        <div className="hidden rounded-lg border border-[#e8e6e1] bg-white p-1 md:flex md:items-center md:gap-1 shadow-2xs">
+        <div className="hidden items-center gap-1 rounded-full border border-[#e3e7e2] bg-white p-1 shadow-xs md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`rounded-md px-3.5 py-1.5 text-xs font-semibold tracking-wide transition-colors ${
+              className={`rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
                 location.pathname === link.to
-                  ? "bg-[#7c9082] text-white"
-                  : "text-[#6b7280] hover:bg-[#fafaf8] hover:text-[#1a1f2e]"
+                  ? "bg-[#2d3a30] text-white shadow-xs"
+                  : "text-[#5a655c] hover:bg-[#f0f3ef] hover:text-[#1c211e]"
               }`}
             >
               {link.label}
@@ -49,22 +49,22 @@ const Header = () => {
           <SheetTrigger asChild className="md:hidden">
             <button
               aria-label="Open navigation menu"
-              className="rounded-lg p-2 text-[#6b7280] hover:bg-[#e8e6e1] hover:text-[#1a1f2e]"
+              className="rounded-lg p-2 text-[#5a655c] hover:bg-[#e2e7e0] hover:text-[#1c211e]"
             >
-              <Menu size={22} strokeWidth={1.5} />
+              <Menu size={20} strokeWidth={1.75} />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 border-[#e8e6e1] bg-[#f8f7f4] backdrop-blur-xl">
+          <SheetContent side="right" className="w-72 border-[#e3e7e2] bg-[#f8f7f4] backdrop-blur-xl">
             <nav className="mt-8 flex flex-col gap-2" aria-label="Mobile navigation">
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setOpen(false)}
-                  className={`rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+                  className={`rounded-xl px-4 py-3 text-sm font-semibold tracking-wide transition-colors ${
                     location.pathname === link.to
-                      ? "bg-[#7c9082] text-white"
-                      : "text-[#1a1f2e] hover:bg-[#e8e6e1]"
+                      ? "bg-[#2d3a30] text-white"
+                      : "text-[#1c211e] hover:bg-[#e2e7e0]"
                   }`}
                 >
                   {link.label}
