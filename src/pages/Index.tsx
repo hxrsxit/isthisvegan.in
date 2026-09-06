@@ -173,7 +173,7 @@ const HomePage = () => {
       <div className="relative z-10">
         {/* Natural Sage Green Hero Container */}
         <div className="bg-[#354338] text-[#f8f7f4] pt-10 pb-14 md:pt-16 md:pb-20 border-b border-[#2d3a30]">
-          <div className="container max-w-5xl px-4 sm:px-6">
+          <div className="container max-w-6xl px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -194,7 +194,7 @@ const HomePage = () => {
         </div>
 
         {/* Search Bar & Filter Controls */}
-        <div className="container max-w-5xl px-4 sm:px-6 py-8">
+        <div className="container max-w-6xl px-4 sm:px-6 py-8">
           <div className="sticky top-20 z-40 mb-8 rounded-2xl border border-[#e3e7e2] bg-white p-3 shadow-xs backdrop-blur-md">
             <div className="relative">
               <Search
