@@ -24,7 +24,7 @@ const Header = () => {
       className="sticky top-0 z-50 border-b border-[#e3e7e2] bg-[#f8f7f4]/90 backdrop-blur-md"
     >
       <nav
-        className="container max-w-6xl flex h-16 items-center justify-between gap-4 px-4 sm:px-6"
+        className="container max-w-7xl flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
         <Logo showText size={36} textClassName="text-[#1c211e] font-serif-fraunces font-bold" />
