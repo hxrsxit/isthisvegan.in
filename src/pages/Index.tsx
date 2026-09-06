@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Search, X, Leaf } from "lucide-react";
+import { Search, X, CheckCircle2, ShieldCheck, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -172,22 +172,22 @@ const HomePage = () => {
 
       <div className="relative z-10">
         {/* Header Hero Section */}
-        <div className="border-b border-[#e8e6e1] bg-[#fafaf8] py-12 md:py-16">
+        <div className="border-b border-[#e8e6e1] bg-[#fafaf8] py-14 md:py-20">
           <div className="container max-w-5xl">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: motionEase }}
             >
-              <span className="font-['Inter'] text-xs font-bold uppercase tracking-[0.25em] text-[#7c9082]">
-                IsThisVegan.in — Sage Garden Guide
+              <span className="font-mono-data text-xs font-semibold uppercase tracking-[0.25em] text-[#7c9082]">
+                IsThisVegan.in — Plant-Based Directory
               </span>
-              <h1 className="mt-3 font-['Inter'] text-[clamp(2.2rem,5vw,4rem)] font-bold leading-[1.08] tracking-tight text-[#1a1f2e]">
-                Check if your Indian Snack <br className="hidden sm:inline" />
+              <h1 className="mt-4 font-serif-editorial text-[clamp(2.4rem,5.5vw,4.5rem)] font-bold leading-[1.06] tracking-tight text-[#1a1f2e]">
+                Check if your Indian food <br className="hidden sm:inline" />
                 is Vegan or Not.
               </h1>
-              <p className="mt-4 max-w-2xl font-['Inter'] text-base text-[#6b7280] leading-relaxed">
-                Instant ingredient verification across 3000+ packaged items, street foods, and beverages in India.
+              <p className="mt-5 max-w-2xl font-['Inter'] text-base text-[#6b7280] leading-relaxed">
+                Instant ingredient verification across 3000+ packaged snacks, street foods, and regional delicacies in India.
               </p>
             </motion.div>
           </div>
@@ -195,7 +195,7 @@ const HomePage = () => {
 
         {/* Search Bar & Filter Controls */}
         <div className="container max-w-5xl py-8">
-          <div className="sticky top-6 z-40 mb-8 rounded-2xl border border-[#e8e6e1] bg-white/90 p-3 shadow-sm backdrop-blur-md">
+          <div className="sticky top-6 z-40 mb-8 rounded-2xl border border-[#e8e6e1] bg-white/95 p-3 shadow-xs backdrop-blur-md">
             <div className="relative">
               <Search
                 size={18}
@@ -268,7 +268,7 @@ const HomePage = () => {
                 className="py-16 text-center"
               >
                 <div className="mx-auto max-w-md rounded-2xl border border-[#e8e6e1] bg-white p-8 shadow-xs">
-                  <p className="font-['Inter'] text-lg font-semibold text-[#1a1f2e]">
+                  <p className="font-serif-editorial text-xl font-semibold text-[#1a1f2e]">
                     No Matching Products Found
                   </p>
                   <p className="mt-2 font-['Inter'] text-xs text-[#6b7280]">
