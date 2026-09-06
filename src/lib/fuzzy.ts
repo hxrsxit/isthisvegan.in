@@ -1,3 +1,5 @@
+import { Snack, parseArrayField, parseJsonObjectField, ProductMetadata } from "./snacks-data";
+
 /**
  * Helper file for typo-tolerant fuzzy matching (similar to Algolia/Elasticsearch edit distance matching)
  */
@@ -30,14 +32,40 @@ function levenshteinDistance(s1: string, s2: string): number {
 }
 
 /**
+ * Extract all indexable text values from a Snack object for multi-attribute fuzzy search.
+ */
+export function getSnackSearchKeys(s: Snack): string[] {
+  const meta = parseJsonObjectField<ProductMetadata>(s.product_metadata, {});
+  const dietary = parseArrayField(s.dietary_compatibility);
+  const allergens = parseArrayField(s.allergens_list);
+  const hidden = parseArrayField(s.hidden_animal_ingredients);
+  const tags = parseArrayField(s.tags);
+
+  const keys: string[] = [
+    s.name || "",
+    s.brand || "",
+    s.product_class || "",
+    s.food_type || "",
+    s.sub_type || "",
+    s.main_category || "",
+    s.verdict_summary || "",
+    s.enhanced_description || "",
+    s.detailed_analysis || "",
+    s.is_vegan ? "vegan accidentally-vegan" : "non-vegan not-vegan dairy",
+    meta.regional_cuisine || "",
+    meta.packaging_status || "",
+    meta.health_tier || "",
+    ...dietary,
+    ...allergens,
+    ...hidden,
+    ...tags,
+  ];
+
+  return keys.filter(Boolean);
+}
+
+/**
  * Searches an array of items with typo tolerance, imitating big-firm enterprise search algorithms.
- * 
- * Rules:
- * 1. Queries with length <= 3: exact match required (0 typos)
- * 2. Queries with length 4-6: 1 typo allowed
- * 3. Queries with length >= 7: 2 typos allowed
- * 4. Matches prefix of words as well (so "chocola" matches "chocolate").
- * 5. Returns items sorted by relevance (fewer typos rank higher).
  */
 export function searchWithTypoTolerance<T>(
   items: T[], 
@@ -49,32 +77,24 @@ export function searchWithTypoTolerance<T>(
   const qWords = query.toLowerCase().split(/\s+/).filter(Boolean);
 
   const scoredItems = items.map(item => {
-    // Collect all searchable text fields, split them into words to test against
     const textValues = getKeys(item).map(v => (v || '').toLowerCase());
     
     let totalScore = 0;
     let isMatch = true;
 
-    // Every word in the query must match *something* in the item's text values
     for (const qw of qWords) {
-      // Algolia/Elasticsearch style dynamic thresholding based on word length
       const allowedTypos = qw.length <= 3 ? 0 : qw.length <= 6 ? 1 : 2;
-      
-      let bestWordScore = Infinity; // Lower is better (0 = exact match)
+      let bestWordScore = Infinity;
 
       for (const textValue of textValues) {
-        // Fast path: exact substring match (0 typos)
         if (textValue.includes(qw)) {
           bestWordScore = 0;
           break;
         }
 
-        // Fuzzy path: compare query word with every word in the text value
-        const tWords = textValue.split(/[\s\-]+/); // Split by space or hyphen
+        const tWords = textValue.split(/[\s\-\/\_]+/);
         for (const tw of tWords) {
-          // Compare against full word
           const distFull = levenshteinDistance(qw, tw);
-          // Compare against prefix of the word (for partial typing)
           const prefixDist = tw.length >= qw.length 
             ? levenshteinDistance(qw, tw.substring(0, qw.length)) 
             : Infinity;
@@ -87,7 +107,6 @@ export function searchWithTypoTolerance<T>(
         }
       }
 
-      // If we couldn't find a matching word within the allowed typo threshold, this item fails
       if (bestWordScore > allowedTypos) {
         isMatch = false;
         break;
@@ -99,7 +118,6 @@ export function searchWithTypoTolerance<T>(
     return { item, score: totalScore, isMatch };
   });
 
-  // Filter out non-matching items and sort by the lowest score (most relevant first)
   return scoredItems
     .filter(res => res.isMatch)
     .sort((a, b) => a.score - b.score)

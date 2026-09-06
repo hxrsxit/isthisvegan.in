@@ -35,7 +35,7 @@ async function generateSitemap() {
   // Paginate through all rows — Supabase caps single queries at 1000 rows
   while (true) {
     const { data, error } = await supabase
-      .from("isthisvegan_db")
+      .from("isthisvegan_db2")
       .select("slug")
       .not("slug", "is", null)
       .range(from, from + PAGE_SIZE - 1);
@@ -60,10 +60,10 @@ async function generateSitemap() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allRoutes
-  .map(
-    (route) => `  <url>\n    <loc>${escapeXml(`${siteUrl}${route}`)}</loc>\n  </url>`
-  )
-  .join("\n")}
+      .map(
+        (route) => `  <url>\n    <loc>${escapeXml(`${siteUrl}${route}`)}</loc>\n  </url>`
+      )
+      .join("\n")}
 </urlset>
 `;
 
