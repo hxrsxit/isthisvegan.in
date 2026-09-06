@@ -193,56 +193,62 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Search Bar & Filter Controls */}
-        <div className="container max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="sticky top-20 z-40 mb-8 rounded-2xl border border-[#e3e7e2] bg-white p-3 shadow-xs backdrop-blur-md">
-            <div className="relative">
-              <Search
-                size={18}
-                strokeWidth={1.75}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="h-12 rounded-xl border-[#e3e7e2] bg-[#f8f7f4] pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
-                aria-label="Search products"
-              />
-              {query && (
-                <button
-                  onClick={() => setQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
-                  aria-label="Clear search"
-                >
-                  <X size={16} strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
-
-            {/* Filter Pills */}
-            <div className="mt-3 overflow-x-auto pb-1">
-              <div className="flex min-w-max items-center gap-2">
-                {PRESET_FILTERS.map((filter) => (
-                  <Badge
-                    key={filter.key}
-                    variant="outline"
-                    onClick={() => setActivePreset(filter.key)}
-                    className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
-                      activePreset === filter.key
-                        ? "border-[#354338] bg-[#354338] text-white shadow-xs"
-                        : "border-[#e3e7e2] bg-[#f0f3ef] text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40"
-                    }`}
+        {/* Sticky Search Bar & Filter Controls Bar */}
+        <div className="sticky top-16 z-40 border-b border-[#e3e7e2] bg-[#f8f7f4]/95 py-4 backdrop-blur-md shadow-2xs mb-8">
+          <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-3">
+              {/* Search Field */}
+              <div className="relative w-full">
+                <Search
+                  size={18}
+                  strokeWidth={1.75}
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="search"
+                  placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
+                  aria-label="Search products"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
+                    aria-label="Clear search"
                   >
-                    {filter.label}
-                  </Badge>
-                ))}
+                    <X size={16} strokeWidth={1.5} />
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Pills */}
+              <div className="overflow-x-auto pb-0.5 no-scrollbar">
+                <div className="flex min-w-max items-center gap-2">
+                  {PRESET_FILTERS.map((filter) => (
+                    <Badge
+                      key={filter.key}
+                      variant="outline"
+                      onClick={() => setActivePreset(filter.key)}
+                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
+                        activePreset === filter.key
+                          ? "border-[#354338] bg-[#354338] text-white shadow-xs"
+                          : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
+                      }`}
+                    >
+                      {filter.label}
+                    </Badge>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Main Content Container */}
+        <div className="container max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
           <AnimatePresence mode="wait">
             {loading ? (
               <LoadingAnimation key="loadingState" />
