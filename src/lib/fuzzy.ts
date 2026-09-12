@@ -1,6 +1,4 @@
-/**
- * Helper file for typo-tolerant fuzzy matching (similar to Algolia/Elasticsearch edit distance matching)
- */
+import { Snack, parseArrayField, parseJsonObjectField, ProductMetadata } from "./snacks-data";
 
 // Calculates the Damerau-Levenshtein distance between two strings
 function levenshteinDistance(s1: string, s2: string): number {
@@ -30,51 +28,113 @@ function levenshteinDistance(s1: string, s2: string): number {
 }
 
 /**
- * Searches an array of items with typo tolerance, imitating big-firm enterprise search algorithms.
- * 
- * Rules:
- * 1. Queries with length <= 3: exact match required (0 typos)
- * 2. Queries with length 4-6: 1 typo allowed
- * 3. Queries with length >= 7: 2 typos allowed
- * 4. Matches prefix of words as well (so "chocola" matches "chocolate").
- * 5. Returns items sorted by relevance (fewer typos rank higher).
+ * Extract all indexable text values from a Snack object for multi-attribute fuzzy search.
  */
-export function searchWithTypoTolerance<T>(
-  items: T[], 
+export function getSnackSearchKeys(s: Snack): string[] {
+  const meta = parseJsonObjectField<ProductMetadata>(s.product_metadata, {});
+  const dietary = parseArrayField(s.dietary_compatibility);
+  const allergens = parseArrayField(s.allergens_list);
+  const hidden = parseArrayField(s.hidden_animal_ingredients);
+  const tags = parseArrayField(s.tags);
+
+  const taste = meta.taste_profile;
+  const tasteKeys = taste ? [taste.sweetness ? `sweet-${taste.sweetness}` : "", taste.spiciness ? `spicy-${taste.spiciness}` : ""] : [];
+
+  const keys: string[] = [
+    s.name || "",
+    s.brand || "",
+    s.product_class || "",
+    s.food_type || "",
+    s.sub_type || "",
+    s.main_category || "",
+    s.verdict_summary || "",
+    s.enhanced_description || "",
+    s.detailed_analysis || "",
+    s.is_vegan ? "vegan plant-based dairy-free" : "non-vegan not-vegan milk dairy ghee",
+    meta.regional_cuisine || "",
+    meta.packaging_status || "",
+    meta.health_tier || "",
+    ...dietary,
+    ...allergens,
+    ...hidden,
+    ...tags,
+    ...tasteKeys
+  ];
+
+  return keys.filter(Boolean);
+}
+
+/**
+ * Enhanced semantic search with smart scoring & typo tolerance.
+ */
+export function searchWithTypoTolerance(
+  items: Snack[], 
   query: string, 
-  getKeys: (item: T) => string[]
-): T[] {
+  getKeys: (item: Snack) => string[]
+): Snack[] {
   if (!query.trim()) return items;
 
-  const qWords = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const rawQuery = query.toLowerCase().trim();
+  const qWords = rawQuery.split(/[\s,]+/).filter(Boolean);
 
   const scoredItems = items.map(item => {
-    // Collect all searchable text fields, split them into words to test against
+    const meta = parseJsonObjectField<ProductMetadata>(item.product_metadata, {});
+    const dietary = parseArrayField(item.dietary_compatibility).map(d => d.toLowerCase());
+    const subType = (item.sub_type || "").toLowerCase();
+    const foodType = (item.food_type || "").toLowerCase();
+    const pClass = (item.product_class || "").toLowerCase();
+
     const textValues = getKeys(item).map(v => (v || '').toLowerCase());
-    
-    let totalScore = 0;
+
+    let score = 0; // Lower is better (0 = exact match, negative = bonus boost)
     let isMatch = true;
 
-    // Every word in the query must match *something* in the item's text values
+    // Direct Intent Boosting
+    if (rawQuery.includes("vegan") && !item.is_vegan) {
+      score += 10; // Penalty for non-vegan if user explicitly searched "vegan"
+    }
+
+    if (rawQuery.includes("sweet")) {
+      const isSweetType = ["chocolate", "biscuit", "cookie", "cake", "candy", "sweet", "halwa", "ice-cream", "pudding", "dessert"].some(
+        st => subType.includes(st) || foodType.includes(st)
+      );
+      if (isSweetType) score -= 5; // Reward matching sweet products
+    }
+
+    if (rawQuery.includes("healthy")) {
+      if (meta.health_tier?.startsWith("1") || meta.health_tier?.startsWith("2")) {
+        score -= 5;
+      } else if (meta.health_tier?.startsWith("4") || meta.health_tier?.startsWith("5")) {
+        score += 8;
+      }
+    }
+
+    if (rawQuery.includes("jain") && dietary.some(d => d.includes("jain"))) {
+      score -= 5;
+    }
+
+    if (rawQuery.includes("gluten") && dietary.some(d => d.includes("gluten"))) {
+      score -= 5;
+    }
+
     for (const qw of qWords) {
-      // Algolia/Elasticsearch style dynamic thresholding based on word length
+      // Ignore common filler search terms in scoring calculation if query has multiple words
+      if (qWords.length > 1 && ["food", "snacks", "snack", "item", "items"].includes(qw)) {
+        continue;
+      }
+
       const allowedTypos = qw.length <= 3 ? 0 : qw.length <= 6 ? 1 : 2;
-      
-      let bestWordScore = Infinity; // Lower is better (0 = exact match)
+      let bestWordScore = Infinity;
 
       for (const textValue of textValues) {
-        // Fast path: exact substring match (0 typos)
-        if (textValue.includes(qw)) {
+        if (textValue === qw || textValue.includes(qw)) {
           bestWordScore = 0;
           break;
         }
 
-        // Fuzzy path: compare query word with every word in the text value
-        const tWords = textValue.split(/[\s\-]+/); // Split by space or hyphen
+        const tWords = textValue.split(/[\s\-\/\_]+/);
         for (const tw of tWords) {
-          // Compare against full word
           const distFull = levenshteinDistance(qw, tw);
-          // Compare against prefix of the word (for partial typing)
           const prefixDist = tw.length >= qw.length 
             ? levenshteinDistance(qw, tw.substring(0, qw.length)) 
             : Infinity;
@@ -87,19 +147,17 @@ export function searchWithTypoTolerance<T>(
         }
       }
 
-      // If we couldn't find a matching word within the allowed typo threshold, this item fails
       if (bestWordScore > allowedTypos) {
         isMatch = false;
         break;
       }
       
-      totalScore += bestWordScore;
+      score += bestWordScore;
     }
 
-    return { item, score: totalScore, isMatch };
+    return { item, score, isMatch };
   });
 
-  // Filter out non-matching items and sort by the lowest score (most relevant first)
   return scoredItems
     .filter(res => res.isMatch)
     .sort((a, b) => a.score - b.score)

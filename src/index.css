@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&family=Playfair+Display:wght@600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,57 +6,43 @@
 
 @layer base {
   :root {
-    /* Ethereal Minimalism – site-wide */
-    --background: 60 20% 98%;
-    --foreground: 160 25% 12%;
+    --background: #f8f7f4;
+    --foreground: #1c211e;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 25% 12%;
+    --card: #ffffff;
+    --card-foreground: #1c211e;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 25% 12%;
+    --popover: #ffffff;
+    --popover-foreground: #1c211e;
 
-    --primary: 153 28% 24%;
-    --primary-foreground: 60 20% 98%;
+    --primary: #354338;
+    --primary-foreground: #ffffff;
 
-    --secondary: 60 15% 94%;
-    --secondary-foreground: 160 25% 12%;
+    --secondary: #e6ece7;
+    --secondary-foreground: #2c3d31;
 
-    --muted: 60 12% 94%;
-    --muted-foreground: 160 8% 42%;
+    --muted: #f0f3ef;
+    --muted-foreground: #5a655c;
 
-    --accent-terracotta: 16 60% 55%;
-    --accent-terracotta-foreground: 60 20% 98%;
-    --accent-mustard: 40 80% 55%;
-    --accent-mustard-foreground: 160 25% 12%;
-    --accent-sage: 145 20% 72%;
+    --accent: #e0e6e1;
+    --accent-foreground: #1c211e;
 
-    --accent: 145 18% 92%;
-    --accent-foreground: 160 25% 12%;
+    /* Natural Earthy Terracotta Red instead of high intense red */
+    --destructive: #8b4538;
+    --destructive-foreground: #ffffff;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-
-    --safe: 152 48% 36%;
-    --safe-foreground: 0 0% 100%;
-
-    --border: 60 10% 91%;
-    --input: 60 10% 91%;
-    --ring: 153 28% 24%;
-
+    --border: #e3e7e2;
+    --input: #ffffff;
+    --ring: #354338;
     --radius: 1rem;
+  }
 
-    --shadow-card: 0 8px 30px rgb(0,0,0,0.04);
-    --shadow-card-hover: 0 12px 40px rgb(0,0,0,0.06);
-
-    --sidebar-background: 60 20% 98%;
-    --sidebar-foreground: 160 25% 12%;
-    --sidebar-primary: 153 28% 24%;
-    --sidebar-primary-foreground: 60 20% 98%;
-    --sidebar-accent: 145 18% 92%;
-    --sidebar-accent-foreground: 160 25% 12%;
-    --sidebar-border: 60 10% 91%;
-    --sidebar-ring: 153 28% 24%;
+  .dark {
+    --background: #141715;
+    --foreground: #f0f3ef;
+    --card: #1c211e;
+    --card-foreground: #f0f3ef;
+    --border: #2d3630;
   }
 }
 
@@ -66,72 +52,49 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: "Anton", Impact, sans-serif;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
+  .font-serif-fraunces {
+    font-family: "Fraunces", Georgia, serif;
   }
 
-  p, li, span {
-    letter-spacing: -0.01em;
+  .font-sans-ui {
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+
+  .font-mono-data {
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: "Fraunces", Georgia, serif;
+    letter-spacing: -0.025em;
+    color: var(--foreground);
+    line-height: 1.15;
   }
 }
 
 @layer utilities {
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
-
-  .mesh-gradient {
-    background:
-      radial-gradient(ellipse at 20% 50%, hsl(145 22% 72% / 0.2) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, hsl(153 28% 24% / 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 80%, hsl(145 18% 92% / 0.25) 0%, transparent 50%),
-      hsl(var(--background));
-  }
-
-  .botanical-watermark {
-    position: relative;
-  }
-  .botanical-watermark::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
-    opacity: 0.06;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%23234' stroke-width='1'%3E%3Cpath d='M100 180 C100 180 60 140 40 100 C20 60 40 20 100 20 C160 20 180 60 160 100 C140 140 100 180 100 180Z'/%3E%3Cpath d='M100 180 C100 180 100 100 100 20'/%3E%3Cpath d='M100 60 C80 50 60 60 55 80'/%3E%3Cpath d='M100 100 C120 90 140 100 145 120'/%3E%3Cpath d='M100 140 C80 130 65 140 60 155'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: bottom right;
-    background-size: contain;
-    pointer-events: none;
-  }
-
   .noise-overlay {
-    opacity: 0.04;
+    opacity: 0.025;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     background-size: 220px 220px;
   }
 
-  .organic-float {
-    animation: float 8s ease-in-out infinite;
-    transform-origin: center;
-    will-change: transform;
+  .linen-card {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
-}
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
+  .linen-card:hover {
+    border-color: #354338;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(53, 67, 56, 0.06);
   }
 }
