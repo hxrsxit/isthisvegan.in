@@ -347,13 +347,13 @@ const HomePage = () => {
       className="relative overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
     >
       <Helmet>
-        <title>Is Your Food Plant-Based or Not? — IsThisVegan.in</title>
+        <title>Is Your Food Plant-Based or Not? ï¿½ IsThisVegan.in</title>
         <meta
           name="description"
           content="India's leading plant-based food directory. Search 3,000+ snacks, packaged foods, and dishes with instant ingredient verification and allergen alerts."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
-        <meta property="og:title" content="Is Your Food Plant-Based or Not? — IsThisVegan.in" />
+        <meta property="og:title" content="Is Your Food Plant-Based or Not? ï¿½ IsThisVegan.in" />
         <meta
           property="og:description"
           content="Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks."
@@ -374,7 +374,7 @@ const HomePage = () => {
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-[#4d5d50] bg-[#435246] px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#d9e2db] shadow-2xs mb-5">
                 <ShieldCheck size={12} className="text-[#a3b5a7]" />
-                <span>India's Plant-Based Directory • 3,000+ Verified Items</span>
+                <span>India's Plant-Based Directory ï¿½ 3,000+ Verified Items</span>
               </div>
               <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#f8f7f4] leading-[1.12]">
                 Is Your Food Plant-based or Not?
@@ -433,13 +433,13 @@ const HomePage = () => {
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-[#e3e7e2]">
-                    <SelectItem value="featured">Featured Order</SelectItem>
+                    <SelectItem value="featured">Featured</SelectItem>
                     <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
-                    <SelectItem value="price-asc">Price: Low to High ($ to $$$$$)</SelectItem>
-                    <SelectItem value="price-desc">Price: High to Low ($$$$$ to $)</SelectItem>
-                    <SelectItem value="name-asc">Name: A to Z</SelectItem>
-                    <SelectItem value="name-desc">Name: Z to A</SelectItem>
-                    <SelectItem value="brand-asc">Brand: A to Z</SelectItem>
+                    <SelectItem value="price-asc">Price: Low2High</SelectItem>
+                    <SelectItem value="price-desc">Price: High2Low</SelectItem>
+                    <SelectItem value="name-asc">Name: Aâ€“Z</SelectItem>
+                    <SelectItem value="name-desc">Name: Zâ€“A</SelectItem>
+                    <SelectItem value="brand-asc">Brand: Aâ€“Z</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -452,11 +452,10 @@ const HomePage = () => {
                       key={filter.key}
                       variant="outline"
                       onClick={() => setActivePreset(filter.key)}
-                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
-                        activePreset === filter.key
-                          ? "border-[#354338] bg-[#354338] text-white shadow-xs"
-                          : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
-                      }`}
+                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${activePreset === filter.key
+                        ? "border-[#354338] bg-[#354338] text-white shadow-xs"
+                        : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
+                        }`}
                     >
                       {filter.label}
                     </Badge>
