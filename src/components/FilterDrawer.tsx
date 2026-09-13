@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+﻿import React, { useState, useMemo } from "react";
 import {
   Sheet,
   SheetContent,
@@ -113,7 +113,7 @@ export function FilterDrawer({
   }, [localFilters]);
 
   const filteredBrands = useMemo(() => {
-    if (!brandSearch.trim()) return availableBrands.slice(0, 40);
+    if (!brandSearch.trim()) return availableBrands;
     const q = brandSearch.toLowerCase();
     return availableBrands.filter((b) => b.toLowerCase().includes(q));
   }, [availableBrands, brandSearch]);
@@ -143,7 +143,7 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className="relative inline-flex items-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 py-2.5 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40"
+          className="relative inline-flex items-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 py-2.5 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0"
         >
           <Filter size={15} className="text-[#354338]" />
           <span>Filters</span>
@@ -160,7 +160,7 @@ export function FilterDrawer({
 
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md bg-[#f8f7f4] border-l border-[#e3e7e2] p-0 flex flex-col h-full text-[#1c211e]"
+        className="w-full sm:max-w-md bg-[#f8f7f4] border-l border-[#e3e7e2] p-0 flex flex-col h-full text-[#1c211e] duration-200 ease-out transition-transform"
       >
         <SheetHeader className="p-5 border-b border-[#e3e7e2] bg-white">
           <div className="flex items-center justify-between">
@@ -220,14 +220,14 @@ export function FilterDrawer({
             </div>
           </div>
 
-          <Accordion type="multiple" defaultValue={["dietary", "brand", "sub_type"]} className="space-y-3">
-            {/* Dietary & Compatibility Badges */}
+          <Accordion type="single" collapsible defaultValue="brand" className="space-y-3">
+            {/* Dietary & Lifestyle Badges */}
             <AccordionItem value="dietary" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
               <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
-                <span>Dietary & Compatibility ({localFilters.dietary.length})</span>
+                <span>Dietary & Health ({localFilters.dietary.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
-                <div className="grid grid-cols-1 gap-2.5">
+                <div className="max-h-56 overflow-y-auto grid grid-cols-1 gap-2 pr-1">
                   {DIETARY_BADGES.map((badge) => {
                     const checked = localFilters.dietary.includes(badge);
                     return (
@@ -257,13 +257,13 @@ export function FilterDrawer({
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5a655c]" />
                   <Input
                     type="text"
-                    placeholder="Search brand name..."
+                    placeholder={`Search among ${availableBrands.length} brands...`}
                     value={brandSearch}
                     onChange={(e) => setBrandSearch(e.target.value)}
                     className="h-8 pl-8 text-xs bg-[#f8f7f4] border-[#e3e7e2]"
                   />
                 </div>
-                <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
+                <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
                   {filteredBrands.map((brand) => {
                     const checked = localFilters.brands.includes(brand);
                     return (

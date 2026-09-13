@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+﻿import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, X, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -347,13 +347,13 @@ const HomePage = () => {
       className="relative overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
     >
       <Helmet>
-        <title>Is Your Food Plant-Based or Not? � IsThisVegan.in</title>
+        <title>Is Your Food Plant-Based or Not? ï¿½ IsThisVegan.in</title>
         <meta
           name="description"
           content="India's leading plant-based food directory. Search 3,000+ snacks, packaged foods, and dishes with instant ingredient verification and allergen alerts."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
-        <meta property="og:title" content="Is Your Food Plant-Based or Not? � IsThisVegan.in" />
+        <meta property="og:title" content="Is Your Food Plant-Based or Not? ï¿½ IsThisVegan.in" />
         <meta
           property="og:description"
           content="Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks."
@@ -374,7 +374,7 @@ const HomePage = () => {
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-[#4d5d50] bg-[#435246] px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#d9e2db] shadow-2xs mb-5">
                 <ShieldCheck size={12} className="text-[#a3b5a7]" />
-                <span>India's Plant-Based Directory � 3,000+ Verified Items</span>
+                <span>India's Plant-Based Directory ï¿½ 3,000+ Verified Items</span>
               </div>
               <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#f8f7f4] leading-[1.12]">
                 Is Your Food Plant-based or Not?
@@ -428,18 +428,18 @@ const HomePage = () => {
 
                 {/* Enhanced Sort Dropdown */}
                 <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger className="h-12 w-40 sm:w-52 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                  <SelectTrigger className="h-12 w-32 sm:w-40 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
                     <ArrowUpDown size={14} className="mr-1.5 text-[#354338]" />
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-[#e3e7e2]">
                     <SelectItem value="featured">Featured</SelectItem>
                     <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
-                    <SelectItem value="price-asc">Price: Low–High</SelectItem>
-                    <SelectItem value="price-desc">Price: High–Low</SelectItem>
-                    <SelectItem value="name-asc">Name: A–Z</SelectItem>
-                    <SelectItem value="name-desc">Name: Z–A</SelectItem>
-                    <SelectItem value="brand-asc">Brand: A–Z</SelectItem>
+                    <SelectItem value="price-asc">Price: Lowâ€“High</SelectItem>
+                    <SelectItem value="price-desc">Price: Highâ€“Low</SelectItem>
+                    <SelectItem value="name-asc">Name: Aâ€“Z</SelectItem>
+                    <SelectItem value="name-desc">Name: Zâ€“A</SelectItem>
+                    <SelectItem value="brand-asc">Brand: Aâ€“Z</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -659,3 +659,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
