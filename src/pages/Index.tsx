@@ -435,8 +435,8 @@ const HomePage = () => {
                   <SelectContent className="bg-white border-[#e3e7e2]">
                     <SelectItem value="featured">Featured</SelectItem>
                     <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
-                    <SelectItem value="price-asc">Price: Low2High</SelectItem>
-                    <SelectItem value="price-desc">Price: High2Low</SelectItem>
+                    <SelectItem value="price-asc">Price: Low–High</SelectItem>
+                    <SelectItem value="price-desc">Price: High–Low</SelectItem>
                     <SelectItem value="name-asc">Name: A–Z</SelectItem>
                     <SelectItem value="name-desc">Name: Z–A</SelectItem>
                     <SelectItem value="brand-asc">Brand: A–Z</SelectItem>
