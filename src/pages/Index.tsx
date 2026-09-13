@@ -263,14 +263,55 @@ const HomePage = () => {
       base = searchWithTypoTolerance(base, debouncedQuery, getSnackSearchKeys);
     }
 
-    // 4. Sorting
+    // 4. Enhanced Sorting Options
     const sorted = [...base];
-    if (sortOption === "name-asc") {
+    if (sortOption === "healthy-vegan") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+
+        const isHealthyA = a.is_vegan && (metaA.health_tier?.startsWith("1") || metaA.health_tier?.startsWith("2"));
+        const isHealthyB = b.is_vegan && (metaB.health_tier?.startsWith("1") || metaB.health_tier?.startsWith("2"));
+
+        if (isHealthyA && !isHealthyB) return -1;
+        if (!isHealthyA && isHealthyB) return 1;
+
+        if (a.is_vegan && !b.is_vegan) return -1;
+        if (!a.is_vegan && b.is_vegan) return 1;
+
+        return a.name.localeCompare(b.name);
+      });
+    } else if (sortOption === "price-asc") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+        const pA = (metaA.price_tier || "").length || 1;
+        const pB = (metaB.price_tier || "").length || 1;
+        return pA - pB;
+      });
+    } else if (sortOption === "price-desc") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+        const pA = (metaA.price_tier || "").length || 1;
+        const pB = (metaB.price_tier || "").length || 1;
+        return pB - pA;
+      });
+    } else if (sortOption === "name-asc") {
       sorted.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortOption === "name-desc") {
       sorted.sort((a, b) => b.name.localeCompare(a.name));
     } else if (sortOption === "brand-asc") {
       sorted.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
+    } else if (sortOption === "featured") {
+      // Placeholder for Featured ranking
+      sorted.sort((a, b) => {
+        const isFeatA = (a as any).is_featured || false;
+        const isFeatB = (b as any).is_featured || false;
+        if (isFeatA && !isFeatB) return -1;
+        if (!isFeatA && isFeatB) return 1;
+        return 0;
+      });
     }
 
     return sorted;
@@ -385,14 +426,17 @@ const HomePage = () => {
                   totalResultsCount={filtered.length}
                 />
 
-                {/* Sort Dropdown */}
+                {/* Enhanced Sort Dropdown */}
                 <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger className="h-12 w-36 sm:w-44 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                  <SelectTrigger className="h-12 w-40 sm:w-52 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
                     <ArrowUpDown size={14} className="mr-1.5 text-[#354338]" />
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-[#e3e7e2]">
                     <SelectItem value="featured">Featured Order</SelectItem>
+                    <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High ($ to $$$$$)</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low ($$$$$ to $)</SelectItem>
                     <SelectItem value="name-asc">Name: A to Z</SelectItem>
                     <SelectItem value="name-desc">Name: Z to A</SelectItem>
                     <SelectItem value="brand-asc">Brand: A to Z</SelectItem>
