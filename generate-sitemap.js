@@ -35,7 +35,7 @@ async function generateSitemap() {
   // Paginate through all rows — Supabase caps single queries at 1000 rows
   while (true) {
     const { data, error } = await supabase
-      .from("isthisvegan_db2")
+      .from("isthisvegan_db3")
       .select("slug")
       .not("slug", "is", null)
       .range(from, from + PAGE_SIZE - 1);

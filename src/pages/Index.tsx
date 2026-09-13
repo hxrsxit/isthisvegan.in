@@ -62,10 +62,10 @@ const HomePage = () => {
       let allData: Snack[] = [];
       let from = 0;
 
-      // Paginate through isthisvegan_db2
+      // Paginate through isthisvegan_db3
       while (true) {
         const { data, error } = await supabase
-          .from<Snack>("isthisvegan_db2")
+          .from<Snack>("isthisvegan_db3")
           .select("*")
           .order("name", { ascending: true })
           .range(from, from + PAGE_SIZE - 1);
@@ -232,11 +232,10 @@ const HomePage = () => {
                       key={filter.key}
                       variant="outline"
                       onClick={() => setActivePreset(filter.key)}
-                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
-                        activePreset === filter.key
+                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${activePreset === filter.key
                           ? "border-[#354338] bg-[#354338] text-white shadow-xs"
                           : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
-                      }`}
+                        }`}
                     >
                       {filter.label}
                     </Badge>

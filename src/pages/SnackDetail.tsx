@@ -74,7 +74,7 @@ const SnackDetail = () => {
       setError(null);
 
       const { data, error } = await supabase
-        .from<Snack>("isthisvegan_db2")
+        .from<Snack>("isthisvegan_db3")
         .select("*")
         .eq("slug", slug)
         .limit(1);
@@ -116,7 +116,7 @@ const SnackDetail = () => {
 
     if (subType) {
       const { data: subData } = await supabase
-        .from<Snack>("isthisvegan_db2")
+        .from<Snack>("isthisvegan_db3")
         .select("*")
         .eq("is_vegan", true)
         .eq("sub_type", subType)
@@ -130,7 +130,7 @@ const SnackDetail = () => {
 
     if (matched.length === 0 && foodType) {
       const { data: foodData } = await supabase
-        .from<Snack>("isthisvegan_db2")
+        .from<Snack>("isthisvegan_db3")
         .select("*")
         .eq("is_vegan", true)
         .eq("food_type", foodType)
@@ -144,7 +144,7 @@ const SnackDetail = () => {
 
     if (matched.length === 0 && productClass) {
       const { data: classData } = await supabase
-        .from<Snack>("isthisvegan_db2")
+        .from<Snack>("isthisvegan_db3")
         .select("*")
         .eq("is_vegan", true)
         .eq("product_class", productClass)
@@ -158,7 +158,7 @@ const SnackDetail = () => {
 
     if (matched.length === 0) {
       const { data: fallbackData } = await supabase
-        .from<Snack>("isthisvegan_db2")
+        .from<Snack>("isthisvegan_db3")
         .select("*")
         .eq("is_vegan", true)
         .neq("slug", currentSnack.slug)
@@ -294,18 +294,16 @@ const SnackDetail = () => {
 
         {/* Master Verdict Banner */}
         <div
-          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${
-            snack.is_vegan
+          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
               ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
               : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
-          }`}
+            }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
               <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${
-                  snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
-                }`}
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
+                  }`}
               >
                 {snack.is_vegan ? (
                   <Leaf size={28} strokeWidth={2} aria-hidden="true" />
@@ -315,9 +313,8 @@ const SnackDetail = () => {
               </div>
               <div>
                 <span
-                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${
-                    snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
-                  }`}
+                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
+                    }`}
                 >
                   {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
                 </span>
@@ -549,11 +546,10 @@ const SnackDetail = () => {
               <button
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${
-                  hasUpvoted
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
                     ? "bg-[#354338] text-white"
                     : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
-                }`}
+                  }`}
               >
                 <ThumbsUp size={13} />
                 <span>{pollStats.upvotes_as_vegan} Vegan Confirmed</span>
