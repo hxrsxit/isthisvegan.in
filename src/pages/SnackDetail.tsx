@@ -6,9 +6,7 @@ import {
   TriangleAlert,
   ExternalLink,
   ShieldCheck,
-  Flame,
   ChefHat,
-  Tag,
   ThumbsUp,
   Flag,
   Sparkles,
@@ -24,7 +22,7 @@ import {
 } from "@/lib/snacks-data";
 import { supabase } from "@/supabaseClient";
 import { motion } from "framer-motion";
-import { landingTheme, landingNoiseBackground } from "@/lib/theme";
+import { landingTheme } from "@/lib/theme";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { Helmet } from "react-helmet-async";
 import SnackCard from "@/components/SnackCard";
@@ -255,9 +253,9 @@ const SnackDetail = () => {
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
   const descriptionText = snack.enhanced_description || snack.detailed_analysis;
 
-  const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) â€” Is This Vegan?`;
+  const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) — Is This Vegan?`;
   const pageDescription = snack.verdict_summary
-    ? `${snack.name} by ${snack.brand} â€” ${snack.is_vegan ? "Plant-Based Verdict" : "Not Vegan Alert"}. ${snack.verdict_summary}`
+    ? `${snack.name} by ${snack.brand} — ${snack.is_vegan ? "Plant-Based Verdict" : "Not Vegan Alert"}. ${snack.verdict_summary}`
     : `Is ${snack.name} by ${snack.brand} vegan? Ingredient verification on IsThisVegan.in`;
   const pageUrl = `https://www.isthisvegan.in/snack/${snack.slug}`;
 
@@ -294,16 +292,18 @@ const SnackDetail = () => {
 
         {/* Master Verdict Banner */}
         <div
-          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
+          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${
+            snack.is_vegan
               ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
               : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
-            }`}
+          }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
               <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
-                  }`}
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${
+                  snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
+                }`}
               >
                 {snack.is_vegan ? (
                   <Leaf size={28} strokeWidth={2} aria-hidden="true" />
@@ -313,8 +313,9 @@ const SnackDetail = () => {
               </div>
               <div>
                 <span
-                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
-                    }`}
+                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${
+                    snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
+                  }`}
                 >
                   {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
                 </span>
@@ -322,8 +323,31 @@ const SnackDetail = () => {
                   {snack.name}
                 </h1>
                 <p className="font-sans-ui text-sm text-[#5a655c] mt-1">
-                  Brand: <span className="font-semibold text-[#1c211e]">{snack.brand || "Unspecified"}</span>
-                  {snack.sub_type && <span> â€¢ Category: {snack.sub_type}</span>}
+                  Brand:{" "}
+                  {snack.brand ? (
+                    <Link
+                      to={`/?brand=${encodeURIComponent(snack.brand)}`}
+                      className="font-semibold text-[#1c211e] hover:underline hover:text-[#354338]"
+                      title={`See all products by ${snack.brand}`}
+                    >
+                      {snack.brand}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-[#1c211e]">Unspecified</span>
+                  )}
+                  {snack.sub_type && (
+                    <span>
+                      {" "}
+                      • Category:{" "}
+                      <Link
+                        to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
+                        className="font-semibold text-[#1c211e] hover:underline hover:text-[#354338]"
+                        title={`See all products in ${snack.sub_type}`}
+                      >
+                        {snack.sub_type}
+                      </Link>
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
@@ -405,13 +429,15 @@ const SnackDetail = () => {
             {dietaryBadges.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {dietaryBadges.map((badge) => (
-                  <span
+                  <Link
                     key={badge}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#e6ece7] border border-[#b2c2b5] px-3 py-1 font-sans-ui text-xs font-semibold text-[#2c3d31]"
+                    to={`/?dietary=${encodeURIComponent(badge)}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-[#e6ece7] border border-[#b2c2b5] px-3 py-1 font-sans-ui text-xs font-semibold text-[#2c3d31] hover:bg-[#d8e4da] hover:border-[#354338] transition-all cursor-pointer"
+                    title={`See all ${badge} items`}
                   >
                     <CheckCircle2 size={12} className="text-[#2c3d31]" />
                     {badge}
-                  </span>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -429,13 +455,15 @@ const SnackDetail = () => {
             {allergens.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {allergens.map((allergen) => (
-                  <span
+                  <Link
                     key={allergen}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#f5f4eb] border border-[#dfdbc7] px-3 py-1 font-sans-ui text-xs font-semibold text-[#545037]"
+                    to={`/?allergen=${encodeURIComponent(allergen)}`}
+                    className="inline-flex items-center gap-1 rounded-full bg-[#f5f4eb] border border-[#dfdbc7] px-3 py-1 font-sans-ui text-xs font-semibold text-[#545037] hover:bg-[#eae6d5] hover:border-[#6b4c29] transition-all cursor-pointer"
+                    title={`See products without ${allergen}`}
                   >
                     <AlertCircle size={12} className="text-[#6b4c29]" />
                     {allergen}
-                  </span>
+                  </Link>
                 ))}
               </div>
             ) : (
@@ -452,6 +480,33 @@ const SnackDetail = () => {
             Product Specifications & Attributes
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans-ui text-xs">
+            {snack.product_class && (
+              <Link
+                to={`/?product_class=${encodeURIComponent(snack.product_class)}`}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
+              >
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Class</span>
+                <span className="font-semibold text-[#1c211e]">{snack.product_class}</span>
+              </Link>
+            )}
+            {snack.food_type && (
+              <Link
+                to={`/?food_type=${encodeURIComponent(snack.food_type)}`}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
+              >
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Food Type</span>
+                <span className="font-semibold text-[#1c211e]">{snack.food_type}</span>
+              </Link>
+            )}
+            {snack.sub_type && (
+              <Link
+                to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
+              >
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Sub Type</span>
+                <span className="font-semibold text-[#1c211e]">{snack.sub_type}</span>
+              </Link>
+            )}
             {metadata.regional_cuisine && (
               <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
                 <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Cuisine</span>
@@ -470,35 +525,17 @@ const SnackDetail = () => {
                 <span className="font-semibold text-[#1c211e]">{metadata.health_tier}</span>
               </div>
             )}
-            {metadata.cross_contamination_risk && (
-              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Cross Contamination</span>
-                <span className="font-semibold text-[#1c211e]">{metadata.cross_contamination_risk}</span>
-              </div>
-            )}
-            {metadata.price_tier && (
-              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Price Tier</span>
-                <span className="font-semibold text-[#1c211e]">{metadata.price_tier}</span>
-              </div>
-            )}
-            {metadata.target_audience && (
-              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
-                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Target Audience</span>
-                <span className="font-semibold text-[#1c211e]">{metadata.target_audience}</span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Amazon Affiliate Button */}
+        {/* Amazon Purchase Link */}
         {snack.amazon_search_url && (
-          <div className="mb-10">
+          <div className="mb-10 text-center">
             <a
               href={snack.amazon_search_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-13 w-full items-center justify-center rounded-full bg-[#354338] px-6 font-sans-ui text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#28332a]"
+              className="inline-flex items-center justify-center rounded-xl bg-[#354338] px-6 py-3.5 font-sans-ui text-sm font-semibold text-white shadow-sm hover:bg-[#28332a] transition-all"
             >
               <ExternalLink size={16} className="mr-2" />
               Check Price / Buy on Amazon
@@ -512,7 +549,7 @@ const SnackDetail = () => {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-[#2c3d31]" />
               <h3 className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
-                Switch To This â€” Vegan Alternatives for {snack.sub_type || snack.name}
+                Switch To This — Vegan Alternatives for {snack.sub_type || snack.name}
               </h3>
             </div>
             {loadingAlternatives ? (
@@ -546,10 +583,11 @@ const SnackDetail = () => {
               <button
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${
+                  hasUpvoted
                     ? "bg-[#354338] text-white"
                     : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
-                  }`}
+                }`}
               >
                 <ThumbsUp size={13} />
                 <span>{pollStats.upvotes_as_vegan} Vegan Confirmed</span>

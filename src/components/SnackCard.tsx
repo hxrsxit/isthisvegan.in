@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import { Leaf, TriangleAlert, ShieldCheck, Flame, Tag } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Leaf, TriangleAlert, Tag, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { Snack, parseArrayField, parseJsonObjectField, ProductMetadata } from "@/lib/snacks-data";
+import { Snack, parseJsonObjectField, ProductMetadata } from "@/lib/snacks-data";
 
 interface SnackCardProps {
   snack: Snack;
@@ -10,10 +10,9 @@ interface SnackCardProps {
 }
 
 export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
-  const dietaryBadges = parseArrayField(snack.dietary_compatibility);
+  const navigate = useNavigate();
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
 
-  // Health tier formatting with natural earth tones
   const healthTier = metadata.health_tier || "";
   let healthLabel = "";
   let healthColorClass = "";
@@ -37,21 +36,48 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
 
   const categoryPill = snack.sub_type || snack.food_type || snack.product_class || snack.main_category;
 
+  const handleBrandClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (snack.brand) {
+      navigate(`/?brand=${encodeURIComponent(snack.brand)}`);
+    }
+  };
+
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (categoryPill) {
+      navigate(`/?sub_type=${encodeURIComponent(categoryPill)}`);
+    }
+  };
+
+  const handleCardClick = () => {
+    sessionStorage.setItem("isthisvegan_scroll_pos", window.scrollY.toString());
+    sessionStorage.setItem("isthisvegan_last_slug", snack.slug);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.02, 0.2), ease: [0.16, 1, 0.3, 1] }}
+      id={`snack-card-${snack.slug}`}
     >
       <Link
         to={`/snack/${snack.slug}`}
+        onClick={handleCardClick}
         className="linen-card group flex flex-col justify-between h-full p-5 sm:p-6 text-[#1c211e]"
       >
         <div>
           {/* Header Row: Brand & Status Badge */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <span className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#5a655c]">
+              <span
+                onClick={handleBrandClick}
+                className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#5a655c] hover:text-[#354338] hover:underline cursor-pointer inline-block"
+                title={`Filter products by brand ${snack.brand}`}
+              >
                 {snack.brand || "Brand Unspecified"}
               </span>
               <h3 className="mt-1 font-serif-fraunces text-lg font-bold leading-snug text-[#1c211e] group-hover:text-[#354338] transition-colors line-clamp-1">
@@ -87,7 +113,11 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
         {/* Bottom Attributes Bar */}
         <div className="mt-5 pt-3 border-t border-[#e3e7e2] flex flex-wrap items-center gap-1.5">
           {categoryPill && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#354338]">
+            <span
+              onClick={handleCategoryClick}
+              className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#354338] hover:bg-[#e2e7e0] cursor-pointer"
+              title={`Filter by category ${categoryPill}`}
+            >
               <Tag size={10} className="text-[#5a655c]" />
               {categoryPill}
             </span>
@@ -97,22 +127,6 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
             <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-sans-ui text-[10px] font-medium ${healthColorClass}`}>
               <Flame size={10} />
               {healthLabel}
-            </span>
-          )}
-
-          {dietaryBadges.slice(0, 2).map((badge) => (
-            <span
-              key={badge}
-              className="inline-flex items-center gap-1 rounded-md bg-white border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-medium text-[#5a655c]"
-            >
-              <ShieldCheck size={10} className="text-[#2c3d31]" />
-              {badge}
-            </span>
-          ))}
-
-          {dietaryBadges.length > 2 && (
-            <span className="font-sans-ui text-[10px] font-medium text-[#5a655c]">
-              +{dietaryBadges.length - 2} more
             </span>
           )}
         </div>
