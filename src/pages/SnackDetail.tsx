@@ -354,7 +354,7 @@ const SnackDetail = () => {
 
             {/* Confidence & Verified Date */}
             <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 border-t md:border-t-0 border-[#e3e7e2] pt-3 md:pt-0">
-              {metadata.vegan_confidence_score && (
+              {snack.is_vegan && metadata.vegan_confidence_score && (
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#e3e7e2] px-3.5 py-1 text-xs font-semibold text-[#1c211e]">
                   <ShieldCheck size={14} className="text-[#2c3d31]" />
                   Confidence: {metadata.vegan_confidence_score}/5
@@ -722,3 +722,4 @@ const SnackDetail = () => {
 };
 
 export default SnackDetail;
+
