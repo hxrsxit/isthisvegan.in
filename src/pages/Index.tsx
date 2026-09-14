@@ -139,43 +139,6 @@ const HomePage = () => {
     fetchSnacks();
   }, []);
 
-  // Restore scroll position & pagination state when navigating back
-  useEffect(() => {
-    if (!loading && snacks.length > 0 && filtered.length > 0) {
-      const savedPos = sessionStorage.getItem("isthisvegan_scroll_pos");
-      const savedSlug = sessionStorage.getItem("isthisvegan_last_slug");
-
-      if (!savedPos && !savedSlug) return;
-
-      if (savedSlug) {
-        const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
-        if (itemIdx >= 0) {
-          setDisplayCount((prev) => Math.max(prev, itemIdx + 20));
-        }
-      }
-
-      const timer = setTimeout(() => {
-        if (savedSlug) {
-          const el = document.getElementById(`snack-card-${savedSlug}`);
-          if (el) {
-            el.scrollIntoView({ block: "center", behavior: "instant" });
-            sessionStorage.removeItem("isthisvegan_scroll_pos");
-            sessionStorage.removeItem("isthisvegan_last_slug");
-            return;
-          }
-        }
-
-        if (savedPos) {
-          window.scrollTo({ top: parseInt(savedPos, 10), behavior: "instant" });
-          sessionStorage.removeItem("isthisvegan_scroll_pos");
-          sessionStorage.removeItem("isthisvegan_last_slug");
-        }
-      }, 150);
-
-      return () => clearTimeout(timer);
-    }
-  }, [loading, snacks, filtered]);
-
   const filtered = useMemo(() => {
     let base = snacks;
 
@@ -337,6 +300,43 @@ const HomePage = () => {
   const displayedSnacks = useMemo(() => {
     return filtered.slice(0, displayCount);
   }, [filtered, displayCount]);
+
+  // Restore scroll position & pagination state when navigating back
+  useEffect(() => {
+    if (!loading && snacks.length > 0 && filtered.length > 0) {
+      const savedPos = sessionStorage.getItem("isthisvegan_scroll_pos");
+      const savedSlug = sessionStorage.getItem("isthisvegan_last_slug");
+
+      if (!savedPos && !savedSlug) return;
+
+      if (savedSlug) {
+        const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
+        if (itemIdx >= 0) {
+          setDisplayCount((prev) => Math.max(prev, itemIdx + 20));
+        }
+      }
+
+      const timer = setTimeout(() => {
+        if (savedSlug) {
+          const el = document.getElementById(`snack-card-${savedSlug}`);
+          if (el) {
+            el.scrollIntoView({ block: "center", behavior: "instant" });
+            sessionStorage.removeItem("isthisvegan_scroll_pos");
+            sessionStorage.removeItem("isthisvegan_last_slug");
+            return;
+          }
+        }
+
+        if (savedPos) {
+          window.scrollTo({ top: parseInt(savedPos, 10), behavior: "instant" });
+          sessionStorage.removeItem("isthisvegan_scroll_pos");
+          sessionStorage.removeItem("isthisvegan_last_slug");
+        }
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [loading, snacks, filtered]);
 
   const motionEase = [0.16, 1, 0.3, 1];
 
