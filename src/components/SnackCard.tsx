@@ -55,6 +55,7 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
   const handleCardClick = () => {
     sessionStorage.setItem("isthisvegan_scroll_pos", window.scrollY.toString());
     sessionStorage.setItem("isthisvegan_last_slug", snack.slug);
+    sessionStorage.setItem("isthisvegan_last_url", window.location.pathname + window.location.search);
   };
 
   return (

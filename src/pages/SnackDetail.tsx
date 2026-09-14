@@ -253,6 +253,18 @@ const SnackDetail = () => {
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
   const descriptionText = snack.enhanced_description || snack.detailed_analysis;
 
+  const handleBack = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const savedUrl = sessionStorage.getItem("isthisvegan_last_url");
+    if (savedUrl) {
+      navigate(savedUrl);
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) | Is This Vegan?`;
   const pageDescription = snack.verdict_summary
     ? `${snack.name} by ${snack.brand} • ${snack.is_vegan ? "Plant-Based Verdict" : "Not Vegan Alert"}. ${snack.verdict_summary}`
@@ -282,13 +294,13 @@ const SnackDetail = () => {
         className="relative z-10 container max-w-4xl py-8 md:py-12 px-4 sm:px-6"
       >
         {/* Navigation */}
-        <Link
-          to="/"
-          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:border-[#354338]"
+        <button
+          onClick={handleBack}
+          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:border-[#354338] cursor-pointer"
         >
           <ArrowLeft size={16} strokeWidth={1.5} />
           Back to Search
-        </Link>
+        </button>
 
         {/* Master Verdict Banner */}
         <div

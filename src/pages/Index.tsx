@@ -141,23 +141,40 @@ const HomePage = () => {
 
   // Restore scroll position & pagination state when navigating back
   useEffect(() => {
-    if (!loading && snacks.length > 0) {
+    if (!loading && snacks.length > 0 && filtered.length > 0) {
       const savedPos = sessionStorage.getItem("isthisvegan_scroll_pos");
-      const savedCount = sessionStorage.getItem("isthisvegan_display_count");
+      const savedSlug = sessionStorage.getItem("isthisvegan_last_slug");
 
-      if (savedCount) {
-        setDisplayCount(Math.max(30, parseInt(savedCount, 10)));
+      if (!savedPos && !savedSlug) return;
+
+      if (savedSlug) {
+        const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
+        if (itemIdx >= 0) {
+          setDisplayCount((prev) => Math.max(prev, itemIdx + 20));
+        }
       }
 
-      if (savedPos) {
-        setTimeout(() => {
+      const timer = setTimeout(() => {
+        if (savedSlug) {
+          const el = document.getElementById(`snack-card-${savedSlug}`);
+          if (el) {
+            el.scrollIntoView({ block: "center", behavior: "instant" });
+            sessionStorage.removeItem("isthisvegan_scroll_pos");
+            sessionStorage.removeItem("isthisvegan_last_slug");
+            return;
+          }
+        }
+
+        if (savedPos) {
           window.scrollTo({ top: parseInt(savedPos, 10), behavior: "instant" });
           sessionStorage.removeItem("isthisvegan_scroll_pos");
-          sessionStorage.removeItem("isthisvegan_display_count");
-        }, 120);
-      }
+          sessionStorage.removeItem("isthisvegan_last_slug");
+        }
+      }, 150);
+
+      return () => clearTimeout(timer);
     }
-  }, [loading, snacks]);
+  }, [loading, snacks, filtered]);
 
   const filtered = useMemo(() => {
     let base = snacks;
