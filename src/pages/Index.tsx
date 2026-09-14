@@ -347,13 +347,13 @@ const HomePage = () => {
       className="relative overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
     >
       <Helmet>
-        <title>Is Your Food Plant-Based or Not? • IsThisVegan.in</title>
+        <title>Is Your Food Plant-Based or Not? | IsThisVegan.in</title>
         <meta
           name="description"
           content="India's leading plant-based food directory. Search 3,000+ snacks, packaged foods, and dishes with instant ingredient verification and allergen alerts."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
-        <meta property="og:title" content="Is Your Food Plant-Based or Not? • IsThisVegan.in" />
+        <meta property="og:title" content="Is Your Food Plant-Based or Not? | IsThisVegan.in" />
         <meta
           property="og:description"
           content="Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks."
@@ -428,8 +428,8 @@ const HomePage = () => {
 
                 {/* Enhanced Sort Dropdown */}
                 <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger className="h-12 w-32 sm:w-40 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
-                    <ArrowUpDown size={14} className="mr-1.5 text-[#354338]" />
+                  <SelectTrigger className="h-12 px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                    <ArrowUpDown size={14} className="mr-1 text-[#354338] shrink-0" />
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
                   <SelectContent className="bg-white border-[#e3e7e2]">

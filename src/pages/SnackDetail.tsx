@@ -253,9 +253,9 @@ const SnackDetail = () => {
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
   const descriptionText = snack.enhanced_description || snack.detailed_analysis;
 
-  const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) — Is This Vegan?`;
+  const pageTitle = `${snack.name} (${snack.brand || "Indian Food"}) | Is This Vegan?`;
   const pageDescription = snack.verdict_summary
-    ? `${snack.name} by ${snack.brand} — ${snack.is_vegan ? "Plant-Based Verdict" : "Not Vegan Alert"}. ${snack.verdict_summary}`
+    ? `${snack.name} by ${snack.brand} â€¢ ${snack.is_vegan ? "Plant-Based Verdict" : "Not Vegan Alert"}. ${snack.verdict_summary}`
     : `Is ${snack.name} by ${snack.brand} vegan? Ingredient verification on IsThisVegan.in`;
   const pageUrl = `https://www.isthisvegan.in/snack/${snack.slug}`;
 
@@ -292,18 +292,16 @@ const SnackDetail = () => {
 
         {/* Master Verdict Banner */}
         <div
-          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${
-            snack.is_vegan
+          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
               ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
               : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
-          }`}
+            }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
               <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${
-                  snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
-                }`}
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
+                  }`}
               >
                 {snack.is_vegan ? (
                   <Leaf size={28} strokeWidth={2} aria-hidden="true" />
@@ -313,9 +311,8 @@ const SnackDetail = () => {
               </div>
               <div>
                 <span
-                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${
-                    snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
-                  }`}
+                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
+                    }`}
                 >
                   {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
                 </span>
@@ -337,8 +334,8 @@ const SnackDetail = () => {
                   )}
                   {snack.sub_type && (
                     <span>
-                      {" "}
-                      • Category:{" "}
+                      {" â€¢ "}
+                      Category:{" "}
                       <Link
                         to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
                         className="font-semibold text-[#1c211e] hover:underline hover:text-[#354338]"
@@ -398,7 +395,7 @@ const SnackDetail = () => {
         {descriptionText && (
           <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
             <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-2">
-              SME Ingredient Analysis & Formulation Insights
+              Ingredient Analysis & Formulation Insights
             </h3>
             <p className="font-sans-ui text-sm md:text-base leading-relaxed text-[#1c211e]">
               {descriptionText}
@@ -549,7 +546,7 @@ const SnackDetail = () => {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-[#2c3d31]" />
               <h3 className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
-                Switch To This — Vegan Alternatives for {snack.sub_type || snack.name}
+                Switch To This â€¢ Vegan Alternatives for {snack.sub_type || snack.name}
               </h3>
             </div>
             {loadingAlternatives ? (
@@ -583,11 +580,10 @@ const SnackDetail = () => {
               <button
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${
-                  hasUpvoted
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
                     ? "bg-[#354338] text-white"
                     : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
-                }`}
+                  }`}
               >
                 <ThumbsUp size={13} />
                 <span>{pollStats.upvotes_as_vegan} Vegan Confirmed</span>

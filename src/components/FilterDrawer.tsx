@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Sheet,
   SheetContent,
@@ -84,6 +84,7 @@ interface FilterDrawerProps {
   onFilterChange: (newFilters: FilterState) => void;
   availableBrands: string[];
   totalResultsCount: number;
+  triggerClassName?: string;
 }
 
 export function FilterDrawer({
@@ -91,6 +92,7 @@ export function FilterDrawer({
   onFilterChange,
   availableBrands,
   totalResultsCount,
+  triggerClassName,
 }: FilterDrawerProps) {
   const [open, setOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
@@ -143,7 +145,9 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className="relative inline-flex items-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 py-2.5 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0"
+          className={`relative inline-flex h-12 w-32 sm:w-40 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
+            triggerClassName || ""
+          }`}
         >
           <Filter size={15} className="text-[#354338]" />
           <span>Filters</span>
