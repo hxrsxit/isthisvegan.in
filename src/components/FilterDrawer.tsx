@@ -145,39 +145,70 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className={`relative inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
-            triggerClassName || "w-32 sm:w-40"
-          }`}
+          className={`relative inline-flex items-center justify-center gap-2 shrink-0 ${triggerClassName}`}
+          style={{
+            height: "40px",
+            minWidth: "100px",
+            border: "1px solid var(--hairline)",
+            borderRadius: "var(--r-sm)",
+            backgroundColor: "var(--paper)",
+            color: "var(--ink)",
+            fontSize: "var(--fs-small)",
+            fontWeight: 500,
+            paddingInline: "12px",
+            gap: "6px",
+            boxShadow: "none",
+          }}
         >
-          <Filter size={15} className="text-[#354338]" />
+          <Filter size={14} style={{ color: "var(--moss)" }} />
           <span>Filters</span>
           {activeFilterCount > 0 && (
-            <Badge
-              variant="secondary"
-              className="ml-1 rounded-full bg-[#354338] text-white px-2 py-0.5 font-mono-data text-[10px]"
+            <span
+              style={{
+                marginLeft: "2px",
+                minWidth: "18px",
+                height: "18px",
+                borderRadius: "999px",
+                backgroundColor: "var(--forest)",
+                color: "var(--mist)",
+                fontSize: "11px",
+                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0 5px",
+              }}
             >
               {activeFilterCount}
-            </Badge>
+            </span>
           )}
         </Button>
       </SheetTrigger>
 
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md bg-[#f8f7f4] border-l border-[#e3e7e2] p-0 flex flex-col h-full text-[#1c211e] duration-200 ease-out transition-transform"
+        className="w-full sm:max-w-md p-0 flex flex-col h-full duration-200 ease-out transition-transform"
+        style={{ backgroundColor: "var(--mist)", borderLeft: "1px solid var(--hairline)", color: "var(--ink)" }}
       >
-        <SheetHeader className="p-5 border-b border-[#e3e7e2] bg-white">
+        <SheetHeader className="p-5 border-b" style={{ borderColor: "var(--hairline)", backgroundColor: "var(--paper)" }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Filter size={18} className="text-[#354338]" />
-              <SheetTitle className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
-                Filter Products
+              <Filter size={16} style={{ color: "var(--moss)" }} />
+              <SheetTitle style={{ fontFamily: "var(--font)", fontSize: "1.125rem", fontWeight: 500, color: "var(--ink)" }}>
+                Filter products
               </SheetTitle>
               {activeFilterCount > 0 && (
-                <Badge className="bg-[#354338] text-white text-[11px] rounded-full">
+                <span
+                  style={{
+                    backgroundColor: "var(--forest)", color: "var(--mist)",
+                    fontSize: "11px", fontWeight: 600, borderRadius: "999px",
+                    padding: "2px 8px",
+                  }}
+                >
                   {activeFilterCount} active
-                </Badge>
+                </span>
               )}
+
             </div>
             <Button
               variant="ghost"

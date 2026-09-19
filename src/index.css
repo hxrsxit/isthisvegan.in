@@ -1,105 +1,308 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap");
+/* ============================================================
+   IsThisVegan.in — Global Styles
+   Design: clean-earthy-ui (calm editorial, minimal, earthy light green)
+   ============================================================ */
+
+/* 1. Fonts -------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Noto+Sans+Devanagari:wght@400;500&display=swap");
 @import url("https://fonts.cdnfonts.com/css/black-mango");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 2. Design Tokens ------------------------------------------ */
 @layer base {
   :root {
-    --background: #f8f7f4;
-    --foreground: #1c211e;
+    /* ── Earthy palette ── */
+    --mist:       #F4F7F0;   /* page background, very light green     */
+    --paper:      #FBFCF8;   /* raised surfaces, inputs               */
+    --sage-100:   #E8EEDF;   /* quiet fills, chips, hover backgrounds */
+    --hairline:   #D5DECA;   /* dividers and card outlines            */
+    --moss:       #7F8F73;   /* input borders (3:1 contrast on mist)  */
+    --stone:      #5C6857;   /* muted/secondary text (5.4:1 on mist)  */
+    --ink:        #1C2A21;   /* primary text (13.8:1 on mist)         */
+    --forest:     #01472E;   /* brand: primary button, links, headings*/
+    --forest-hover: #0A5A3D;
 
-    --card: #ffffff;
-    --card-foreground: #1c211e;
+    /* ── Verdict palette (always pair with text label + icon) ── */
+    --vegan-fg:     #01472E;  --vegan-bg:     #DDEBD6;
+    --not-vegan-fg: #8A3524;  --not-vegan-bg: #F3DFD8;
+    --unsure-fg:    #6E4F0B;  --unsure-bg:    #F2E8C8;
 
-    --popover: #ffffff;
-    --popover-foreground: #1c211e;
+    /* ── Typography ── */
+    --font: "Hanken Grotesk", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-accent: "Fraunces", Georgia, serif;   /* one accent use per page max */
+    --font-logo: "Black Mango", "Fraunces", serif;
 
-    --primary: #354338;
-    --primary-foreground: #ffffff;
+    --fs-hero:  clamp(2.5rem, 6vw + 1rem, 5.5rem);
+    --fs-h2:    clamp(1.75rem, 3vw + 0.5rem, 3rem);
+    --fs-h3:    1.375rem;
+    --fs-body:  1rem;
+    --fs-small: 0.8125rem;   /* 13px — never go below this */
 
-    --secondary: #e6ece7;
-    --secondary-foreground: #2c3d31;
+    /* ── Spacing (8px scale) ── */
+    --s-1: 8px;  --s-2: 16px; --s-3: 24px; --s-4: 32px;
+    --s-6: 48px; --s-8: 64px; --s-12: 96px; --s-16: 128px;
+    --section-y: clamp(48px, 8vw, 96px);
+    --container: 1120px;
+    --gutter: clamp(20px, 5vw, 48px);
 
-    --muted: #f0f3ef;
-    --muted-foreground: #5a655c;
+    /* ── Radius by hierarchy ── */
+    --r-sm:   10px;
+    --r-md:   20px;
+    --r-lg:   32px;
+    --r-pill: 999px;
 
-    --accent: #e0e6e1;
-    --accent-foreground: #1c211e;
-
-    /* Natural Earthy Terracotta Red instead of high intense red */
-    --destructive: #8b4538;
-    --destructive-foreground: #ffffff;
-
-    --border: #e3e7e2;
-    --input: #ffffff;
-    --ring: #354338;
-    --radius: 1rem;
-  }
-
-  .dark {
-    --background: #141715;
-    --foreground: #f0f3ef;
-    --card: #1c211e;
-    --card-foreground: #f0f3ef;
-    --border: #2d3630;
+    /* ── shadcn/ui compatibility ── */
+    --background: var(--mist);
+    --foreground:  var(--ink);
+    --card:        var(--paper);
+    --card-foreground: var(--ink);
+    --popover:     var(--paper);
+    --popover-foreground: var(--ink);
+    --primary:     var(--forest);
+    --primary-foreground: var(--mist);
+    --secondary:   var(--sage-100);
+    --secondary-foreground: var(--ink);
+    --muted:       var(--sage-100);
+    --muted-foreground: var(--stone);
+    --accent:      var(--sage-100);
+    --accent-foreground: var(--ink);
+    --destructive: #8A3524;
+    --destructive-foreground: var(--mist);
+    --border:      var(--hairline);
+    --input:       var(--paper);
+    --ring:        var(--forest);
+    --radius:      var(--r-md);
   }
 }
 
+/* 3. Base reset + body -------------------------------------- */
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
   * {
     @apply border-border;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    margin: 0;
+    background-color: var(--mist);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
-  }
-
-  .font-black-mango {
-    font-family: "Black Mango", "Fraunces", Georgia, serif;
-  }
-
-  .font-serif-fraunces {
-    font-family: "Fraunces", Georgia, serif;
-  }
-
-  .font-sans-ui {
-    font-family: "Plus Jakarta Sans", sans-serif;
-  }
-
-  .font-mono-data {
-    font-family: "JetBrains Mono", monospace;
+    text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3, h4 {
-    font-family: "Fraunces", Georgia, serif;
+    font-family: var(--font);
+    font-weight: 300;
+    color: var(--ink);
     letter-spacing: -0.025em;
-    color: var(--foreground);
-    line-height: 1.15;
+    line-height: 1.08;
+    margin: 0;
+  }
+
+  h1 { font-size: var(--fs-hero); letter-spacing: -0.035em; line-height: 0.98; }
+  h2 { font-size: var(--fs-h2);   letter-spacing: -0.025em; line-height: 1.05; }
+  h3 { font-size: var(--fs-h3);   letter-spacing: -0.01em;  line-height: 1.2; font-weight: 400; }
+
+  p { max-width: 64ch; margin: 0; }
+  a { color: var(--forest); text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+  a:hover { color: var(--forest-hover); }
+  :focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
+
+  /* Font utility classes (logo + accent kept, mono removed) */
+  .font-black-mango  { font-family: var(--font-logo); }
+  .font-serif-fraunces { font-family: var(--font-accent); }
+  .font-sans-ui      { font-family: var(--font); }
+  /* font-mono-data intentionally removed — use .muted-label instead */
+  .muted-label {
+    font-family: var(--font);
+    font-size: var(--fs-small);
+    color: var(--stone);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
   }
 }
 
+/* 4. Paper grain overlay ------------------------------------ */
 @layer utilities {
+  /* Subtle SVG noise on the page background — 3-5% strength */
   .noise-overlay {
-    opacity: 0.025;
+    opacity: 0.04;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     background-size: 220px 220px;
   }
+}
 
+/* 5. Component utilities ------------------------------------ */
+@layer utilities {
+
+  /* ── Hero fade-in ── */
+  @keyframes hero-in { from { opacity: 0; } to { opacity: 1; } }
+  .hero-fade { animation: hero-in 500ms ease-out both; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-fade { animation: none; }
+    * { transition: none !important; }
+  }
+
+  /* ── Directory row (replaces product card grid) ── */
+  .dir-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--hairline);
+    color: var(--ink);
+    text-decoration: none;
+    background: transparent;
+    transition: background 120ms ease;
+  }
+  .dir-row:hover { background: var(--sage-100); padding-inline: 12px; margin-inline: -12px; }
+  .dir-row:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; border-radius: var(--r-sm); }
+
+  .dir-row__left { min-width: 0; }
+  .dir-row__brand {
+    display: block;
+    font-size: var(--fs-small);
+    color: var(--stone);
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+  .dir-row__name {
+    display: block;
+    font-size: 1.0625rem;
+    line-height: 1.35;
+    font-weight: 400;
+    color: var(--ink);
+    /* Never truncate — names wrap */
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .dir-row__cat {
+    display: block;
+    font-size: var(--fs-small);
+    color: var(--stone);
+    margin-top: 3px;
+    font-weight: 400;
+  }
+  .dir-row__right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* ── Verdict badge ── */
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    border-radius: var(--r-pill);
+    white-space: nowrap;
+    min-height: 28px;
+  }
+  .verdict-badge--vegan     { background: var(--vegan-bg);     color: var(--vegan-fg); }
+  .verdict-badge--not-vegan { background: var(--not-vegan-bg); color: var(--not-vegan-fg); }
+  .verdict-badge--unsure    { background: var(--unsure-bg);    color: var(--unsure-fg); }
+
+  /* ── Earthy card (for detail page sections) ── */
+  .earthy-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-md);
+    transition: border-color 160ms ease;
+  }
+  .earthy-card:hover { border-color: var(--forest); }
+
+  /* ── Preset chip (category filter bar) ── */
+  .preset-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--stone);
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 36px;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .preset-chip:hover {
+    background: var(--sage-100);
+    color: var(--ink);
+    border-color: var(--moss);
+  }
+  .preset-chip--active {
+    background: var(--forest);
+    color: var(--mist);
+    border-color: var(--forest);
+  }
+  .preset-chip--active:hover {
+    background: var(--forest-hover);
+    color: var(--mist);
+  }
+
+  /* ── Active filter chip ── */
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--hairline);
+    background: var(--sage-100);
+    color: var(--ink);
+    cursor: pointer;
+    min-height: 28px;
+    transition: background 120ms ease;
+  }
+  .filter-chip:hover { background: var(--hairline); }
+
+  /* ── Outlined control (search bar / filter / sort style base) ── */
+  .earthy-input {
+    background: var(--paper);
+    border: 1px solid var(--moss);
+    border-radius: 16px;
+    color: var(--ink);
+    font-family: var(--font);
+    transition: border-color 120ms ease;
+  }
+  .earthy-input:focus,
+  .earthy-input:focus-visible {
+    outline: 2px solid var(--forest);
+    outline-offset: 2px;
+    border-color: var(--forest);
+  }
+  .earthy-input::placeholder { color: var(--stone); }
+
+  /* legacy — keep linen-card name for any component not yet migrated */
   .linen-card {
-    background-color: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 1.25rem;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r-md);
+    transition: border-color 160ms ease;
   }
+  .linen-card:hover { border-color: var(--forest); }
 
-  .linen-card:hover {
-    border-color: #354338;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(53, 67, 56, 0.06);
-  }
+  /* no-scrollbar utility */
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 }
