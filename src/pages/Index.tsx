@@ -43,7 +43,7 @@ const HomePage = () => {
     }
     return 30;
   });
-  const [sortOption, setSortOption] = useState<string>(searchParams.get("sort") || "featured");
+  const [sortOption, setSortOption] = useState<string>(searchParams.get("sort") || "name-asc");
 
   const [filters, setFilters] = useState<FilterState>(() => {
     const parseParamArray = (paramName: string): string[] => {
@@ -93,7 +93,7 @@ const HomePage = () => {
   useEffect(() => {
     const params = new URLSearchParams();
     if (query) params.set("search", query);
-    if (sortOption !== "featured") params.set("sort", sortOption);
+    if (sortOption !== "name-asc") params.set("sort", sortOption);
     if (activePreset !== "All") params.set("preset", activePreset);
     if (filters.status !== "all") params.set("status", filters.status);
 
@@ -492,6 +492,8 @@ const HomePage = () => {
                     onFilterChange={setFilters}
                     availableBrands={availableBrands}
                     totalResultsCount={filtered.length}
+                    snacks={snacks}
+                    activePreset={activePreset}
                     triggerClassName="flex-1 sm:flex-initial sm:w-auto min-w-0"
                   />
 
