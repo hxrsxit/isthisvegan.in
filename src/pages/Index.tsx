@@ -407,9 +407,9 @@ const HomePage = () => {
         <div className="sticky top-16 z-40 border-b border-[#e3e7e2] bg-[#f8f7f4]/95 py-4 backdrop-blur-md shadow-2xs mb-6">
           <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-3">
-              {/* Top Row: Search Input + Filter Drawer Button + Sort Dropdown */}
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1">
+              {/* Controls Row: Search Bar (Full Width on mobile) + Filters & Sort Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                <div className="relative flex-1 min-w-0">
                   <Search
                     size={18}
                     strokeWidth={1.75}
@@ -421,13 +421,14 @@ const HomePage = () => {
                     placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
+                    className="h-11 sm:h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
                     aria-label="Search products"
                   />
                   {query && (
                     <button
+                      type="button"
                       onClick={() => setQuery("")}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
                       aria-label="Clear search"
                     >
                       <X size={16} strokeWidth={1.5} />
@@ -435,30 +436,33 @@ const HomePage = () => {
                   )}
                 </div>
 
-                {/* Filter Drawer Component */}
-                <FilterDrawer
-                  filters={filters}
-                  onFilterChange={setFilters}
-                  availableBrands={availableBrands}
-                  totalResultsCount={filtered.length}
-                />
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Filter Drawer Component */}
+                  <FilterDrawer
+                    filters={filters}
+                    onFilterChange={setFilters}
+                    availableBrands={availableBrands}
+                    totalResultsCount={filtered.length}
+                    triggerClassName="w-full sm:w-auto min-w-[100px] sm:min-w-[120px]"
+                  />
 
-                {/* Enhanced Sort Dropdown */}
-                <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger className="h-12 px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
-                    <ArrowUpDown size={14} className="mr-1 text-[#354338] shrink-0" />
-                    <SelectValue placeholder="Sort By" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-[#e3e7e2]">
-                    <SelectItem value="featured">Featured</SelectItem>
-                    <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
-                    <SelectItem value="price-asc">Price: Low - High</SelectItem>
-                    <SelectItem value="price-desc">Price: High - Low</SelectItem>
-                    <SelectItem value="name-asc">Name: A - Z</SelectItem>
-                    <SelectItem value="name-desc">Name: Z - A</SelectItem>
-                    <SelectItem value="brand-asc">Brand: A - Z</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Enhanced Sort Dropdown */}
+                  <Select value={sortOption} onValueChange={setSortOption}>
+                    <SelectTrigger className="h-11 sm:h-12 w-full sm:w-auto min-w-[110px] sm:min-w-[130px] px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                      <ArrowUpDown size={14} className="mr-1.5 text-[#354338] shrink-0" />
+                      <SelectValue placeholder="Sort By" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-[#e3e7e2]">
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
+                      <SelectItem value="price-asc">Price: Low - High</SelectItem>
+                      <SelectItem value="price-desc">Price: High - Low</SelectItem>
+                      <SelectItem value="name-asc">Name: A - Z</SelectItem>
+                      <SelectItem value="name-desc">Name: Z - A</SelectItem>
+                      <SelectItem value="brand-asc">Brand: A - Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Preset Filters Row */}
@@ -645,7 +649,7 @@ const HomePage = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {displayedSnacks.map((snack, i) => (
                     <motion.div
                       key={snack.slug}

@@ -145,8 +145,8 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className={`relative inline-flex h-12 w-32 sm:w-40 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
-            triggerClassName || ""
+          className={`relative inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
+            triggerClassName || "w-32 sm:w-40"
           }`}
         >
           <Filter size={15} className="text-[#354338]" />
