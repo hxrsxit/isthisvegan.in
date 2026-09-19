@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useLayoutEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, X, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -65,6 +65,30 @@ const HomePage = () => {
 
   const debouncedQuery = useDebounce(query, 300);
 
+  // ── Scroll restoration state ──────────────────────────────────────────────
+  // We read sessionStorage ONCE on mount so refs are stable across re-renders.
+  const restorationRef = useRef<{
+    slug: string | null;
+    scrollY: number;
+    displayCount: number;
+    phase: "idle" | "expanding" | "scrolling" | "done";
+  }>({
+    slug: sessionStorage.getItem("isthisvegan_last_slug"),
+    scrollY: parseInt(sessionStorage.getItem("isthisvegan_scroll_pos") || "0", 10),
+    displayCount: parseInt(sessionStorage.getItem("isthisvegan_display_count") || "30", 10),
+    phase: sessionStorage.getItem("isthisvegan_last_slug") || sessionStorage.getItem("isthisvegan_scroll_pos")
+      ? "expanding"
+      : "idle",
+  });
+
+  // Tell the browser NOT to auto-restore scroll — we handle it ourselves.
+  useLayoutEffect(() => {
+    window.history.scrollRestoration = "manual";
+    return () => {
+      window.history.scrollRestoration = "auto";
+    };
+  }, []);
+
   // Sync state with URL params
   useEffect(() => {
     const params = new URLSearchParams();
@@ -95,8 +119,8 @@ const HomePage = () => {
   }, [snacks]);
 
   useEffect(() => {
-    const hasSavedState = sessionStorage.getItem("isthisvegan_last_slug") || sessionStorage.getItem("isthisvegan_scroll_pos");
-    if (!hasSavedState) {
+    // Only reset displayCount when a NEW search/filter is applied (not on back-navigation).
+    if (restorationRef.current.phase === "idle") {
       setDisplayCount(30);
     }
   }, [debouncedQuery, activePreset, filters, sortOption]);
@@ -312,64 +336,55 @@ const HomePage = () => {
     return filtered.slice(0, displayCount);
   }, [filtered, displayCount]);
 
-  // Restore scroll position & pagination state when navigating back
-  useLayoutEffect(() => {
-    if (!loading && snacks.length > 0 && filtered.length > 0) {
-      const savedPos = sessionStorage.getItem("isthisvegan_scroll_pos");
-      const savedSlug = sessionStorage.getItem("isthisvegan_last_slug");
+  // ── Phase 1: Expand displayCount so the saved card is rendered ──────────
+  useEffect(() => {
+    const r = restorationRef.current;
+    if (r.phase !== "expanding" || loading || filtered.length === 0) return;
 
-      if (!savedPos && !savedSlug) return;
-
-      if (savedSlug) {
-        const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
-        if (itemIdx >= 0 && displayCount < itemIdx + 25) {
-          setDisplayCount(itemIdx + 25);
-          return;
-        }
+    const neededCount = r.displayCount > 30 ? r.displayCount : (() => {
+      if (r.slug) {
+        const idx = filtered.findIndex(s => s.slug === r.slug);
+        return idx >= 0 ? idx + 5 : 30;
       }
+      return 30;
+    })();
 
-      const targetY = savedPos ? parseInt(savedPos, 10) : 0;
-      let attempts = 0;
-
-      const performScroll = () => {
-        attempts++;
-        let restored = false;
-
-        // Try direct element targeting first
-        if (savedSlug) {
-          const el = document.getElementById(`snack-card-${savedSlug}`);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (rect.height > 0) {
-              const absoluteTop = window.scrollY + rect.top - (window.innerHeight / 3);
-              window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
-              restored = true;
-            }
-          }
-        }
-
-        // Fallback to saved raw scroll position
-        if (!restored && targetY > 0) {
-          window.scrollTo({ top: targetY, behavior: "instant" });
-          restored = true;
-        }
-
-        if (restored || attempts >= 20) {
-          setTimeout(() => {
-            sessionStorage.removeItem("isthisvegan_scroll_pos");
-            sessionStorage.removeItem("isthisvegan_last_slug");
-            sessionStorage.removeItem("isthisvegan_display_count");
-          }, 500);
-        } else {
-          setTimeout(performScroll, 50);
-        }
-      };
-
-      // Delay initial execution slightly to let React complete DOM paint
-      const timerId = setTimeout(performScroll, 60);
-      return () => clearTimeout(timerId);
+    if (displayCount < neededCount) {
+      setDisplayCount(neededCount);
+    } else {
+      // displayCount is already enough — proceed to scroll phase
+      restorationRef.current = { ...r, phase: "scrolling" };
     }
-  }, [loading, snacks, filtered, displayedSnacks]);
+  }, [loading, filtered, displayCount]);
+
+  // ── Phase 2: Scroll once the target card is actually in the DOM ──────────
+  useEffect(() => {
+    const r = restorationRef.current;
+    if (r.phase !== "scrolling") return;
+    if (loading || displayedSnacks.length === 0) return;
+
+    // If we have a slug, wait until that card's ID is in the DOM
+    if (r.slug) {
+      const el = document.getElementById(`snack-card-${r.slug}`);
+      if (!el) return; // Not rendered yet — wait for next render
+
+      const rect = el.getBoundingClientRect();
+      if (rect.height === 0) return; // Element exists but isn't painted yet
+
+      // Scroll so the card is roughly 1/3 from the top of the viewport
+      const absoluteTop = window.scrollY + rect.top - Math.round(window.innerHeight / 3);
+      window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
+    } else if (r.scrollY > 0) {
+      window.scrollTo({ top: r.scrollY, behavior: "instant" });
+    }
+
+    // Clean up sessionStorage and mark done
+    restorationRef.current = { ...r, phase: "done" };
+    sessionStorage.removeItem("isthisvegan_scroll_pos");
+    sessionStorage.removeItem("isthisvegan_last_slug");
+    sessionStorage.removeItem("isthisvegan_display_count");
+    sessionStorage.removeItem("isthisvegan_last_url");
+  }, [loading, displayedSnacks]);
 
   const motionEase = [0.16, 1, 0.3, 1];
 

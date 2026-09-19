@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -36,6 +36,7 @@ const FLAG_REASONS = [
 ];
 
 const SnackDetail = () => {
+  const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
   const [snack, setSnack] = useState<Snack | null>(null);
   const [loading, setLoading] = useState(true);
