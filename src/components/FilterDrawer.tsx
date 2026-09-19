@@ -225,7 +225,7 @@ export function FilterDrawer({
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Status */}
           <div className="rounded-xl border border-[#e3e7e2] bg-white p-4">
-            <label className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3 block">
+            <label className="muted-label text-[#5a655c] mb-3 block">
               Vegan Status
             </label>
             <div className="flex gap-2">
@@ -258,7 +258,7 @@ export function FilterDrawer({
           <Accordion type="single" collapsible defaultValue="brand" className="space-y-3">
             {/* Dietary & Lifestyle Badges */}
             <AccordionItem value="dietary" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Dietary & Health ({localFilters.dietary.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
@@ -268,7 +268,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={badge}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -284,7 +284,7 @@ export function FilterDrawer({
 
             {/* Brand Filter */}
             <AccordionItem value="brand" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Brand ({localFilters.brands.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-3">
@@ -304,7 +304,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={brand}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -323,7 +323,7 @@ export function FilterDrawer({
 
             {/* Sub Type / Category */}
             <AccordionItem value="sub_type" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Sub-Category / Type ({localFilters.subTypes.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
@@ -333,7 +333,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={sub}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -349,7 +349,7 @@ export function FilterDrawer({
 
             {/* Product Class */}
             <AccordionItem value="class" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Product Class ({localFilters.productClasses.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -358,7 +358,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={cls}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -373,7 +373,7 @@ export function FilterDrawer({
 
             {/* Food Type */}
             <AccordionItem value="food_type" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Food Type ({localFilters.foodTypes.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -382,7 +382,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={ft}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -397,7 +397,7 @@ export function FilterDrawer({
 
             {/* Exclude Allergens */}
             <AccordionItem value="allergens" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
                 <span>Exclude Allergens ({localFilters.excludeAllergens.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -406,7 +406,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={alg}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -425,7 +425,7 @@ export function FilterDrawer({
           <Button
             type="button"
             onClick={handleApply}
-            className="flex-1 rounded-xl bg-[#354338] text-white hover:bg-[#28332a] font-sans-ui text-xs font-semibold h-11"
+            className="flex-1 rounded-xl bg-[#354338] text-white hover:bg-[#28332a] text-xs font-medium h-11"
           >
             Show {totalResultsCount} Results
           </Button>

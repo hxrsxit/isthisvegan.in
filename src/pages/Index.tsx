@@ -444,7 +444,7 @@ const HomePage = () => {
             <h1 style={{ color: "var(--ink)", maxWidth: "18ch", marginBottom: "var(--s-3)" }}>
               Is your food plant-based or not?
             </h1>
-            <p style={{ color: "var(--stone)", maxWidth: "52ch", marginBottom: "var(--s-4)", fontSize: "var(--fs-body)", lineHeight: 1.6 }}>
+            <p className="font-serif" style={{ color: "var(--stone)", maxWidth: "52ch", marginBottom: "var(--s-4)", fontSize: "var(--fs-body)", lineHeight: 1.5 }}>
               Instant ingredient checks, allergen safety, Jain compatibility, and street food ordering hacks — for Indian snacks.
             </p>
 
@@ -495,7 +495,7 @@ const HomePage = () => {
 
             {/* Item count line — small muted, sentence case */}
             {!loading && (
-              <p style={{
+              <p className="tabular-nums" style={{
                 marginTop: "var(--s-1)",
                 fontSize: "var(--fs-small)",
                 color: "var(--stone)",
@@ -686,7 +686,7 @@ const HomePage = () => {
                   borderBottom: "1px solid var(--hairline)",
                   marginBottom: "0",
                 }}>
-                  <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
+                  <span className="tabular-nums">Showing {displayedSnacks.length.toLocaleString()} of {filtered.length.toLocaleString()} products</span>
                   {(activePreset !== "All" || hasActiveFilters) && (
                     <button
                       onClick={() => { setActivePreset("All"); setFilters(DEFAULT_FILTERS); }}

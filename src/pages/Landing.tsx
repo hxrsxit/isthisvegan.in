@@ -41,7 +41,7 @@ const Landing = () => {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
           <Link
             to="/"
-            className="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.34em] text-[hsl(var(--landing-forest))] transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:opacity-70"
+            className="text-[13px] font-medium text-[hsl(var(--landing-forest))] transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:opacity-70"
           >
             - Is This Vegan?
           </Link>
@@ -54,7 +54,7 @@ const Landing = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="rounded-full px-4 py-2 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em] text-[hsl(var(--landing-forest)/0.72)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))]"
+                className="rounded-full px-4 py-2 text-[13px] font-medium text-[hsl(var(--landing-forest)/0.72)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.8)] hover:text-[hsl(var(--landing-forest))]"
               >
                 {link.label}
               </Link>
@@ -66,8 +66,8 @@ const Landing = () => {
             className="h-12 rounded-full border border-[hsl(var(--landing-forest)/0.08)] bg-[hsl(var(--landing-cream)/0.7)] px-2 text-[hsl(var(--landing-forest))] shadow-[0_20px_50px_hsl(var(--landing-shadow))] backdrop-blur-[20px] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02] hover:bg-[hsl(var(--landing-cream)/0.85)]"
           >
             <Link to="/" className="flex items-center gap-2 px-3">
-              <span className="font-['Inter'] text-[10px] font-bold uppercase tracking-[0.28em]">Browse</span>
-              <span className="inline-flex min-w-12 items-center justify-center rounded-full bg-[hsl(var(--landing-cream))] px-3 py-1 font-['Inter'] text-[10px] font-bold uppercase tracking-[0.24em] text-[hsl(var(--landing-forest))]">
+              <span className="text-[13px] font-medium">Browse</span>
+              <span className="inline-flex min-w-12 items-center justify-center rounded-full bg-[hsl(var(--landing-cream))] px-3 py-1 text-[13px] font-medium tabular-nums text-[hsl(var(--landing-forest))]">
                 200+
               </span>
             </Link>

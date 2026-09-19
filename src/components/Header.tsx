@@ -31,7 +31,7 @@ const Header = () => {
         <Logo
           showText
           size={32}
-          textClassName="font-black-mango font-semibold text-base tracking-tight"
+          textClassName="font-medium text-base tracking-tight"
           className=""
         />
 
