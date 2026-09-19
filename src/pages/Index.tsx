@@ -652,17 +652,7 @@ const HomePage = () => {
                 </div>
               </motion.div>
             ) : (
-              <motion.div
-                key={`${debouncedQuery}-${activePreset}-${sortOption}`}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: { opacity: 1, transition: { staggerChildren: 0.03 } },
-                }}
-                className="w-full"
-              >
+              <div className="w-full">
                 <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#5a655c] uppercase tracking-wider">
                   <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
                   {(activePreset !== "All" || hasActiveFilters) && (
@@ -699,7 +689,7 @@ const HomePage = () => {
                     <LoadingAnimation message="Loading more products..." className="py-6" />
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>
