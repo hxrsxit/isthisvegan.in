@@ -336,12 +336,19 @@ const HomePage = () => {
     return filtered.slice(0, displayCount);
   }, [filtered, displayCount]);
 
-  // ── Phase 1: Expand displayCount so the saved card is rendered ──────────
+  // ── Scroll Restoration: single self-retrying effect ─────────────────────
+  // Deps include displayedSnacks so React re-runs this after every displayCount
+  // expansion, giving us a reliable "wait until DOM is ready then scroll" loop.
   useEffect(() => {
     const r = restorationRef.current;
-    if (r.phase !== "expanding" || loading || filtered.length === 0) return;
+    if (r.phase === "idle" || r.phase === "done") return;
+    if (loading || filtered.length === 0) return;
 
-    const neededCount = r.displayCount > 30 ? r.displayCount : (() => {
+    // ── Step 1: Compute how many items we need rendered ──────────────────
+    const neededCount = (() => {
+      // If we saved an explicit count, use it (handles mid-page items)
+      if (r.displayCount > 30) return r.displayCount;
+      // Otherwise compute from slug position in the filtered list
       if (r.slug) {
         const idx = filtered.findIndex(s => s.slug === r.slug);
         return idx >= 0 ? idx + 5 : 30;
@@ -349,42 +356,36 @@ const HomePage = () => {
       return 30;
     })();
 
+    // ── Step 2: If not enough items are rendered yet, expand and wait ─────
     if (displayCount < neededCount) {
       setDisplayCount(neededCount);
-    } else {
-      // displayCount is already enough — proceed to scroll phase
-      restorationRef.current = { ...r, phase: "scrolling" };
+      return; // Effect will re-run once displayedSnacks updates
     }
-  }, [loading, filtered, displayCount]);
 
-  // ── Phase 2: Scroll once the target card is actually in the DOM ──────────
-  useEffect(() => {
-    const r = restorationRef.current;
-    if (r.phase !== "scrolling") return;
-    if (loading || displayedSnacks.length === 0) return;
-
-    // If we have a slug, wait until that card's ID is in the DOM
+    // ── Step 3: Try to scroll to the target card ──────────────────────────
     if (r.slug) {
       const el = document.getElementById(`snack-card-${r.slug}`);
-      if (!el) return; // Not rendered yet — wait for next render
-
+      if (!el) {
+        // Card should be rendered but isn't in DOM yet — bump count and retry
+        setDisplayCount(prev => prev + 10);
+        return;
+      }
       const rect = el.getBoundingClientRect();
-      if (rect.height === 0) return; // Element exists but isn't painted yet
+      if (rect.height === 0) return; // Exists but not painted yet — retry next frame
 
-      // Scroll so the card is roughly 1/3 from the top of the viewport
       const absoluteTop = window.scrollY + rect.top - Math.round(window.innerHeight / 3);
       window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
     } else if (r.scrollY > 0) {
       window.scrollTo({ top: r.scrollY, behavior: "instant" });
     }
 
-    // Clean up sessionStorage and mark done
+    // ── Done: clean up ────────────────────────────────────────────────────
     restorationRef.current = { ...r, phase: "done" };
     sessionStorage.removeItem("isthisvegan_scroll_pos");
     sessionStorage.removeItem("isthisvegan_last_slug");
     sessionStorage.removeItem("isthisvegan_display_count");
     sessionStorage.removeItem("isthisvegan_last_url");
-  }, [loading, displayedSnacks]);
+  }, [loading, filtered, displayCount, displayedSnacks]);
 
   const motionEase = [0.16, 1, 0.3, 1];
 
