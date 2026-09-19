@@ -36,7 +36,13 @@ const HomePage = () => {
   const [activePreset, setActivePreset] = useState<string>(
     searchParams.get("preset") || "All"
   );
-  const [displayCount, setDisplayCount] = useState(30);
+  const [displayCount, setDisplayCount] = useState(() => {
+    const savedCount = sessionStorage.getItem("isthisvegan_display_count");
+    if (savedCount) {
+      return Math.max(30, parseInt(savedCount, 10));
+    }
+    return 30;
+  });
   const [sortOption, setSortOption] = useState<string>(searchParams.get("sort") || "featured");
 
   const [filters, setFilters] = useState<FilterState>(() => {
@@ -314,28 +320,39 @@ const HomePage = () => {
       if (savedSlug) {
         const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
         if (itemIdx >= 0) {
-          setDisplayCount((prev) => Math.max(prev, itemIdx + 20));
+          setDisplayCount((prev) => Math.max(prev, itemIdx + 25));
         }
       }
 
-      const timer = setTimeout(() => {
+      let attempts = 0;
+      const restoreScroll = () => {
+        attempts++;
+        let restored = false;
+
         if (savedSlug) {
           const el = document.getElementById(`snack-card-${savedSlug}`);
           if (el) {
             el.scrollIntoView({ block: "center", behavior: "instant" });
-            sessionStorage.removeItem("isthisvegan_scroll_pos");
-            sessionStorage.removeItem("isthisvegan_last_slug");
-            return;
+            restored = true;
           }
         }
 
-        if (savedPos) {
-          window.scrollTo({ top: parseInt(savedPos, 10), behavior: "instant" });
+        if (!restored && savedPos) {
+          const targetY = parseInt(savedPos, 10);
+          window.scrollTo({ top: targetY, behavior: "instant" });
+          restored = true;
+        }
+
+        if (restored || attempts >= 5) {
           sessionStorage.removeItem("isthisvegan_scroll_pos");
           sessionStorage.removeItem("isthisvegan_last_slug");
+          sessionStorage.removeItem("isthisvegan_display_count");
+        } else {
+          setTimeout(restoreScroll, 100);
         }
-      }, 150);
+      };
 
+      const timer = setTimeout(restoreScroll, 80);
       return () => clearTimeout(timer);
     }
   }, [loading, snacks, filtered]);

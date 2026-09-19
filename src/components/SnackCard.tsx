@@ -56,6 +56,10 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
     sessionStorage.setItem("isthisvegan_scroll_pos", window.scrollY.toString());
     sessionStorage.setItem("isthisvegan_last_slug", snack.slug);
     sessionStorage.setItem("isthisvegan_last_url", window.location.pathname + window.location.search);
+    const visibleCards = document.querySelectorAll("[id^='snack-card-']");
+    if (visibleCards.length > 0) {
+      sessionStorage.setItem("isthisvegan_display_count", visibleCards.length.toString());
+    }
   };
 
   return (
