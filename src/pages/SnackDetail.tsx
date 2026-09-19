@@ -232,13 +232,13 @@ const SnackDetail = () => {
         className="relative flex min-h-screen flex-col items-center justify-center bg-[#f8f7f4] text-[#1c211e] px-4 text-center"
       >
         <div className="relative z-10">
-          <p className="font-serif text-2xl font-normal mb-2 text-[#1c211e]">
+          <p className="font-serif-fraunces text-2xl font-bold mb-2 text-[#1c211e]">
             {error ? "Error Loading Data" : "Product Not Found"}
           </p>
-          {error && <p className="muted-label text-xs text-[#5a655c] mt-2 max-w-md">{error}</p>}
+          {error && <p className="font-sans-ui text-xs text-[#5a655c] mt-2 max-w-md">{error}</p>}
           <Link
             to="/"
-            className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 text-xs font-medium text-[#1c211e] shadow-xs hover:bg-[#f0f3ef]"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-xs hover:bg-[#f0f3ef]"
           >
             <ArrowLeft size={16} strokeWidth={1.5} />
             Back to Search
@@ -274,7 +274,8 @@ const SnackDetail = () => {
 
   return (
     <div
-      style={{ minHeight: "100vh", backgroundColor: "var(--mist)", color: "var(--ink)" }}
+      style={landingTheme}
+      className="relative min-h-screen overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
     >
       <Helmet>
         <title>{pageTitle}</title>
@@ -288,123 +289,128 @@ const SnackDetail = () => {
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        style={{ position: "relative", zIndex: 10, maxWidth: "720px", margin: "0 auto", padding: "clamp(32px,6vw,64px) var(--gutter)" }}
+        className="relative z-10 container max-w-4xl py-8 md:py-12 px-4 sm:px-6"
       >
-        {/* Back link — plain text, no pill */}
+        {/* Navigation */}
         <button
           onClick={handleBack}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: "6px",
-            background: "none", border: "none", cursor: "pointer",
-            color: "var(--forest)", fontSize: "var(--fs-small)", fontWeight: 500,
-            marginBottom: "var(--s-6)", padding: 0,
-            textDecoration: "underline", textUnderlineOffset: "3px",
-          }}
+          className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[#e3e7e2] bg-white px-4 py-2 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:border-[#354338] cursor-pointer"
         >
-          <ArrowLeft size={15} strokeWidth={1.75} />
-          Back to search
+          <ArrowLeft size={16} strokeWidth={1.5} />
+          Back to Search
         </button>
 
-        {/* Verdict banner */}
+        {/* Master Verdict Banner */}
         <div
-          style={{
-            marginBottom: "var(--s-6)",
-            borderRadius: "var(--r-md)",
-            border: "1px solid var(--hairline)",
-            padding: "var(--s-6) var(--s-4)",
-            backgroundColor: snack.is_vegan ? "var(--vegan-bg)" : "var(--not-vegan-bg)",
-            color: snack.is_vegan ? "var(--vegan-fg)" : "var(--not-vegan-fg)",
-          }}
+          className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
+              ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
+              : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
+            }`}
         >
-          {/* Verdict word — hero scale */}
-          <div style={{ display: "flex", alignItems: "center", gap: "var(--s-2)", marginBottom: "var(--s-2)" }}>
-            {snack.is_vegan ? (
-              <Leaf size={32} strokeWidth={1.75} aria-hidden="true" />
-            ) : (
-              <TriangleAlert size={32} strokeWidth={1.75} aria-hidden="true" />
-            )}
-            <span style={{ fontSize: "var(--fs-hero)", fontWeight: 300, letterSpacing: "-0.035em", lineHeight: 0.98 }}>
-              {snack.is_vegan ? "Vegan" : "Not vegan"}
-            </span>
-          </div>
-          <h1 style={{ fontFamily: "var(--font)", fontWeight: 400, fontSize: "clamp(1.25rem, 3vw, 1.75rem)", lineHeight: 1.2, color: "var(--ink)", marginBottom: "var(--s-1)" }}>
-            {snack.name}
-          </h1>
-          <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)", display: "flex", flexWrap: "wrap", gap: "4px" }}>
-            {snack.brand && (
-              <Link
-                to={`/?brand=${encodeURIComponent(snack.brand)}`}
-                style={{ color: "var(--forest)", fontWeight: 500 }}
-                title={`See all products by ${snack.brand}`}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl shadow-xs ${snack.is_vegan ? "bg-[#354338] text-white" : "bg-[#8b4538] text-white"
+                  }`}
               >
-                {snack.brand}
-              </Link>
-            )}
-            {snack.sub_type && (
-              <>
-                <span>·</span>
-                <Link
-                  to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
-                  style={{ color: "var(--stone)" }}
-                  title={`See all products in ${snack.sub_type}`}
+                {snack.is_vegan ? (
+                  <Leaf size={28} strokeWidth={2} aria-hidden="true" />
+                ) : (
+                  <TriangleAlert size={28} strokeWidth={2} aria-hidden="true" />
+                )}
+              </div>
+              <div>
+                <span
+                  className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
+                    }`}
                 >
-                  {snack.sub_type}
-                </Link>
-              </>
-            )}
-          </p>
+                  {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
+                </span>
+                <h1 className="font-serif-fraunces text-2xl md:text-4xl font-bold tracking-tight text-[#1c211e]">
+                  {snack.name}
+                </h1>
+                <p className="font-sans-ui text-sm text-[#5a655c] mt-1">
+                  Brand:{" "}
+                  {snack.brand ? (
+                    <Link
+                      to={`/?brand=${encodeURIComponent(snack.brand)}`}
+                      className="font-semibold text-[#1c211e] hover:underline hover:text-[#354338]"
+                      title={`See all products by ${snack.brand}`}
+                    >
+                      {snack.brand}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-[#1c211e]">Unspecified</span>
+                  )}
+                  {snack.sub_type && (
+                    <span>
+                      {" • "}
+                      Category:{" "}
+                      <Link
+                        to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
+                        className="font-semibold text-[#1c211e] hover:underline hover:text-[#354338]"
+                        title={`See all products in ${snack.sub_type}`}
+                      >
+                        {snack.sub_type}
+                      </Link>
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
 
-          {/* Confidence + verified date */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--s-2)", marginTop: "var(--s-3)", alignItems: "center" }}>
-            {snack.is_vegan && metadata.vegan_confidence_score && (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "var(--fs-small)", fontWeight: 500, color: "var(--vegan-fg)" }}>
-                <ShieldCheck size={14} aria-hidden="true" />
-                Confidence: {metadata.vegan_confidence_score}/5
-              </span>
-            )}
-            {snack.last_verified_date && (
-              <span style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>
-                Verified: {snack.last_verified_date}
-              </span>
-            )}
+            {/* Confidence & Verified Date */}
+            <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 border-t md:border-t-0 border-[#e3e7e2] pt-3 md:pt-0">
+              {snack.is_vegan && metadata.vegan_confidence_score && (
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#e3e7e2] px-3.5 py-1 text-xs font-semibold text-[#1c211e]">
+                  <ShieldCheck size={14} className="text-[#2c3d31]" />
+                  Confidence: {metadata.vegan_confidence_score}/5
+                </div>
+              )}
+              {snack.last_verified_date && (
+                <span className="font-mono-data text-[11px] text-[#5a655c]">
+                  Verified: {snack.last_verified_date}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Verdict summary */}
+        {/* Verdict Summary Callout */}
         {snack.verdict_summary && (
-          <div className="earthy-card" style={{ marginBottom: "var(--s-6)", padding: "var(--s-4) var(--s-4)" }}>
-            <p className="muted-label" style={{ marginBottom: "var(--s-1)" }}>Verdict summary</p>
-            <p className="font-serif" style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)", lineHeight: 1.5, color: "var(--ink)" }}>
-              {snack.verdict_summary}
+          <div className="mb-6 rounded-2xl border border-[#e3e7e2] bg-white p-6 text-[#1c211e] shadow-xs">
+            <p className="font-mono-data text-xs uppercase tracking-wider text-[#5a655c] mb-1 font-bold">
+              Verdict Summary
             </p>
+            <p className="font-serif-fraunces text-lg md:text-2xl leading-relaxed">{snack.verdict_summary}</p>
           </div>
         )}
 
-        {/* Hidden animal ingredients alert */}
+        {/* Hidden Animal Ingredients Alert */}
         {!snack.is_vegan && hiddenIngredients.length > 0 && (
-          <div style={{
-            marginBottom: "var(--s-6)", display: "flex", alignItems: "flex-start", gap: "var(--s-2)",
-            borderRadius: "var(--r-md)", border: "1px solid var(--hairline)",
-            backgroundColor: "var(--not-vegan-bg)", padding: "var(--s-3)",
-          }}>
-            <TriangleAlert size={20} style={{ color: "var(--not-vegan-fg)", flexShrink: 0, marginTop: "2px" }} aria-hidden="true" />
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#e5c5bd] bg-[#f9eee9] p-5">
+            <TriangleAlert size={22} className="text-[#7d3c34] shrink-0 mt-0.5" />
             <div>
-              <p className="muted-label" style={{ color: "var(--not-vegan-fg)", marginBottom: "4px" }}>Hidden animal ingredients detected</p>
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--ink)", fontWeight: 500 }}>
+              <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#7d3c34]">
+                Hidden Animal Ingredients Detected
+              </h3>
+              <p className="mt-1 font-sans-ui text-sm text-[#1c211e] font-semibold">
                 {hiddenIngredients.join(", ")}
               </p>
             </div>
           </div>
         )}
 
-        {/* Ingredient analysis — Fraunces accent (one per page) */}
+        {/* SME Description */}
         {descriptionText && (
-          <div className="earthy-card" style={{ marginBottom: "var(--s-8)", padding: "var(--s-4) var(--s-4)" }}>
-            <p className="muted-label" style={{ marginBottom: "var(--s-1)" }}>Ingredient analysis &amp; formulation insights</p>
-            <p style={{ fontSize: "var(--fs-body)", lineHeight: 1.65, color: "var(--ink)" }}>
+          <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
+            <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-2">
+              Ingredient Analysis & Formulation Insights
+            </h3>
+            <p className="font-sans-ui text-sm md:text-base leading-relaxed text-[#1c211e]">
               {descriptionText}
             </p>
           </div>
@@ -412,117 +418,121 @@ const SnackDetail = () => {
 
         {/* DIY Vegan Hack / Ordering Tip */}
         {snack.diy_vegan_recipe_or_hack && (
-          <div style={{ marginBottom: "var(--s-6)", padding: "var(--s-4)", borderRadius: "var(--r-md)", border: "1px solid var(--hairline)", backgroundColor: "var(--vegan-bg)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--forest)", fontSize: "var(--fs-small)", fontWeight: 500, marginBottom: "var(--s-1)" }}>
-              <ChefHat size={16} style={{ color: "var(--forest)" }} />
-              <span>How to veganise / street ordering hack</span>
+          <div className="mb-8 p-6 rounded-2xl border border-[#b2c2b5] bg-[#e6ece7] shadow-xs">
+            <div className="flex items-center gap-2 text-[#2c3d31] font-bold uppercase text-xs tracking-wider mb-2 font-mono-data">
+              <ChefHat size={18} className="text-[#2c3d31]" />
+              <span>How to Veganise / Street Ordering Hack</span>
             </div>
-            <p style={{ fontSize: "var(--fs-body)", color: "var(--ink)", lineHeight: 1.6 }}>
+            <p className="font-sans-ui text-sm md:text-base text-[#1c211e] leading-relaxed">
               {snack.diy_vegan_recipe_or_hack}
             </p>
           </div>
         )}
 
         {/* Badges Grid */}
-        <div style={{ marginBottom: "var(--s-6)", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--s-3)" }}>
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Dietary Compatibility */}
-          <div className="earthy-card" style={{ padding: "var(--s-4)" }}>
-            <p className="muted-label" style={{ marginBottom: "var(--s-2)" }}>Dietary compatibility</p>
+          <div className="p-6 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
+            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3">
+              Dietary Compatibility
+            </h4>
             {dietaryBadges.length > 0 ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              <div className="flex flex-wrap gap-2">
                 {dietaryBadges.map((badge) => (
                   <Link
                     key={badge}
                     to={`/?dietary=${encodeURIComponent(badge)}`}
-                    className="preset-chip"
-                    style={{ fontSize: "var(--fs-small)", minHeight: "32px", padding: "3px 12px" }}
+                    className="inline-flex items-center gap-1 rounded-full bg-[#e6ece7] border border-[#b2c2b5] px-3 py-1 font-sans-ui text-xs font-semibold text-[#2c3d31] hover:bg-[#d8e4da] hover:border-[#354338] transition-all cursor-pointer"
                     title={`See all ${badge} items`}
                   >
-                    <CheckCircle2 size={12} style={{ color: "var(--forest)" }} />
+                    <CheckCircle2 size={12} className="text-[#2c3d31]" />
                     {badge}
                   </Link>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>
+              <p className="font-sans-ui text-xs text-[#5a655c]">
                 No specific dietary badges tagged.
               </p>
             )}
           </div>
 
           {/* Allergens Present */}
-          <div className="earthy-card" style={{ padding: "var(--s-4)" }}>
-            <p className="muted-label" style={{ marginBottom: "var(--s-2)" }}>Allergens present</p>
+          <div className="p-6 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
+            <h4 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3">
+              Allergens Present
+            </h4>
             {allergens.length > 0 ? (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              <div className="flex flex-wrap gap-2">
                 {allergens.map((allergen) => (
                   <Link
                     key={allergen}
                     to={`/?allergen=${encodeURIComponent(allergen)}`}
-                    className="preset-chip"
-                    style={{ fontSize: "var(--fs-small)", minHeight: "32px", padding: "3px 12px" }}
+                    className="inline-flex items-center gap-1 rounded-full bg-[#f5f4eb] border border-[#dfdbc7] px-3 py-1 font-sans-ui text-xs font-semibold text-[#545037] hover:bg-[#eae6d5] hover:border-[#6b4c29] transition-all cursor-pointer"
                     title={`See products without ${allergen}`}
                   >
-                    <AlertCircle size={12} style={{ color: "var(--not-vegan-fg)" }} />
+                    <AlertCircle size={12} className="text-[#6b4c29]" />
                     {allergen}
                   </Link>
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--vegan-fg)", fontWeight: 500 }}>
-                Confirmed allergen-free / zero tracked allergens.
+              <p className="font-sans-ui text-xs text-[#2c3d31] font-semibold">
+                Confirmed Allergen-Free / Zero tracked allergens.
               </p>
             )}
           </div>
         </div>
 
         {/* Specifications Grid */}
-        <div className="earthy-card" style={{ marginBottom: "var(--s-6)", padding: "var(--s-4)" }}>
-          <p className="muted-label" style={{ marginBottom: "var(--s-3)" }}>Product specifications &amp; attributes</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "var(--s-2)", fontSize: "var(--fs-small)" }}>
+        <div className="mb-8 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
+          <h3 className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-4">
+            Product Specifications & Attributes
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans-ui text-xs">
             {snack.product_class && (
               <Link
                 to={`/?product_class=${encodeURIComponent(snack.product_class)}`}
-                style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)", display: "block" }}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
               >
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Class</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{snack.product_class}</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Class</span>
+                <span className="font-semibold text-[#1c211e]">{snack.product_class}</span>
               </Link>
             )}
             {snack.food_type && (
               <Link
                 to={`/?food_type=${encodeURIComponent(snack.food_type)}`}
-                style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)", display: "block" }}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
               >
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Food type</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{snack.food_type}</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Food Type</span>
+                <span className="font-semibold text-[#1c211e]">{snack.food_type}</span>
               </Link>
             )}
             {snack.sub_type && (
               <Link
                 to={`/?sub_type=${encodeURIComponent(snack.sub_type)}`}
-                style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)", display: "block" }}
+                className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] hover:border-[#354338] transition-all"
               >
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Sub type</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{snack.sub_type}</span>
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Sub Type</span>
+                <span className="font-semibold text-[#1c211e]">{snack.sub_type}</span>
               </Link>
             )}
             {metadata.regional_cuisine && (
-              <div style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)" }}>
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Cuisine</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{metadata.regional_cuisine}</span>
+              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Cuisine</span>
+                <span className="font-semibold text-[#1c211e]">{metadata.regional_cuisine}</span>
               </div>
             )}
             {metadata.packaging_status && (
-              <div style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)" }}>
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Packaging</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{metadata.packaging_status}</span>
+              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Packaging</span>
+                <span className="font-semibold text-[#1c211e]">{metadata.packaging_status}</span>
               </div>
             )}
             {metadata.health_tier && (
-              <div style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)" }}>
-                <span className="muted-label" style={{ display: "block", marginBottom: "2px", fontSize: "11px" }}>Health tier</span>
-                <span style={{ fontWeight: 500, color: "var(--ink)" }}>{metadata.health_tier}</span>
+              <div className="p-3.5 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
+                <span className="text-[#5a655c] block mb-0.5 font-mono-data text-[10px] uppercase">Health Tier</span>
+                <span className="font-semibold text-[#1c211e]">{metadata.health_tier}</span>
               </div>
             )}
           </div>
@@ -530,43 +540,38 @@ const SnackDetail = () => {
 
         {/* Amazon Purchase Link */}
         {snack.amazon_search_url && (
-          <div style={{ marginBottom: "var(--s-8)", textAlign: "center" }}>
+          <div className="mb-10 text-center">
             <a
               href={snack.amazon_search_url}
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                borderRadius: "var(--r-pill)", backgroundColor: "var(--forest)",
-                padding: "12px 24px", fontSize: "var(--fs-small)", fontWeight: 500,
-                color: "var(--mist)", textDecoration: "none", minHeight: "44px"
-              }}
+              className="inline-flex items-center justify-center rounded-xl bg-[#354338] px-6 py-3.5 font-sans-ui text-sm font-semibold text-white shadow-sm hover:bg-[#28332a] transition-all"
             >
-              <ExternalLink size={15} style={{ marginRight: "8px" }} />
-              Check price / buy on Amazon
+              <ExternalLink size={16} className="mr-2" />
+              Check Price / Buy on Amazon
             </a>
           </div>
         )}
 
         {/* "Switch To This" Vegan Alternatives Section */}
         {!snack.is_vegan && (
-          <div style={{ marginBottom: "var(--s-8)", padding: "var(--s-4)", borderRadius: "var(--r-md)", border: "1px solid var(--hairline)", backgroundColor: "var(--vegan-bg)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "var(--s-3)" }}>
-              <Sparkles size={16} style={{ color: "var(--forest)" }} />
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 300, color: "var(--ink)" }}>
-                Switch to this · Vegan alternatives for {snack.sub_type || snack.name}
-              </h2>
+          <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#b2c2b5] bg-[#e6ece7]/60">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles size={18} className="text-[#2c3d31]" />
+              <h3 className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
+                Switch To This • Vegan Alternatives for {snack.sub_type || snack.name}
+              </h3>
             </div>
             {loadingAlternatives ? (
               <LoadingAnimation message="Finding matching vegan alternatives..." />
             ) : alternatives.length > 0 ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--s-2)" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {alternatives.map((alt) => (
                   <SnackCard key={alt.slug} snack={alt} />
                 ))}
               </div>
             ) : (
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>
+              <p className="font-sans-ui text-xs text-[#5a655c]">
                 No matching alternatives found.
               </p>
             )}
@@ -574,99 +579,80 @@ const SnackDetail = () => {
         )}
 
         {/* Community Verification & Discussion Hub */}
-        <div className="earthy-card" style={{ marginBottom: "var(--s-8)", padding: "var(--s-4)" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--hairline)", paddingBottom: "var(--s-3)", marginBottom: "var(--s-4)", gap: "var(--s-2)" }}>
+        <div className="mb-10 p-6 md:p-8 rounded-2xl border border-[#e3e7e2] bg-white shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#e3e7e2] pb-4 mb-6 gap-4">
             <div>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 300, color: "var(--ink)", marginBottom: "2px" }}>
-                Community verification &amp; discussion
-              </h2>
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>
+              <h3 className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
+                Community Verification & Discussion
+              </h3>
+              <p className="font-sans-ui text-xs text-[#5a655c]">
                 Report ingredient updates or confirm product verification.
               </p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "var(--s-2)" }}>
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
-                className="tabular-nums"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: "6px",
-                  borderRadius: "var(--r-pill)", padding: "6px 14px",
-                  fontSize: "var(--fs-small)", fontWeight: 500,
-                  backgroundColor: hasUpvoted ? "var(--forest)" : "var(--vegan-bg)",
-                  color: hasUpvoted ? "var(--mist)" : "var(--vegan-fg)",
-                  border: "none", cursor: "pointer"
-                }}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
+                    ? "bg-[#354338] text-white"
+                    : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
+                  }`}
               >
                 <ThumbsUp size={13} />
-                <span>{pollStats.upvotes_as_vegan} vegan confirmed</span>
+                <span>{pollStats.upvotes_as_vegan} Vegan Confirmed</span>
               </button>
 
               <button
                 onClick={() => setShowFlagModal(true)}
-                className="tabular-nums"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: "6px",
-                  borderRadius: "var(--r-pill)", padding: "6px 14px",
-                  fontSize: "var(--fs-small)", fontWeight: 500,
-                  backgroundColor: "var(--not-vegan-bg)", color: "var(--not-vegan-fg)",
-                  border: "1px solid var(--hairline)", cursor: "pointer"
-                }}
+                className="flex items-center gap-1.5 rounded-full bg-[#f9eee9] border border-[#e5c5bd] px-4 py-2 font-sans-ui text-xs font-semibold text-[#7d3c34] hover:bg-[#f3ded6]"
               >
                 <Flag size={13} />
-                <span>Flag non-vegan ({pollStats.reports_as_non_vegan})</span>
+                <span>Flag Non-Vegan ({pollStats.reports_as_non_vegan})</span>
               </button>
             </div>
           </div>
 
           {/* Add Comment Form */}
-          <form onSubmit={handleAddComment} style={{ marginBottom: "var(--s-4)", display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--s-2)" }}>
+          <form onSubmit={handleAddComment} className="mb-6 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
-                placeholder="Your name (optional)"
+                placeholder="Your Name (Optional)"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                className="earthy-input"
-                style={{ flex: "1 1 180px", height: "40px", padding: "0 12px", fontSize: "var(--fs-small)" }}
+                className="sm:w-1/3 rounded-xl border border-[#e3e7e2] bg-[#f8f7f4] px-3.5 py-2.5 text-xs font-sans-ui text-[#1c211e]"
               />
               <input
                 type="text"
                 placeholder="Share ingredient update or verification comment..."
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="earthy-input"
-                style={{ flex: "2 1 280px", height: "40px", padding: "0 12px", fontSize: "var(--fs-small)" }}
+                className="sm:w-2/3 rounded-xl border border-[#e3e7e2] bg-[#f8f7f4] px-3.5 py-2.5 text-xs font-sans-ui text-[#1c211e]"
               />
             </div>
             <button
               type="submit"
-              style={{
-                alignSelf: "flex-start", borderRadius: "var(--r-pill)",
-                backgroundColor: "var(--forest)", color: "var(--mist)",
-                padding: "8px 18px", fontSize: "var(--fs-small)", fontWeight: 500,
-                border: "none", cursor: "pointer", minHeight: "36px"
-              }}
+              className="rounded-full bg-[#354338] px-5 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a]"
             >
-              Post comment
+              Post Comment
             </button>
           </form>
 
           {/* Comments List */}
           {comments.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+            <div className="space-y-3">
               {comments.map((c, i) => (
-                <div key={i} style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--mist)", border: "1px solid var(--hairline)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--fs-small)", color: "var(--ink)", fontWeight: 500, marginBottom: "2px" }}>
+                <div key={i} className="p-4 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2]">
+                  <div className="flex justify-between text-xs font-semibold text-[#1c211e] mb-1">
                     <span>{c.author}</span>
-                    <span className="tabular-nums" style={{ color: "var(--stone)", fontWeight: 400 }}>{c.date}</span>
+                    <span className="font-mono-data text-[#5a655c] text-[11px]">{c.date}</span>
                   </div>
-                  <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>{c.text}</p>
+                  <p className="text-xs text-[#5a655c] font-sans-ui">{c.text}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ textAlign: "center", fontSize: "var(--fs-small)", color: "var(--stone)", padding: "var(--s-3) 0" }}>
+            <p className="text-center font-sans-ui text-xs text-[#5a655c] py-3">
               No comments yet. Share your verification note!
             </p>
           )}
@@ -674,30 +660,29 @@ const SnackDetail = () => {
 
         {/* Flag Report Modal */}
         {showFlagModal && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.4)", padding: "16px" }}>
-            <div style={{ width: "100%", maxWidth: "420px", borderRadius: "var(--r-md)", backgroundColor: "var(--paper)", padding: "var(--s-4)", border: "1px solid var(--hairline)" }}>
-              <h2 style={{ fontSize: "1.25rem", fontWeight: 300, color: "var(--ink)", marginBottom: "4px" }}>
-                Report recipe change / non-vegan flag
-              </h2>
-              <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)", marginBottom: "var(--s-3)" }}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h3 className="font-serif-fraunces text-lg font-bold text-[#1c211e] mb-1">
+                Report Recipe Change / Non-Vegan Flag
+              </h3>
+              <p className="font-sans-ui text-xs text-[#5a655c] mb-4">
                 Did {snack.name} start using milk solids or non-vegan ingredients?
               </p>
 
               {flagSubmitted ? (
-                <div style={{ padding: "var(--s-2)", borderRadius: "var(--r-sm)", backgroundColor: "var(--vegan-bg)", color: "var(--vegan-fg)", textAlign: "center", fontSize: "var(--fs-small)", fontWeight: 500 }}>
+                <div className="p-3 rounded-xl bg-[#e6ece7] text-[#2c3d31] text-center font-sans-ui text-xs font-semibold">
                   Report submitted. Moderators will audit this product.
                 </div>
               ) : (
-                <form onSubmit={handleFlagSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--s-3)" }}>
+                <form onSubmit={handleFlagSubmit} className="space-y-4">
                   <div>
-                    <label style={{ display: "block", fontSize: "var(--fs-small)", fontWeight: 500, color: "var(--ink)", marginBottom: "4px" }}>
-                      Reason for flag
+                    <label className="block text-xs font-semibold text-[#1c211e] mb-1">
+                      Reason for Flag
                     </label>
                     <select
                       value={selectedFlagReason}
                       onChange={(e) => setSelectedFlagReason(e.target.value)}
-                      className="earthy-input"
-                      style={{ width: "100%", height: "40px", padding: "0 12px", fontSize: "var(--fs-small)" }}
+                      className="w-full rounded-xl border border-[#e3e7e2] p-2.5 text-xs font-sans-ui"
                     >
                       {FLAG_REASONS.map((r) => (
                         <option key={r} value={r}>
@@ -708,32 +693,31 @@ const SnackDetail = () => {
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "var(--fs-small)", fontWeight: 500, color: "var(--ink)", marginBottom: "4px" }}>
-                      Batch details / notes
+                    <label className="block text-xs font-semibold text-[#1c211e] mb-1">
+                      Batch Details / Notes
                     </label>
                     <textarea
                       rows={3}
                       value={flagDetails}
                       onChange={(e) => setFlagDetails(e.target.value)}
                       placeholder="Specify batch date or exact ingredient label change..."
-                      className="earthy-input"
-                      style={{ width: "100%", padding: "8px 12px", fontSize: "var(--fs-small)" }}
+                      className="w-full rounded-xl border border-[#e3e7e2] p-2.5 text-xs font-sans-ui"
                     />
                   </div>
 
-                  <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                  <div className="flex gap-2 justify-end">
                     <button
                       type="button"
                       onClick={() => setShowFlagModal(false)}
-                      style={{ borderRadius: "var(--r-pill)", padding: "6px 16px", fontSize: "var(--fs-small)", fontWeight: 500, color: "var(--stone)", background: "none", border: "none", cursor: "pointer" }}
+                      className="rounded-full px-4 py-2 text-xs font-medium text-[#5a655c] hover:bg-[#f0f3ef]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      style={{ borderRadius: "var(--r-pill)", backgroundColor: "var(--not-vegan-fg)", color: "var(--mist)", padding: "6px 18px", fontSize: "var(--fs-small)", fontWeight: 500, border: "none", cursor: "pointer" }}
+                      className="rounded-full bg-[#8b4538] px-5 py-2 text-xs font-semibold text-white hover:bg-[#72372d]"
                     >
-                      Submit report
+                      Submit Report
                     </button>
                   </div>
                 </form>

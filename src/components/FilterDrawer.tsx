@@ -145,70 +145,39 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className={`relative inline-flex items-center justify-center gap-2 shrink-0 ${triggerClassName}`}
-          style={{
-            height: "40px",
-            minWidth: "100px",
-            border: "1px solid var(--hairline)",
-            borderRadius: "var(--r-sm)",
-            backgroundColor: "var(--paper)",
-            color: "var(--ink)",
-            fontSize: "var(--fs-small)",
-            fontWeight: 500,
-            paddingInline: "12px",
-            gap: "6px",
-            boxShadow: "none",
-          }}
+          className={`relative inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
+            triggerClassName || "w-32 sm:w-40"
+          }`}
         >
-          <Filter size={14} style={{ color: "var(--moss)" }} />
+          <Filter size={15} className="text-[#354338]" />
           <span>Filters</span>
           {activeFilterCount > 0 && (
-            <span
-              style={{
-                marginLeft: "2px",
-                minWidth: "18px",
-                height: "18px",
-                borderRadius: "999px",
-                backgroundColor: "var(--forest)",
-                color: "var(--mist)",
-                fontSize: "11px",
-                fontWeight: 600,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "0 5px",
-              }}
+            <Badge
+              variant="secondary"
+              className="ml-1 rounded-full bg-[#354338] text-white px-2 py-0.5 font-mono-data text-[10px]"
             >
               {activeFilterCount}
-            </span>
+            </Badge>
           )}
         </Button>
       </SheetTrigger>
 
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md p-0 flex flex-col h-full duration-200 ease-out transition-transform"
-        style={{ backgroundColor: "var(--mist)", borderLeft: "1px solid var(--hairline)", color: "var(--ink)" }}
+        className="w-full sm:max-w-md bg-[#f8f7f4] border-l border-[#e3e7e2] p-0 flex flex-col h-full text-[#1c211e] duration-200 ease-out transition-transform"
       >
-        <SheetHeader className="p-5 border-b" style={{ borderColor: "var(--hairline)", backgroundColor: "var(--paper)" }}>
+        <SheetHeader className="p-5 border-b border-[#e3e7e2] bg-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Filter size={16} style={{ color: "var(--moss)" }} />
-              <SheetTitle style={{ fontFamily: "var(--font)", fontSize: "1.125rem", fontWeight: 500, color: "var(--ink)" }}>
-                Filter products
+              <Filter size={18} className="text-[#354338]" />
+              <SheetTitle className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
+                Filter Products
               </SheetTitle>
               {activeFilterCount > 0 && (
-                <span
-                  style={{
-                    backgroundColor: "var(--forest)", color: "var(--mist)",
-                    fontSize: "11px", fontWeight: 600, borderRadius: "999px",
-                    padding: "2px 8px",
-                  }}
-                >
+                <Badge className="bg-[#354338] text-white text-[11px] rounded-full">
                   {activeFilterCount} active
-                </span>
+                </Badge>
               )}
-
             </div>
             <Button
               variant="ghost"
@@ -225,7 +194,7 @@ export function FilterDrawer({
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Status */}
           <div className="rounded-xl border border-[#e3e7e2] bg-white p-4">
-            <label className="muted-label text-[#5a655c] mb-3 block">
+            <label className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#5a655c] mb-3 block">
               Vegan Status
             </label>
             <div className="flex gap-2">
@@ -258,7 +227,7 @@ export function FilterDrawer({
           <Accordion type="single" collapsible defaultValue="brand" className="space-y-3">
             {/* Dietary & Lifestyle Badges */}
             <AccordionItem value="dietary" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Dietary & Health ({localFilters.dietary.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
@@ -268,7 +237,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={badge}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -284,7 +253,7 @@ export function FilterDrawer({
 
             {/* Brand Filter */}
             <AccordionItem value="brand" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Brand ({localFilters.brands.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-3">
@@ -304,7 +273,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={brand}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -323,7 +292,7 @@ export function FilterDrawer({
 
             {/* Sub Type / Category */}
             <AccordionItem value="sub_type" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Sub-Category / Type ({localFilters.subTypes.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
@@ -333,7 +302,7 @@ export function FilterDrawer({
                     return (
                       <label
                         key={sub}
-                        className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                        className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                       >
                         <Checkbox
                           checked={checked}
@@ -349,7 +318,7 @@ export function FilterDrawer({
 
             {/* Product Class */}
             <AccordionItem value="class" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Product Class ({localFilters.productClasses.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -358,7 +327,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={cls}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -373,7 +342,7 @@ export function FilterDrawer({
 
             {/* Food Type */}
             <AccordionItem value="food_type" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Food Type ({localFilters.foodTypes.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -382,7 +351,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={ft}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -397,7 +366,7 @@ export function FilterDrawer({
 
             {/* Exclude Allergens */}
             <AccordionItem value="allergens" className="rounded-xl border border-[#e3e7e2] bg-white px-4">
-              <AccordionTrigger className="muted-label text-[13px] text-[#1c211e] hover:no-underline py-3">
+              <AccordionTrigger className="font-mono-data text-xs font-bold uppercase tracking-wider text-[#1c211e] hover:no-underline py-3">
                 <span>Exclude Allergens ({localFilters.excludeAllergens.length})</span>
               </AccordionTrigger>
               <AccordionContent className="pb-4 space-y-2">
@@ -406,7 +375,7 @@ export function FilterDrawer({
                   return (
                     <label
                       key={alg}
-                      className="flex items-center gap-2.5 cursor-pointer text-xs text-[#1c211e] hover:text-[#354338]"
+                      className="flex items-center gap-2.5 cursor-pointer text-xs font-sans-ui text-[#1c211e] hover:text-[#354338]"
                     >
                       <Checkbox
                         checked={checked}
@@ -425,7 +394,7 @@ export function FilterDrawer({
           <Button
             type="button"
             onClick={handleApply}
-            className="flex-1 rounded-xl bg-[#354338] text-white hover:bg-[#28332a] text-xs font-medium h-11"
+            className="flex-1 rounded-xl bg-[#354338] text-white hover:bg-[#28332a] font-sans-ui text-xs font-semibold h-11"
           >
             Show {totalResultsCount} Results
           </Button>

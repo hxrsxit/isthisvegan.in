@@ -1,5 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Leaf, TriangleAlert, HelpCircle } from "lucide-react";
+import { Leaf, TriangleAlert, Tag, Flame } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 import { Snack, parseJsonObjectField, ProductMetadata } from "@/lib/snacks-data";
 
 interface SnackCardProps {
@@ -11,18 +13,42 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
   const navigate = useNavigate();
   const metadata = parseJsonObjectField<ProductMetadata>(snack.product_metadata, {});
 
-  // Category: prefer sub_type → food_type → product_class
-  const category = snack.sub_type || snack.food_type || snack.product_class || "";
-
-  // Health tier — only surface clearly positive ones in the list
   const healthTier = metadata.health_tier || "";
-  const showHealthy = healthTier.startsWith("1") || healthTier.startsWith("2");
+  let healthLabel = "";
+  let healthColorClass = "";
+
+  if (healthTier.startsWith("1")) {
+    healthLabel = "Superfood";
+    healthColorClass = "bg-[#e6ece7] text-[#2c3d31] border-[#b2c2b5]";
+  } else if (healthTier.startsWith("2")) {
+    healthLabel = "Healthy";
+    healthColorClass = "bg-[#e6ece7] text-[#2c3d31] border-[#b2c2b5]";
+  } else if (healthTier.startsWith("3")) {
+    healthLabel = "Moderate";
+    healthColorClass = "bg-[#f5f4eb] text-[#545037] border-[#dfdbc7]";
+  } else if (healthTier.startsWith("4")) {
+    healthLabel = "Processed";
+    healthColorClass = "bg-[#f7efe6] text-[#6b4c29] border-[#e4d4be]";
+  } else if (healthTier.startsWith("5")) {
+    healthLabel = "Ultra-Processed";
+    healthColorClass = "bg-[#f9eee9] text-[#7d3c34] border-[#e5c5bd]";
+  }
+
+  const categoryPill = snack.sub_type || snack.food_type || snack.product_class || snack.main_category;
 
   const handleBrandClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (snack.brand) {
       navigate(`/?brand=${encodeURIComponent(snack.brand)}`);
+    }
+  };
+
+  const handleCategoryClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (categoryPill) {
+      navigate(`/?sub_type=${encodeURIComponent(categoryPill)}`);
     }
   };
 
@@ -36,63 +62,73 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
     }
   };
 
-  // Verdict badge content
-  const VerdictBadge = () => {
-    if (snack.is_vegan === true) {
-      return (
-        <span className="verdict-badge verdict-badge--vegan" aria-label="Vegan">
-          <Leaf size={11} strokeWidth={2.5} aria-hidden="true" />
-          Vegan
-        </span>
-      );
-    }
-    if (snack.is_vegan === false) {
-      return (
-        <span className="verdict-badge verdict-badge--not-vegan" aria-label="Not vegan">
-          <TriangleAlert size={11} strokeWidth={2.5} aria-hidden="true" />
-          Not vegan
-        </span>
-      );
-    }
-    return (
-      <span className="verdict-badge verdict-badge--unsure" aria-label="Check label">
-        <HelpCircle size={11} strokeWidth={2.5} aria-hidden="true" />
-        Check label
-      </span>
-    );
-  };
-
   return (
     <div id={`snack-card-${snack.slug}`}>
       <Link
         to={`/snack/${snack.slug}`}
         onClick={handleCardClick}
-        className="dir-row"
-        style={{ display: "grid" }}
+        className="linen-card group flex flex-col justify-between h-full p-5 sm:p-6 text-[#1c211e]"
       >
-        {/* Left: brand + name + category */}
-        <div className="dir-row__left">
-          {snack.brand && (
-            <span
-              className="dir-row__brand"
-              onClick={handleBrandClick}
-              title={`Filter by brand: ${snack.brand}`}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && handleBrandClick(e as any)}
+        <div>
+          {/* Header Row: Brand & Status Badge */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <span
+                onClick={handleBrandClick}
+                className="font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#5a655c] hover:text-[#354338] hover:underline cursor-pointer inline-block"
+                title={`Filter products by brand ${snack.brand}`}
+              >
+                {snack.brand || "Brand Unspecified"}
+              </span>
+              <h3 className="mt-1 font-serif-fraunces text-lg font-bold leading-snug text-[#1c211e] group-hover:text-[#354338] transition-colors line-clamp-1">
+                {snack.name}
+              </h3>
+            </div>
+
+            <Badge
+              variant="outline"
+              className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 font-sans-ui text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                snack.is_vegan
+                  ? "border-[#b2c2b5] bg-[#e6ece7] text-[#2c3d31]"
+                  : "border-[#e5c5bd] bg-[#f9eee9] text-[#7d3c34]"
+              }`}
             >
-              {snack.brand}
-            </span>
-          )}
-          <span className="dir-row__name">{snack.name}</span>
-          {category && (
-            <span className="dir-row__cat">{category}{showHealthy ? " · Healthy" : ""}</span>
+              {snack.is_vegan ? (
+                <Leaf size={11} strokeWidth={2.5} className="text-[#2c3d31]" aria-hidden="true" />
+              ) : (
+                <TriangleAlert size={11} strokeWidth={2.5} className="text-[#7d3c34]" aria-hidden="true" />
+              )}
+              {snack.is_vegan ? "Vegan" : "Not Vegan"}
+            </Badge>
+          </div>
+
+          {/* Verdict Summary */}
+          {snack.verdict_summary && (
+            <p className="mt-3 line-clamp-2 font-sans-ui text-xs text-[#5a655c] leading-relaxed font-normal">
+              {snack.verdict_summary}
+            </p>
           )}
         </div>
 
-        {/* Right: verdict badge */}
-        <div className="dir-row__right">
-          <VerdictBadge />
+        {/* Bottom Attributes Bar */}
+        <div className="mt-5 pt-3 border-t border-[#e3e7e2] flex flex-wrap items-center gap-1.5">
+          {categoryPill && (
+            <span
+              onClick={handleCategoryClick}
+              className="inline-flex items-center gap-1 rounded-md bg-[#f0f3ef] border border-[#e3e7e2] px-2 py-0.5 font-sans-ui text-[10px] font-semibold text-[#354338] hover:bg-[#e2e7e0] cursor-pointer"
+              title={`Filter by category ${categoryPill}`}
+            >
+              <Tag size={10} className="text-[#5a655c]" />
+              {categoryPill}
+            </span>
+          )}
+
+          {healthLabel && (
+            <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-sans-ui text-[10px] font-medium ${healthColorClass}`}>
+              <Flame size={10} />
+              {healthLabel}
+            </span>
+          )}
         </div>
       </Link>
     </div>

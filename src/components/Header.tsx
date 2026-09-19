@@ -1,7 +1,9 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
+import { motion } from "framer-motion";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -15,93 +17,64 @@ const Header = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header
-      className="sticky top-0 z-50 border-b backdrop-blur-md"
-      style={{
-        borderColor: "var(--hairline)",
-        backgroundColor: "color-mix(in srgb, var(--mist) 92%, transparent)",
-      }}
+    <motion.header
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="sticky top-0 z-50 border-b border-[#e3e7e2] bg-[#f8f7f4]/90 backdrop-blur-md"
     >
       <nav
-        className="flex h-14 items-center justify-between gap-4"
-        style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "0 var(--gutter)" }}
+        className="container max-w-7xl flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
-        {/* Logo */}
-        <Logo
-          showText
-          size={32}
-          textClassName="font-medium text-base tracking-tight"
-          className=""
-        />
+        <Logo showText size={36} textClassName="text-[#1c211e] font-black-mango font-bold text-xl tracking-wide" />
 
-        {/* Desktop nav — plain text links, active underlined */}
-        <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => {
-            const isActive = location.pathname === link.to;
-            return (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="text-sm font-medium transition-colors"
-                style={{
-                  color: isActive ? "var(--forest)" : "var(--stone)",
-                  textDecoration: isActive ? "underline" : "none",
-                  textDecorationColor: "var(--forest)",
-                  textUnderlineOffset: "4px",
-                  textDecorationThickness: "1.5px",
-                }}
-                onMouseEnter={(e) => { if (!isActive) (e.target as HTMLElement).style.color = "var(--ink)"; }}
-                onMouseLeave={(e) => { if (!isActive) (e.target as HTMLElement).style.color = "var(--stone)"; }}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        <div className="hidden items-center gap-1 rounded-full border border-[#e3e7e2] bg-white p-1 shadow-xs md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={`rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
+                location.pathname === link.to
+                  ? "bg-[#354338] text-white shadow-xs"
+                  : "text-[#5a655c] hover:bg-[#f0f3ef] hover:text-[#1c211e]"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
-        {/* Mobile menu button */}
-        <button
-          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={open}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg transition-colors"
-          style={{ color: "var(--stone)" }}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X size={20} strokeWidth={1.75} /> : <Menu size={20} strokeWidth={1.75} />}
-        </button>
-      </nav>
-
-      {/* Mobile full-screen menu */}
-      {open && (
-        <div
-          className="md:hidden border-t"
-          style={{ borderColor: "var(--hairline)", backgroundColor: "var(--mist)" }}
-        >
-          <nav className="flex flex-col" aria-label="Mobile navigation">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.to;
-              return (
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild className="md:hidden">
+            <button
+              aria-label="Open navigation menu"
+              className="rounded-lg p-2 text-[#5a655c] hover:bg-[#e2e7e0] hover:text-[#1c211e]"
+            >
+              <Menu size={20} strokeWidth={1.75} />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-72 border-[#e3e7e2] bg-[#f8f7f4] backdrop-blur-xl">
+            <nav className="mt-8 flex flex-col gap-2" aria-label="Mobile navigation">
+              {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setOpen(false)}
-                  className="flex items-center px-6 py-4 text-base font-medium border-b transition-colors"
-                  style={{
-                    borderColor: "var(--hairline)",
-                    color: isActive ? "var(--forest)" : "var(--ink)",
-                    backgroundColor: isActive ? "var(--sage-100)" : "transparent",
-                    fontWeight: isActive ? 600 : 400,
-                  }}
+                  className={`rounded-xl px-4 py-3 text-sm font-semibold tracking-wide transition-colors ${
+                    location.pathname === link.to
+                      ? "bg-[#354338] text-white"
+                      : "text-[#1c211e] hover:bg-[#e2e7e0]"
+                  }`}
                 >
                   {link.label}
                 </Link>
-              );
-            })}
-          </nav>
-        </div>
-      )}
-    </header>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+      </nav>
+    </motion.header>
   );
 };
 

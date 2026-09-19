@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, X, ArrowUpDown } from "lucide-react";
+import { Search, X, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -408,7 +408,10 @@ const HomePage = () => {
     filters.brands.length > 0;
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--mist)", color: "var(--ink)" }}>
+    <div
+      style={{ minHeight: "100vh" }}
+      className="relative overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
+    >
       <Helmet>
         <title>Is Your Food Plant-Based or Not? | IsThisVegan.in</title>
         <meta
@@ -422,216 +425,201 @@ const HomePage = () => {
           content="Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks."
         />
         <meta property="og:url" content="https://www.isthisvegan.in/" />
-        <meta name="theme-color" content="#01472E" />
       </Helmet>
 
-      {/* Paper grain overlay */}
       <div className="noise-overlay pointer-events-none fixed inset-0 z-[1]" aria-hidden />
 
       <div className="relative z-10">
-
-        {/* ── Hero ──────────────────────────────────────────────── */}
-        <section
-          className="hero-fade"
-          style={{
-            borderBottom: "1px solid var(--hairline)",
-            paddingTop: "clamp(40px, 8vw, 80px)",
-            paddingBottom: "clamp(32px, 6vw, 64px)",
-          }}
-        >
-          <div style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "0 var(--gutter)" }}>
-            {/* Headline */}
-            <h1 style={{ color: "var(--ink)", maxWidth: "18ch", marginBottom: "var(--s-3)" }}>
-              Is your food plant-based or not?
-            </h1>
-            <p className="font-serif" style={{ color: "var(--stone)", maxWidth: "52ch", marginBottom: "var(--s-4)", fontSize: "var(--fs-body)", lineHeight: 1.5 }}>
-              Instant ingredient checks, allergen safety, Jain compatibility, and street food ordering hacks — for Indian snacks.
-            </p>
-
-            {/* Search input */}
-            <div style={{ position: "relative", maxWidth: "640px" }}>
-              <Search
-                size={18}
-                strokeWidth={1.75}
-                style={{
-                  position: "absolute", left: "16px",
-                  top: "50%", transform: "translateY(-50%)",
-                  color: "var(--moss)", pointerEvents: "none",
-                }}
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="earthy-input"
-                style={{
-                  height: "56px", width: "100%",
-                  paddingLeft: "48px", paddingRight: query ? "48px" : "16px",
-                  fontSize: "1rem",
-                }}
-                aria-label="Search products"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
-                  style={{
-                    position: "absolute", right: "12px",
-                    top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none",
-                    color: "var(--stone)", cursor: "pointer",
-                    padding: "4px", borderRadius: "50%",
-                    minWidth: "32px", minHeight: "32px",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                  aria-label="Clear search"
-                >
-                  <X size={16} strokeWidth={1.5} />
-                </button>
-              )}
-            </div>
-
-            {/* Item count line — small muted, sentence case */}
-            {!loading && (
-              <p className="tabular-nums" style={{
-                marginTop: "var(--s-1)",
-                fontSize: "var(--fs-small)",
-                color: "var(--stone)",
-                fontWeight: 400,
-              }}>
-                {filtered.length === snacks.length
-                  ? `${snacks.length.toLocaleString()} products verified`
-                  : `${filtered.length.toLocaleString()} of ${snacks.length.toLocaleString()} products`}
+        {/* Natural Sage Green Hero Container */}
+        <div className="bg-[#354338] text-[#f8f7f4] pt-10 pb-14 md:pt-16 md:pb-20 border-b border-[#2d3a30]">
+          <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: motionEase }}
+            >
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#4d5d50] bg-[#435246] px-3.5 py-1 font-mono-data text-[10px] font-bold uppercase tracking-[0.2em] text-[#d9e2db] shadow-2xs mb-5">
+                <ShieldCheck size={12} className="text-[#a3b5a7]" />
+                <span>India's Plant-Based Directory • 3,000+ Verified Items</span>
+              </div>
+              <h1 className="font-serif-fraunces text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#f8f7f4] leading-[1.12]">
+                Is Your Food Plant-based or Not?
+              </h1>
+              <p className="mt-4 max-w-xl font-sans-ui text-base text-[#c5cfc8] leading-relaxed">
+                Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks.
               </p>
-            )}
+            </motion.div>
           </div>
-        </section>
+        </div>
 
-        {/* ── Sticky filter/sort controls ──────────────────────── */}
-        <div
-          className="sticky z-40"
-          style={{
-            top: "56px",
-            borderBottom: "1px solid var(--hairline)",
-            backgroundColor: "color-mix(in srgb, var(--mist) 95%, transparent)",
-            backdropFilter: "blur(8px)",
-            paddingBlock: "var(--s-2)",
-            marginBottom: "var(--s-3)",
-          }}
-        >
-          <div style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "0 var(--gutter)" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--s-2)" }}>
+        {/* Sticky Search Bar & Multi-Filter Controls Bar */}
+        <div className="sticky top-16 z-40 border-b border-[#e3e7e2] bg-[#f8f7f4]/95 py-4 backdrop-blur-md shadow-2xs mb-6">
+          <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-3">
+              {/* Controls Row: Search Bar (Full Width on mobile) + Filters & Sort Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                <div className="relative flex-1 min-w-0">
+                  <Search
+                    size={18}
+                    strokeWidth={1.75}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    type="search"
+                    placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="h-11 sm:h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
+                    aria-label="Search products"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
+                      aria-label="Clear search"
+                    >
+                      <X size={16} strokeWidth={1.5} />
+                    </button>
+                  )}
+                </div>
 
-              {/* Controls row: Filter + Sort buttons (search is in hero) */}
-              <div style={{ display: "flex", alignItems: "center", gap: "var(--s-1)", flexWrap: "wrap" }}>
-                {/* Filter Drawer */}
-                <FilterDrawer
-                  filters={filters}
-                  onFilterChange={setFilters}
-                  availableBrands={availableBrands}
-                  totalResultsCount={filtered.length}
-                  triggerClassName=""
-                />
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Filter Drawer Component */}
+                  <FilterDrawer
+                    filters={filters}
+                    onFilterChange={setFilters}
+                    availableBrands={availableBrands}
+                    totalResultsCount={filtered.length}
+                    triggerClassName="w-full sm:w-auto min-w-[100px] sm:min-w-[120px]"
+                  />
 
-                {/* Sort dropdown */}
-                <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger
-                    style={{
-                      height: "40px",
-                      minWidth: "130px",
-                      border: "1px solid var(--hairline)",
-                      borderRadius: "var(--r-sm)",
-                      backgroundColor: "var(--paper)",
-                      color: "var(--ink)",
-                      fontSize: "var(--fs-small)",
-                      fontWeight: 500,
-                      paddingInline: "12px",
-                      gap: "6px",
-                    }}
-                  >
-                    <ArrowUpDown size={13} style={{ color: "var(--moss)", flexShrink: 0 }} />
-                    <SelectValue placeholder="Sort" />
-                  </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "var(--paper)", borderColor: "var(--hairline)", fontSize: "var(--fs-small)" }}>
-                    <SelectItem value="featured">Featured</SelectItem>
-                    <SelectItem value="healthy-vegan">Healthy &amp; vegan first</SelectItem>
-                    <SelectItem value="price-asc">Price: low to high</SelectItem>
-                    <SelectItem value="price-desc">Price: high to low</SelectItem>
-                    <SelectItem value="name-asc">Name: A – Z</SelectItem>
-                    <SelectItem value="name-desc">Name: Z – A</SelectItem>
-                    <SelectItem value="brand-asc">Brand: A – Z</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Enhanced Sort Dropdown */}
+                  <Select value={sortOption} onValueChange={setSortOption}>
+                    <SelectTrigger className="h-11 sm:h-12 w-full sm:w-auto min-w-[110px] sm:min-w-[130px] px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                      <ArrowUpDown size={14} className="mr-1.5 text-[#354338] shrink-0" />
+                      <SelectValue placeholder="Sort By" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-[#e3e7e2]">
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
+                      <SelectItem value="price-asc">Price: Low - High</SelectItem>
+                      <SelectItem value="price-desc">Price: High - Low</SelectItem>
+                      <SelectItem value="name-asc">Name: A - Z</SelectItem>
+                      <SelectItem value="name-desc">Name: Z - A</SelectItem>
+                      <SelectItem value="brand-asc">Brand: A - Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              {/* Preset filter chips row */}
-              <div className="overflow-x-auto no-scrollbar" style={{ paddingBottom: "2px" }}>
-                <div style={{ display: "flex", minWidth: "max-content", gap: "var(--s-1)", alignItems: "center" }}>
+              {/* Preset Filters Row */}
+              <div className="overflow-x-auto pb-0.5 no-scrollbar">
+                <div className="flex min-w-max items-center gap-2">
                   {PRESET_FILTERS.map((filter) => (
-                    <button
+                    <Badge
                       key={filter.key}
+                      variant="outline"
                       onClick={() => setActivePreset(filter.key)}
-                      className={`preset-chip${activePreset === filter.key ? " preset-chip--active" : ""}`}
+                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${activePreset === filter.key
+                        ? "border-[#354338] bg-[#354338] text-white shadow-xs"
+                        : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
+                        }`}
                     >
                       {filter.label}
-                    </button>
+                    </Badge>
                   ))}
                 </div>
               </div>
 
-              {/* Active filter chips */}
+              {/* Active Filter Chips Bar */}
               {hasActiveFilters && (
-                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px" }}>
-                  <span style={{ fontSize: "var(--fs-small)", color: "var(--stone)", fontWeight: 500, marginRight: "4px" }}>
-                    Active filters:
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="font-mono-data text-[10px] uppercase font-bold text-[#5a655c] mr-1">
+                    Active Filters:
                   </span>
                   {filters.status !== "all" && (
-                    <button className="filter-chip" onClick={() => removeFilterChip("status")}>
-                      Status: {filters.status} <X size={11} />
-                    </button>
+                    <Badge
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("status")}
+                    >
+                      Status: {filters.status}
+                      <X size={12} />
+                    </Badge>
                   )}
                   {filters.brands.map((b) => (
-                    <button key={b} className="filter-chip" onClick={() => removeFilterChip("brands", b)}>
-                      Brand: {b} <X size={11} />
-                    </button>
+                    <Badge
+                      key={b}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("brands", b)}
+                    >
+                      Brand: {b}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   {filters.dietary.map((d) => (
-                    <button key={d} className="filter-chip" onClick={() => removeFilterChip("dietary", d)}>
-                      {d} <X size={11} />
-                    </button>
+                    <Badge
+                      key={d}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("dietary", d)}
+                    >
+                      {d}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   {filters.subTypes.map((st) => (
-                    <button key={st} className="filter-chip" onClick={() => removeFilterChip("subTypes", st)}>
-                      Type: {st} <X size={11} />
-                    </button>
+                    <Badge
+                      key={st}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("subTypes", st)}
+                    >
+                      Type: {st}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   {filters.productClasses.map((pc) => (
-                    <button key={pc} className="filter-chip" onClick={() => removeFilterChip("productClasses", pc)}>
-                      Class: {pc} <X size={11} />
-                    </button>
+                    <Badge
+                      key={pc}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("productClasses", pc)}
+                    >
+                      Class: {pc}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   {filters.foodTypes.map((ft) => (
-                    <button key={ft} className="filter-chip" onClick={() => removeFilterChip("foodTypes", ft)}>
-                      Food: {ft} <X size={11} />
-                    </button>
+                    <Badge
+                      key={ft}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("foodTypes", ft)}
+                    >
+                      Food: {ft}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   {filters.excludeAllergens.map((alg) => (
-                    <button
+                    <Badge
                       key={alg}
-                      className="filter-chip"
-                      style={{ backgroundColor: "var(--not-vegan-bg)", color: "var(--not-vegan-fg)", borderColor: "var(--hairline)" }}
+                      variant="secondary"
+                      className="bg-[#f9eee9] text-[#7d3c34] border border-[#e5c5bd] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#f3ded6]"
                       onClick={() => removeFilterChip("excludeAllergens", alg)}
                     >
-                      No {alg} <X size={11} />
-                    </button>
+                      No {alg}
+                      <X size={12} />
+                    </Badge>
                   ))}
                   <button
                     onClick={() => setFilters(DEFAULT_FILTERS)}
-                    style={{ fontSize: "var(--fs-small)", color: "var(--forest)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px", marginLeft: "4px" }}
+                    className="text-[11px] font-semibold text-[#5a655c] underline hover:text-[#1c211e] ml-2"
                   >
-                    Clear all
+                    Clear All Filters
                   </button>
                 </div>
               )}
@@ -639,74 +627,76 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* ── Product list ─────────────────────────────────────── */}
-        <div style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "0 var(--gutter)", paddingBottom: "var(--s-12)" }}>
+        {/* Main Content Container */}
+        <div className="container max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
           <AnimatePresence mode="wait">
             {loading ? (
               <LoadingAnimation key="loadingState" />
             ) : error ? (
               <motion.div
                 key="error"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                style={{ padding: "64px 0", textAlign: "center" }}
+                className="py-16 text-center"
               >
-                <p style={{ color: "var(--ink)", fontSize: "1.1rem" }}>Failed to load products from database.</p>
-                <p style={{ color: "var(--stone)", fontSize: "var(--fs-small)", marginTop: "8px" }}>{error}</p>
+                <p className="font-serif-fraunces text-lg text-[#1c211e]">
+                  Failed to load products from database.
+                </p>
+                <p className="mt-2 font-sans-ui text-xs text-[#5a655c]">{error}</p>
               </motion.div>
             ) : filtered.length === 0 ? (
               <motion.div
                 key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                style={{ padding: "64px 0", textAlign: "center" }}
+                className="py-16 text-center"
               >
-                <div className="earthy-card" style={{ maxWidth: "420px", margin: "0 auto", padding: "var(--s-6)" }}>
-                  <p style={{ fontSize: "1.25rem", fontWeight: 400, color: "var(--ink)", marginBottom: "var(--s-1)" }}>No matching products</p>
-                  <p style={{ fontSize: "var(--fs-small)", color: "var(--stone)" }}>Try adjusting filters or clearing search terms.</p>
+                <div className="mx-auto max-w-md rounded-2xl border border-[#e3e7e2] bg-white p-8 shadow-xs">
+                  <p className="font-serif-fraunces text-xl font-bold text-[#1c211e]">
+                    No Matching Products Found
+                  </p>
+                  <p className="mt-2 font-sans-ui text-xs text-[#5a655c]">
+                    Try adjusting your filter options or clearing search terms.
+                  </p>
+
                   {hasActiveFilters && (
                     <Button
                       onClick={() => setFilters(DEFAULT_FILTERS)}
-                      style={{ marginTop: "var(--s-3)", backgroundColor: "var(--forest)", color: "var(--mist)", borderRadius: "var(--r-pill)", fontWeight: 500, minHeight: "44px" }}
+                      className="mt-4 rounded-full bg-[#354338] px-5 py-2 font-sans-ui text-xs text-white"
                     >
-                      Reset all filters
+                      Reset All Filters
                     </Button>
                   )}
                 </div>
               </motion.div>
             ) : (
-              <div>
-                {/* Result meta line */}
-                <div style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  fontSize: "var(--fs-small)", color: "var(--stone)",
-                  paddingBlock: "var(--s-2)",
-                  borderBottom: "1px solid var(--hairline)",
-                  marginBottom: "0",
-                }}>
-                  <span className="tabular-nums">Showing {displayedSnacks.length.toLocaleString()} of {filtered.length.toLocaleString()} products</span>
+              <div className="w-full">
+                <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#5a655c] uppercase tracking-wider">
+                  <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
                   {(activePreset !== "All" || hasActiveFilters) && (
                     <button
-                      onClick={() => { setActivePreset("All"); setFilters(DEFAULT_FILTERS); }}
-                      style={{ color: "var(--forest)", background: "none", border: "none", cursor: "pointer", fontSize: "var(--fs-small)", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                      onClick={() => {
+                        setActivePreset("All");
+                        setFilters(DEFAULT_FILTERS);
+                      }}
+                      className="underline hover:text-[#1c211e]"
                     >
-                      Reset filters
+                      Reset All Filters
                     </button>
                   )}
                 </div>
 
-                {/* Directory list */}
-                <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {displayedSnacks.map((snack, i) => (
                     <SnackCard key={snack.slug} snack={snack} index={i} />
                   ))}
                 </div>
 
-                {/* Infinite scroll sentinel */}
+                {/* Infinite Scroll sentinel */}
                 {displayCount < filtered.length && (
-                  <div ref={sentinelRef} style={{ width: "100%", marginTop: "var(--s-8)" }}>
+                  <div ref={sentinelRef} className="w-full mt-10">
                     <LoadingAnimation message="Loading more products..." className="py-6" />
                   </div>
                 )}
@@ -720,5 +710,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
 
