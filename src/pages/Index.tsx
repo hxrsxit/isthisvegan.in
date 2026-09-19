@@ -33,27 +33,27 @@ const HomePage = () => {
   const [snacks, setSnacks] = useState<Snack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activePreset, setActivePreset] = useState("All");
+  const [activePreset, setActivePreset] = useState<string>(
+    searchParams.get("preset") || "All"
+  );
   const [displayCount, setDisplayCount] = useState(30);
   const [sortOption, setSortOption] = useState<string>(searchParams.get("sort") || "featured");
 
   const [filters, setFilters] = useState<FilterState>(() => {
-    const brand = searchParams.get("brand");
-    const dietary = searchParams.get("dietary");
-    const subType = searchParams.get("sub_type");
-    const foodType = searchParams.get("food_type");
-    const productClass = searchParams.get("product_class");
-    const allergen = searchParams.get("allergen");
-    const status = searchParams.get("status");
+    const parseParamArray = (paramName: string): string[] => {
+      const val = searchParams.get(paramName);
+      if (!val) return [];
+      return val.split(",").map((s) => decodeURIComponent(s.trim())).filter(Boolean);
+    };
 
     return {
-      status: (status as any) || "all",
-      productClasses: productClass ? [productClass] : [],
-      foodTypes: foodType ? [foodType] : [],
-      subTypes: subType ? [subType] : [],
-      dietary: dietary ? [dietary] : [],
-      excludeAllergens: allergen ? [allergen] : [],
-      brands: brand ? [brand] : [],
+      status: (searchParams.get("status") as any) || "all",
+      productClasses: parseParamArray("product_class"),
+      foodTypes: parseParamArray("food_type"),
+      subTypes: parseParamArray("sub_type"),
+      dietary: parseParamArray("dietary"),
+      excludeAllergens: parseParamArray("allergen"),
+      brands: parseParamArray("brand"),
     };
   });
 
@@ -64,16 +64,18 @@ const HomePage = () => {
     const params = new URLSearchParams();
     if (query) params.set("search", query);
     if (sortOption !== "featured") params.set("sort", sortOption);
+    if (activePreset !== "All") params.set("preset", activePreset);
     if (filters.status !== "all") params.set("status", filters.status);
-    if (filters.brands.length > 0) params.set("brand", filters.brands[0]);
-    if (filters.dietary.length > 0) params.set("dietary", filters.dietary[0]);
-    if (filters.subTypes.length > 0) params.set("sub_type", filters.subTypes[0]);
-    if (filters.foodTypes.length > 0) params.set("food_type", filters.foodTypes[0]);
-    if (filters.productClasses.length > 0) params.set("product_class", filters.productClasses[0]);
-    if (filters.excludeAllergens.length > 0) params.set("allergen", filters.excludeAllergens[0]);
+
+    if (filters.brands.length > 0) params.set("brand", filters.brands.join(","));
+    if (filters.dietary.length > 0) params.set("dietary", filters.dietary.join(","));
+    if (filters.subTypes.length > 0) params.set("sub_type", filters.subTypes.join(","));
+    if (filters.foodTypes.length > 0) params.set("food_type", filters.foodTypes.join(","));
+    if (filters.productClasses.length > 0) params.set("product_class", filters.productClasses.join(","));
+    if (filters.excludeAllergens.length > 0) params.set("allergen", filters.excludeAllergens.join(","));
 
     setSearchParams(params, { replace: true });
-  }, [query, sortOption, filters, setSearchParams]);
+  }, [query, sortOption, activePreset, filters, setSearchParams]);
 
   // Extract available brands
   const availableBrands = useMemo(() => {
