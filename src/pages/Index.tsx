@@ -322,8 +322,9 @@ const HomePage = () => {
 
       if (savedSlug) {
         const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
-        if (itemIdx >= 0) {
-          setDisplayCount((prev) => Math.max(prev, itemIdx + 25));
+        if (itemIdx >= 0 && displayCount < itemIdx + 25) {
+          setDisplayCount(itemIdx + 25);
+          return; // Wait for displayCount state update to render target card in displayedSnacks
         }
       }
 
@@ -349,23 +350,21 @@ const HomePage = () => {
           found = true;
         }
 
-        if (found || attempts >= 10) {
-          // Allow DOM to settle before clearing flags
+        if (found || attempts >= 15) {
           setTimeout(() => {
             sessionStorage.removeItem("isthisvegan_scroll_pos");
             sessionStorage.removeItem("isthisvegan_last_slug");
             sessionStorage.removeItem("isthisvegan_display_count");
-          }, 300);
+          }, 400);
         } else {
-          requestAnimationFrame(performScroll);
+          setTimeout(performScroll, 50);
         }
       };
 
-      // Execute on next animation frame once DOM updates
-      const animationId = requestAnimationFrame(performScroll);
-      return () => cancelAnimationFrame(animationId);
+      const timerId = setTimeout(performScroll, 50);
+      return () => clearTimeout(timerId);
     }
-  }, [loading, snacks, filtered]);
+  }, [loading, snacks, filtered, displayedSnacks]);
 
   const motionEase = [0.16, 1, 0.3, 1];
 
