@@ -306,8 +306,8 @@ const SnackDetail = () => {
         {/* Master Verdict Banner */}
         <div
           className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
-              ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
-              : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
+            ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
+            : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
             }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -327,7 +327,7 @@ const SnackDetail = () => {
                   className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
                     }`}
                 >
-                  {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
+                  {snack.is_vegan ? "100% Plant-Based" : "Non-Vegan Alert"}
                 </span>
                 <h1 className="font-serif-fraunces text-2xl md:text-4xl font-bold tracking-tight text-[#1c211e]">
                   {snack.name}
@@ -594,8 +594,8 @@ const SnackDetail = () => {
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
                 className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
-                    ? "bg-[#354338] text-white"
-                    : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
+                  ? "bg-[#354338] text-white"
+                  : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
                   }`}
               >
                 <ThumbsUp size={13} />
