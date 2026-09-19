@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import logoImage from "@/assets/is-this-vegan-logo.png";
 
 interface LogoProps {
@@ -16,7 +16,7 @@ const Logo = ({ showText = false, className = "", textClassName, size = 32 }: Lo
   <Link
     to="/"
     className={`inline-flex items-center gap-2.5 ${className}`}
-    aria-label="Is This Vegan? – Home"
+    aria-label="Is This Vegan? Home"
   >
     <img
       src={logoImage}
@@ -30,7 +30,7 @@ const Logo = ({ showText = false, className = "", textClassName, size = 32 }: Lo
       }}
     />
     {showText && (
-      <span className={`font-['Inter'] text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
+      <span className={`font-black-mango text-lg font-semibold tracking-tight ${textClassName ?? "text-foreground"}`}>
         Is This Vegan?
       </span>
     )}

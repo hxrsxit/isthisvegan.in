@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -27,7 +27,7 @@ const Header = () => {
         className="container max-w-7xl flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8"
         aria-label="Main navigation"
       >
-        <Logo showText size={36} textClassName="text-[#1c211e] font-serif-fraunces font-bold" />
+        <Logo showText size={36} textClassName="text-[#1c211e] font-black-mango font-bold text-xl tracking-wide" />
 
         <div className="hidden items-center gap-1 rounded-full border border-[#e3e7e2] bg-white p-1 shadow-xs md:flex">
           {navLinks.map((link) => (

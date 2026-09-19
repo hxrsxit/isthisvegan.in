@@ -1,8 +1,10 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { Search, X, ShieldCheck } from "lucide-react";
+import { useState, useMemo, useEffect, useLayoutEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Search, X, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/use-debounce";
 import SnackCard from "@/components/SnackCard";
 import { Snack, parseArrayField, parseJsonObjectField, ProductMetadata } from "@/lib/snacks-data";
@@ -11,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { searchWithTypoTolerance, getSnackSearchKeys } from "@/lib/fuzzy";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { Helmet } from "react-helmet-async";
+import { FilterDrawer, FilterState, DEFAULT_FILTERS } from "@/components/FilterDrawer";
 
 const PRESET_FILTERS = [
   { label: "All Items", key: "All" },
@@ -25,20 +28,103 @@ const PRESET_FILTERS = [
 ];
 
 const HomePage = () => {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get("search") || "");
   const [snacks, setSnacks] = useState<Snack[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activePreset, setActivePreset] = useState("All");
-  const [displayCount, setDisplayCount] = useState(30);
+  const [activePreset, setActivePreset] = useState<string>(
+    searchParams.get("preset") || "All"
+  );
+  const [displayCount, setDisplayCount] = useState(() => {
+    const savedCount = sessionStorage.getItem("isthisvegan_display_count");
+    if (savedCount) {
+      return Math.max(30, parseInt(savedCount, 10));
+    }
+    return 30;
+  });
+  const [sortOption, setSortOption] = useState<string>(searchParams.get("sort") || "featured");
+
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const parseParamArray = (paramName: string): string[] => {
+      const val = searchParams.get(paramName);
+      if (!val) return [];
+      return val.split(",").map((s) => decodeURIComponent(s.trim())).filter(Boolean);
+    };
+
+    return {
+      status: (searchParams.get("status") as any) || "all",
+      productClasses: parseParamArray("product_class"),
+      foodTypes: parseParamArray("food_type"),
+      subTypes: parseParamArray("sub_type"),
+      dietary: parseParamArray("dietary"),
+      excludeAllergens: parseParamArray("allergen"),
+      brands: parseParamArray("brand"),
+    };
+  });
+
   const debouncedQuery = useDebounce(query, 300);
 
-  // Reset display count on new search or preset filter change
-  useEffect(() => {
-    setDisplayCount(30);
-  }, [debouncedQuery, activePreset]);
+  // ── Scroll restoration state ──────────────────────────────────────────────
+  // We read sessionStorage ONCE on mount so refs are stable across re-renders.
+  const restorationRef = useRef<{
+    slug: string | null;
+    scrollY: number;
+    displayCount: number;
+    phase: "idle" | "expanding" | "scrolling" | "done";
+  }>({
+    slug: sessionStorage.getItem("isthisvegan_last_slug"),
+    scrollY: parseInt(sessionStorage.getItem("isthisvegan_scroll_pos") || "0", 10),
+    displayCount: parseInt(sessionStorage.getItem("isthisvegan_display_count") || "30", 10),
+    phase: sessionStorage.getItem("isthisvegan_last_slug") || sessionStorage.getItem("isthisvegan_scroll_pos")
+      ? "expanding"
+      : "idle",
+  });
 
-  // Infinite scroll sentinel callback ref
+  // Tell the browser NOT to auto-restore scroll — we handle it ourselves.
+  useLayoutEffect(() => {
+    window.history.scrollRestoration = "manual";
+    return () => {
+      window.history.scrollRestoration = "auto";
+    };
+  }, []);
+
+  // Sync state with URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (query) params.set("search", query);
+    if (sortOption !== "featured") params.set("sort", sortOption);
+    if (activePreset !== "All") params.set("preset", activePreset);
+    if (filters.status !== "all") params.set("status", filters.status);
+
+    if (filters.brands.length > 0) params.set("brand", filters.brands.join(","));
+    if (filters.dietary.length > 0) params.set("dietary", filters.dietary.join(","));
+    if (filters.subTypes.length > 0) params.set("sub_type", filters.subTypes.join(","));
+    if (filters.foodTypes.length > 0) params.set("food_type", filters.foodTypes.join(","));
+    if (filters.productClasses.length > 0) params.set("product_class", filters.productClasses.join(","));
+    if (filters.excludeAllergens.length > 0) params.set("allergen", filters.excludeAllergens.join(","));
+
+    setSearchParams(params, { replace: true });
+  }, [query, sortOption, activePreset, filters, setSearchParams]);
+
+  // Extract available brands
+  const availableBrands = useMemo(() => {
+    const set = new Set<string>();
+    snacks.forEach((s) => {
+      if (s.brand && s.brand.trim()) {
+        set.add(s.brand.trim());
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [snacks]);
+
+  useEffect(() => {
+    // Only reset displayCount when a NEW search/filter is applied (not on back-navigation).
+    if (restorationRef.current.phase === "idle") {
+      setDisplayCount(30);
+    }
+  }, [debouncedQuery, activePreset, filters, sortOption]);
+
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
     if (!node) return;
     const observer = new IntersectionObserver(
@@ -62,10 +148,9 @@ const HomePage = () => {
       let allData: Snack[] = [];
       let from = 0;
 
-      // Paginate through isthisvegan_db2
       while (true) {
         const { data, error } = await supabase
-          .from<Snack>("isthisvegan_db2")
+          .from<Snack>("isthisvegan_db3")
           .select("*")
           .order("name", { ascending: true })
           .range(from, from + PAGE_SIZE - 1);
@@ -78,7 +163,6 @@ const HomePage = () => {
         }
 
         allData = allData.concat(data ?? []);
-
         if (!data || data.length < PAGE_SIZE) break;
         from += PAGE_SIZE;
       }
@@ -93,7 +177,7 @@ const HomePage = () => {
   const filtered = useMemo(() => {
     let base = snacks;
 
-    // Filter by preset tag
+    // 1. Preset filter bar
     if (activePreset !== "All") {
       base = base.filter((s) => {
         const dietaryBadges = parseArrayField(s.dietary_compatibility);
@@ -120,21 +204,19 @@ const HomePage = () => {
               metadata.health_tier?.startsWith("2")
             );
           case "Street-Food":
-            return metadata.packaging_status === "Street-Food";
-          case "Savory":
             return (
-              fType.includes("snack") ||
-              pClass.includes("food") ||
-              ["chips", "wafers", "namkeen", "popcorn", "extruded", "nut", "fried", "papad"].some((t) =>
-                sType.includes(t)
-              )
+              pClass.includes("street") ||
+              fType.includes("street") ||
+              sType.includes("street") ||
+              metadata.packaging_status === "Street-Food"
             );
+          case "Savory":
+            return pClass.includes("food") || fType.includes("snack");
           case "Sweets":
             return (
               fType.includes("dessert") ||
-              ["chocolate", "biscuit", "cookie", "cake", "candy", "sweet", "halwa", "ice-cream"].some((t) =>
-                sType.includes(t)
-              )
+              sType.includes("sweet") ||
+              sType.includes("chocolate")
             );
           default:
             return true;
@@ -142,29 +224,206 @@ const HomePage = () => {
       });
     }
 
-    // Step 2: Use typo-tolerant fuzzy finder across multi-attribute keys
-    if (!debouncedQuery.trim()) return base;
+    // 2. Multi-Attribute Filters (Amazon-style)
+    if (filters.status === "vegan") {
+      base = base.filter((s) => s.is_vegan === true);
+    } else if (filters.status === "non-vegan") {
+      base = base.filter((s) => s.is_vegan === false);
+    }
 
-    return searchWithTypoTolerance(base, debouncedQuery, getSnackSearchKeys);
-  }, [activePreset, debouncedQuery, snacks]);
+    if (filters.productClasses.length > 0) {
+      base = base.filter((s) =>
+        s.product_class && filters.productClasses.includes(s.product_class)
+      );
+    }
+
+    if (filters.foodTypes.length > 0) {
+      base = base.filter((s) =>
+        s.food_type && filters.foodTypes.includes(s.food_type)
+      );
+    }
+
+    if (filters.subTypes.length > 0) {
+      base = base.filter((s) =>
+        s.sub_type && filters.subTypes.includes(s.sub_type)
+      );
+    }
+
+    if (filters.dietary.length > 0) {
+      base = base.filter((s) => {
+        const badges = parseArrayField(s.dietary_compatibility).map((b) => b.toLowerCase());
+        return filters.dietary.every((d) =>
+          badges.some((b) => b.includes(d.toLowerCase()))
+        );
+      });
+    }
+
+    if (filters.excludeAllergens.length > 0) {
+      base = base.filter((s) => {
+        const allergens = parseArrayField(s.allergens_list).map((a) => a.toLowerCase());
+        return !filters.excludeAllergens.some((ex) =>
+          allergens.some((a) => a.includes(ex.toLowerCase()))
+        );
+      });
+    }
+
+    if (filters.brands.length > 0) {
+      base = base.filter(
+        (s) => s.brand && filters.brands.includes(s.brand.trim())
+      );
+    }
+
+    // 3. Search query filter
+    if (debouncedQuery.trim()) {
+      base = searchWithTypoTolerance(base, debouncedQuery, getSnackSearchKeys);
+    }
+
+    // 4. Enhanced Sorting Options
+    const sorted = [...base];
+    if (sortOption === "healthy-vegan") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+
+        const isHealthyA = a.is_vegan && (metaA.health_tier?.startsWith("1") || metaA.health_tier?.startsWith("2"));
+        const isHealthyB = b.is_vegan && (metaB.health_tier?.startsWith("1") || metaB.health_tier?.startsWith("2"));
+
+        if (isHealthyA && !isHealthyB) return -1;
+        if (!isHealthyA && isHealthyB) return 1;
+
+        if (a.is_vegan && !b.is_vegan) return -1;
+        if (!a.is_vegan && b.is_vegan) return 1;
+
+        return a.name.localeCompare(b.name);
+      });
+    } else if (sortOption === "price-asc") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+        const pA = (metaA.price_tier || "").length || 1;
+        const pB = (metaB.price_tier || "").length || 1;
+        return pA - pB;
+      });
+    } else if (sortOption === "price-desc") {
+      sorted.sort((a, b) => {
+        const metaA = parseJsonObjectField<ProductMetadata>(a.product_metadata, {});
+        const metaB = parseJsonObjectField<ProductMetadata>(b.product_metadata, {});
+        const pA = (metaA.price_tier || "").length || 1;
+        const pB = (metaB.price_tier || "").length || 1;
+        return pB - pA;
+      });
+    } else if (sortOption === "name-asc") {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOption === "name-desc") {
+      sorted.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (sortOption === "brand-asc") {
+      sorted.sort((a, b) => (a.brand || "").localeCompare(b.brand || ""));
+    } else if (sortOption === "featured") {
+      // Placeholder for Featured ranking
+      sorted.sort((a, b) => {
+        const isFeatA = (a as any).is_featured || false;
+        const isFeatB = (b as any).is_featured || false;
+        if (isFeatA && !isFeatB) return -1;
+        if (!isFeatA && isFeatB) return 1;
+        return 0;
+      });
+    }
+
+    return sorted;
+  }, [snacks, activePreset, filters, debouncedQuery, sortOption]);
 
   const displayedSnacks = useMemo(() => {
     return filtered.slice(0, displayCount);
   }, [filtered, displayCount]);
 
-  const motionEase: [number, number, number, number] = [0.16, 1, 0.3, 1];
+  // ── Scroll Restoration: single self-retrying effect ─────────────────────
+  // Deps include displayedSnacks so React re-runs this after every displayCount
+  // expansion, giving us a reliable "wait until DOM is ready then scroll" loop.
+  useEffect(() => {
+    const r = restorationRef.current;
+    if (r.phase === "idle" || r.phase === "done") return;
+    if (loading || filtered.length === 0) return;
+
+    // ── Step 1: Compute how many items we need rendered ──────────────────
+    const neededCount = (() => {
+      // If we saved an explicit count, use it (handles mid-page items)
+      if (r.displayCount > 30) return r.displayCount;
+      // Otherwise compute from slug position in the filtered list
+      if (r.slug) {
+        const idx = filtered.findIndex(s => s.slug === r.slug);
+        return idx >= 0 ? idx + 5 : 30;
+      }
+      return 30;
+    })();
+
+    // ── Step 2: If not enough items are rendered yet, expand and wait ─────
+    if (displayCount < neededCount) {
+      setDisplayCount(neededCount);
+      return; // Effect will re-run once displayedSnacks updates
+    }
+
+    // ── Step 3: Try to scroll to the target card ──────────────────────────
+    if (r.slug) {
+      const el = document.getElementById(`snack-card-${r.slug}`);
+      if (!el) {
+        // Card should be rendered but isn't in DOM yet — bump count and retry
+        setDisplayCount(prev => prev + 10);
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.height === 0) return; // Exists but not painted yet — retry next frame
+
+      const absoluteTop = window.scrollY + rect.top - Math.round(window.innerHeight / 3);
+      window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
+    } else if (r.scrollY > 0) {
+      window.scrollTo({ top: r.scrollY, behavior: "instant" });
+    }
+
+    // ── Done: clean up ────────────────────────────────────────────────────
+    restorationRef.current = { ...r, phase: "done" };
+    sessionStorage.removeItem("isthisvegan_scroll_pos");
+    sessionStorage.removeItem("isthisvegan_last_slug");
+    sessionStorage.removeItem("isthisvegan_display_count");
+    sessionStorage.removeItem("isthisvegan_last_url");
+  }, [loading, filtered, displayCount, displayedSnacks]);
+
+  const motionEase = [0.16, 1, 0.3, 1];
+
+  const removeFilterChip = (type: keyof FilterState, val?: string) => {
+    if (type === "status") {
+      setFilters({ ...filters, status: "all" });
+    } else if (val) {
+      const arr = (filters[type] as string[]).filter((x) => x !== val);
+      setFilters({ ...filters, [type]: arr });
+    }
+  };
+
+  const hasActiveFilters =
+    filters.status !== "all" ||
+    filters.productClasses.length > 0 ||
+    filters.foodTypes.length > 0 ||
+    filters.subTypes.length > 0 ||
+    filters.dietary.length > 0 ||
+    filters.excludeAllergens.length > 0 ||
+    filters.brands.length > 0;
 
   return (
-    <div className="relative min-h-screen bg-[#f8f7f4] text-[#1c211e]">
+    <div
+      style={{ minHeight: "100vh" }}
+      className="relative overflow-hidden bg-[#f8f7f4] text-[#1c211e]"
+    >
       <Helmet>
-        <title>Is This Vegan? — Check if Indian Foods & Snacks are Vegan</title>
+        <title>Is Your Food Plant-Based or Not? | IsThisVegan.in</title>
         <meta
           name="description"
-          content="Search 3000+ Indian packaged snacks, street foods, and drinks to instantly check if they're vegan. Sage green dietary directory for India."
+          content="India's leading plant-based food directory. Search 3,000+ snacks, packaged foods, and dishes with instant ingredient verification and allergen alerts."
         />
         <link rel="canonical" href="https://www.isthisvegan.in/" />
-        <meta property="og:title" content="Is This Vegan? — Check if Indian Foods & Snacks are Vegan" />
-        <meta property="og:description" content="Search 3000+ Indian snacks and foods to check if they're vegan." />
+        <meta property="og:title" content="Is Your Food Plant-Based or Not? | IsThisVegan.in" />
+        <meta
+          property="og:description"
+          content="Instant ingredient verification, allergen safety, Jain compatibility badges, and street food ordering hacks."
+        />
         <meta property="og:url" content="https://www.isthisvegan.in/" />
       </Helmet>
 
@@ -193,38 +452,69 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Sticky Search Bar & Filter Controls Bar */}
-        <div className="sticky top-16 z-40 border-b border-[#e3e7e2] bg-[#f8f7f4]/95 py-4 backdrop-blur-md shadow-2xs mb-8">
+        {/* Sticky Search Bar & Multi-Filter Controls Bar */}
+        <div className="sticky top-16 z-40 border-b border-[#e3e7e2] bg-[#f8f7f4]/95 py-4 backdrop-blur-md shadow-2xs mb-6">
           <div className="container max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-3">
-              {/* Search Field */}
-              <div className="relative w-full">
-                <Search
-                  size={18}
-                  strokeWidth={1.75}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
-                  aria-hidden="true"
-                />
-                <Input
-                  type="search"
-                  placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
-                  aria-label="Search products"
-                />
-                {query && (
-                  <button
-                    onClick={() => setQuery("")}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
-                    aria-label="Clear search"
-                  >
-                    <X size={16} strokeWidth={1.5} />
-                  </button>
-                )}
+              {/* Controls Row: Search Bar (Full Width on mobile) + Filters & Sort Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                <div className="relative flex-1 min-w-0">
+                  <Search
+                    size={18}
+                    strokeWidth={1.75}
+                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5a655c]"
+                    aria-hidden="true"
+                  />
+                  <Input
+                    type="search"
+                    placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="h-11 sm:h-12 w-full rounded-xl border-[#e3e7e2] bg-white pl-11 pr-11 font-sans-ui text-sm text-[#1c211e] shadow-2xs placeholder:text-[#5a655c]/60 focus-visible:ring-2 focus-visible:ring-[#354338]"
+                    aria-label="Search products"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#5a655c] hover:bg-[#e3e7e2] hover:text-[#1c211e]"
+                      aria-label="Clear search"
+                    >
+                      <X size={16} strokeWidth={1.5} />
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Filter Drawer Component */}
+                  <FilterDrawer
+                    filters={filters}
+                    onFilterChange={setFilters}
+                    availableBrands={availableBrands}
+                    totalResultsCount={filtered.length}
+                    triggerClassName="w-full sm:w-auto min-w-[100px] sm:min-w-[120px]"
+                  />
+
+                  {/* Enhanced Sort Dropdown */}
+                  <Select value={sortOption} onValueChange={setSortOption}>
+                    <SelectTrigger className="h-11 sm:h-12 w-full sm:w-auto min-w-[110px] sm:min-w-[130px] px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                      <ArrowUpDown size={14} className="mr-1.5 text-[#354338] shrink-0" />
+                      <SelectValue placeholder="Sort By" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white border-[#e3e7e2]">
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="healthy-vegan">Healthy & Vegan First</SelectItem>
+                      <SelectItem value="price-asc">Price: Low - High</SelectItem>
+                      <SelectItem value="price-desc">Price: High - Low</SelectItem>
+                      <SelectItem value="name-asc">Name: A - Z</SelectItem>
+                      <SelectItem value="name-desc">Name: Z - A</SelectItem>
+                      <SelectItem value="brand-asc">Brand: A - Z</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              {/* Filter Pills */}
+              {/* Preset Filters Row */}
               <div className="overflow-x-auto pb-0.5 no-scrollbar">
                 <div className="flex min-w-max items-center gap-2">
                   {PRESET_FILTERS.map((filter) => (
@@ -232,17 +522,107 @@ const HomePage = () => {
                       key={filter.key}
                       variant="outline"
                       onClick={() => setActivePreset(filter.key)}
-                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
-                        activePreset === filter.key
-                          ? "border-[#354338] bg-[#354338] text-white shadow-xs"
-                          : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
-                      }`}
+                      className={`cursor-pointer rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${activePreset === filter.key
+                        ? "border-[#354338] bg-[#354338] text-white shadow-xs"
+                        : "border-[#e3e7e2] bg-white text-[#3e4a40] hover:bg-[#e2e7e0] hover:border-[#354338]/40 shadow-2xs"
+                        }`}
                     >
                       {filter.label}
                     </Badge>
                   ))}
                 </div>
               </div>
+
+              {/* Active Filter Chips Bar */}
+              {hasActiveFilters && (
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="font-mono-data text-[10px] uppercase font-bold text-[#5a655c] mr-1">
+                    Active Filters:
+                  </span>
+                  {filters.status !== "all" && (
+                    <Badge
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("status")}
+                    >
+                      Status: {filters.status}
+                      <X size={12} />
+                    </Badge>
+                  )}
+                  {filters.brands.map((b) => (
+                    <Badge
+                      key={b}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("brands", b)}
+                    >
+                      Brand: {b}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  {filters.dietary.map((d) => (
+                    <Badge
+                      key={d}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("dietary", d)}
+                    >
+                      {d}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  {filters.subTypes.map((st) => (
+                    <Badge
+                      key={st}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("subTypes", st)}
+                    >
+                      Type: {st}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  {filters.productClasses.map((pc) => (
+                    <Badge
+                      key={pc}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("productClasses", pc)}
+                    >
+                      Class: {pc}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  {filters.foodTypes.map((ft) => (
+                    <Badge
+                      key={ft}
+                      variant="secondary"
+                      className="bg-[#e6ece7] text-[#2c3d31] border border-[#b2c2b5] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#d8e4da]"
+                      onClick={() => removeFilterChip("foodTypes", ft)}
+                    >
+                      Food: {ft}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  {filters.excludeAllergens.map((alg) => (
+                    <Badge
+                      key={alg}
+                      variant="secondary"
+                      className="bg-[#f9eee9] text-[#7d3c34] border border-[#e5c5bd] px-2.5 py-0.5 text-[11px] font-medium gap-1 cursor-pointer hover:bg-[#f3ded6]"
+                      onClick={() => removeFilterChip("excludeAllergens", alg)}
+                    >
+                      No {alg}
+                      <X size={12} />
+                    </Badge>
+                  ))}
+                  <button
+                    onClick={() => setFilters(DEFAULT_FILTERS)}
+                    className="text-[11px] font-semibold text-[#5a655c] underline hover:text-[#1c211e] ml-2"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -278,54 +658,39 @@ const HomePage = () => {
                     No Matching Products Found
                   </p>
                   <p className="mt-2 font-sans-ui text-xs text-[#5a655c]">
-                    Try adjusting your search terms or selecting "All Items".
+                    Try adjusting your filter options or clearing search terms.
                   </p>
-                  <Button
-                    asChild
-                    className="mt-5 rounded-full bg-[#354338] px-6 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a]"
-                  >
-                    <a href="mailto:info.isthisvegan@gmail.com?subject=New Snack Suggestion">
-                      Suggest a Product
-                    </a>
-                  </Button>
+
+                  {hasActiveFilters && (
+                    <Button
+                      onClick={() => setFilters(DEFAULT_FILTERS)}
+                      className="mt-4 rounded-full bg-[#354338] px-5 py-2 font-sans-ui text-xs text-white"
+                    >
+                      Reset All Filters
+                    </Button>
+                  )}
                 </div>
               </motion.div>
             ) : (
-              <motion.div
-                key={`${debouncedQuery}-${activePreset}`}
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: { opacity: 1, transition: { staggerChildren: 0.03 } },
-                }}
-                className="w-full"
-              >
+              <div className="w-full">
                 <div className="mb-4 flex items-center justify-between font-mono-data text-xs text-[#5a655c] uppercase tracking-wider">
                   <span>Showing {displayedSnacks.length} of {filtered.length} products</span>
-                  {activePreset !== "All" && (
+                  {(activePreset !== "All" || hasActiveFilters) && (
                     <button
-                      onClick={() => setActivePreset("All")}
+                      onClick={() => {
+                        setActivePreset("All");
+                        setFilters(DEFAULT_FILTERS);
+                      }}
                       className="underline hover:text-[#1c211e]"
                     >
-                      Reset Filter
+                      Reset All Filters
                     </button>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {displayedSnacks.map((snack, i) => (
-                    <motion.div
-                      key={snack.slug}
-                      variants={{
-                        hidden: { opacity: 0, y: 15 },
-                        show: { opacity: 1, y: 0 },
-                      }}
-                      transition={{ duration: 0.35, ease: motionEase }}
-                    >
-                      <SnackCard snack={snack} index={i} />
-                    </motion.div>
+                    <SnackCard key={snack.slug} snack={snack} index={i} />
                   ))}
                 </div>
 
@@ -335,7 +700,7 @@ const HomePage = () => {
                     <LoadingAnimation message="Loading more products..." className="py-6" />
                   </div>
                 )}
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>
@@ -345,3 +710,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
