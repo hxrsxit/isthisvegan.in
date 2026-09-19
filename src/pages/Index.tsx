@@ -485,19 +485,19 @@ const HomePage = () => {
                   )}
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                   {/* Filter Drawer Component */}
                   <FilterDrawer
                     filters={filters}
                     onFilterChange={setFilters}
                     availableBrands={availableBrands}
                     totalResultsCount={filtered.length}
-                    triggerClassName="w-full sm:w-auto min-w-[100px] sm:min-w-[120px]"
+                    triggerClassName="flex-1 sm:flex-initial sm:w-auto min-w-0"
                   />
 
                   {/* Enhanced Sort Dropdown */}
                   <Select value={sortOption} onValueChange={setSortOption}>
-                    <SelectTrigger className="h-11 sm:h-12 w-full sm:w-auto min-w-[110px] sm:min-w-[130px] px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
+                    <SelectTrigger className="h-11 sm:h-12 flex-1 sm:flex-initial sm:w-auto min-w-0 px-3 sm:px-4 shrink-0 rounded-xl border-[#e3e7e2] bg-white text-xs font-semibold text-[#1c211e] shadow-2xs">
                       <ArrowUpDown size={14} className="mr-1.5 text-[#354338] shrink-0" />
                       <SelectValue placeholder="Sort By" />
                     </SelectTrigger>
