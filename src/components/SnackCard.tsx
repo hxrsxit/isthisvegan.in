@@ -63,12 +63,7 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: Math.min(index * 0.02, 0.2), ease: [0.16, 1, 0.3, 1] }}
-      id={`snack-card-${snack.slug}`}
-    >
+    <div id={`snack-card-${snack.slug}`}>
       <Link
         to={`/snack/${snack.slug}`}
         onClick={handleCardClick}
@@ -136,6 +131,6 @@ export default function SnackCard({ snack, index = 0 }: SnackCardProps) {
           )}
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

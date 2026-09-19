@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useLayoutEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search, X, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -313,7 +313,7 @@ const HomePage = () => {
   }, [filtered, displayCount]);
 
   // Restore scroll position & pagination state when navigating back
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!loading && snacks.length > 0 && filtered.length > 0) {
       const savedPos = sessionStorage.getItem("isthisvegan_scroll_pos");
       const savedSlug = sessionStorage.getItem("isthisvegan_last_slug");
@@ -324,7 +324,7 @@ const HomePage = () => {
         const itemIdx = filtered.findIndex((s) => s.slug === savedSlug);
         if (itemIdx >= 0 && displayCount < itemIdx + 25) {
           setDisplayCount(itemIdx + 25);
-          return; // Wait for displayCount state update to render target card in displayedSnacks
+          return;
         }
       }
 
@@ -357,12 +357,11 @@ const HomePage = () => {
             sessionStorage.removeItem("isthisvegan_display_count");
           }, 400);
         } else {
-          setTimeout(performScroll, 50);
+          setTimeout(performScroll, 30);
         }
       };
 
-      const timerId = setTimeout(performScroll, 50);
-      return () => clearTimeout(timerId);
+      performScroll();
     }
   }, [loading, snacks, filtered, displayedSnacks]);
 
@@ -669,16 +668,7 @@ const HomePage = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {displayedSnacks.map((snack, i) => (
-                    <motion.div
-                      key={snack.slug}
-                      variants={{
-                        hidden: { opacity: 0, y: 15 },
-                        show: { opacity: 1, y: 0 },
-                      }}
-                      transition={{ duration: 0.35, ease: motionEase }}
-                    >
-                      <SnackCard snack={snack} index={i} />
-                    </motion.div>
+                    <SnackCard key={snack.slug} snack={snack} index={i} />
                   ))}
                 </div>
 
