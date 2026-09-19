@@ -328,40 +328,46 @@ const HomePage = () => {
         }
       }
 
-      let attempts = 0;
       const targetY = savedPos ? parseInt(savedPos, 10) : 0;
+      let attempts = 0;
 
       const performScroll = () => {
         attempts++;
-        let found = false;
+        let restored = false;
 
+        // Try direct element targeting first
         if (savedSlug) {
           const el = document.getElementById(`snack-card-${savedSlug}`);
           if (el) {
             const rect = el.getBoundingClientRect();
-            const absoluteTop = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-            window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
-            found = true;
+            if (rect.height > 0) {
+              const absoluteTop = window.scrollY + rect.top - (window.innerHeight / 3);
+              window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
+              restored = true;
+            }
           }
         }
 
-        if (!found && targetY > 0) {
+        // Fallback to saved raw scroll position
+        if (!restored && targetY > 0) {
           window.scrollTo({ top: targetY, behavior: "instant" });
-          found = true;
+          restored = true;
         }
 
-        if (found || attempts >= 15) {
+        if (restored || attempts >= 20) {
           setTimeout(() => {
             sessionStorage.removeItem("isthisvegan_scroll_pos");
             sessionStorage.removeItem("isthisvegan_last_slug");
             sessionStorage.removeItem("isthisvegan_display_count");
-          }, 400);
+          }, 500);
         } else {
-          setTimeout(performScroll, 30);
+          setTimeout(performScroll, 50);
         }
       };
 
-      performScroll();
+      // Delay initial execution slightly to let React complete DOM paint
+      const timerId = setTimeout(performScroll, 60);
+      return () => clearTimeout(timerId);
     }
   }, [loading, snacks, filtered, displayedSnacks]);
 
