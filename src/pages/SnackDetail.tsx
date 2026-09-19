@@ -745,9 +745,6 @@ const SnackDetail = () => {
     </div>
   );
 };
-    </div>
-  );
-};
 
 export default SnackDetail;
 
