@@ -95,7 +95,10 @@ const HomePage = () => {
   }, [snacks]);
 
   useEffect(() => {
-    setDisplayCount(30);
+    const hasSavedState = sessionStorage.getItem("isthisvegan_last_slug") || sessionStorage.getItem("isthisvegan_scroll_pos");
+    if (!hasSavedState) {
+      setDisplayCount(30);
+    }
   }, [debouncedQuery, activePreset, filters, sortOption]);
 
   const sentinelRef = useCallback((node: HTMLDivElement | null) => {
@@ -325,35 +328,42 @@ const HomePage = () => {
       }
 
       let attempts = 0;
-      const restoreScroll = () => {
+      const targetY = savedPos ? parseInt(savedPos, 10) : 0;
+
+      const performScroll = () => {
         attempts++;
-        let restored = false;
+        let found = false;
 
         if (savedSlug) {
           const el = document.getElementById(`snack-card-${savedSlug}`);
           if (el) {
-            el.scrollIntoView({ block: "center", behavior: "instant" });
-            restored = true;
+            const rect = el.getBoundingClientRect();
+            const absoluteTop = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
+            window.scrollTo({ top: Math.max(0, absoluteTop), behavior: "instant" });
+            found = true;
           }
         }
 
-        if (!restored && savedPos) {
-          const targetY = parseInt(savedPos, 10);
+        if (!found && targetY > 0) {
           window.scrollTo({ top: targetY, behavior: "instant" });
-          restored = true;
+          found = true;
         }
 
-        if (restored || attempts >= 5) {
-          sessionStorage.removeItem("isthisvegan_scroll_pos");
-          sessionStorage.removeItem("isthisvegan_last_slug");
-          sessionStorage.removeItem("isthisvegan_display_count");
+        if (found || attempts >= 10) {
+          // Allow DOM to settle before clearing flags
+          setTimeout(() => {
+            sessionStorage.removeItem("isthisvegan_scroll_pos");
+            sessionStorage.removeItem("isthisvegan_last_slug");
+            sessionStorage.removeItem("isthisvegan_display_count");
+          }, 300);
         } else {
-          setTimeout(restoreScroll, 100);
+          requestAnimationFrame(performScroll);
         }
       };
 
-      const timer = setTimeout(restoreScroll, 80);
-      return () => clearTimeout(timer);
+      // Execute on next animation frame once DOM updates
+      const animationId = requestAnimationFrame(performScroll);
+      return () => cancelAnimationFrame(animationId);
     }
   }, [loading, snacks, filtered]);
 
