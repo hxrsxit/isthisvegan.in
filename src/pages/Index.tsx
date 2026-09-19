@@ -440,57 +440,96 @@ const HomePage = () => {
           }}
         >
           <div style={{ maxWidth: "var(--container)", margin: "0 auto", padding: "0 var(--gutter)" }}>
-            {/* Headline */}
-            <h1 style={{ color: "var(--ink)", maxWidth: "18ch", marginBottom: "var(--s-3)" }}>
-              Is your food plant-based or not?
-            </h1>
-            <p style={{ color: "var(--stone)", maxWidth: "52ch", marginBottom: "var(--s-4)", fontSize: "var(--fs-body)", lineHeight: 1.6 }}>
-              Instant ingredient checks, allergen safety, Jain compatibility, and street food ordering hacks — for Indian snacks.
-            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                gap: "clamp(24px, 5vw, 64px)",
+                alignItems: "center",
+              }}
+            >
+              {/* Left Column: Copy & Search */}
+              <div>
+                <h1 style={{ color: "var(--ink)", maxWidth: "18ch", marginBottom: "var(--s-3)" }}>
+                  Is your food plant-based or not?
+                </h1>
+                <p style={{ color: "var(--stone)", maxWidth: "52ch", marginBottom: "var(--s-4)", fontSize: "var(--fs-body)", lineHeight: 1.6 }}>
+                  Instant ingredient checks, allergen safety, Jain compatibility, and street food ordering hacks — for Indian snacks.
+                </p>
 
-            {/* Search input */}
-            <div style={{ position: "relative", maxWidth: "640px" }}>
-              <Search
-                size={18}
-                strokeWidth={1.75}
-                style={{
-                  position: "absolute", left: "16px",
-                  top: "50%", transform: "translateY(-50%)",
-                  color: "var(--moss)", pointerEvents: "none",
-                }}
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="earthy-input"
-                style={{
-                  height: "56px", width: "100%",
-                  paddingLeft: "48px", paddingRight: query ? "48px" : "16px",
-                  fontSize: "1rem",
-                }}
-                aria-label="Search products"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={() => setQuery("")}
+                {/* Search input */}
+                <div style={{ position: "relative", maxWidth: "640px" }}>
+                  <Search
+                    size={18}
+                    strokeWidth={1.75}
+                    style={{
+                      position: "absolute", left: "16px",
+                      top: "50%", transform: "translateY(-50%)",
+                      color: "var(--moss)", pointerEvents: "none",
+                    }}
+                    aria-hidden="true"
+                  />
+                  <Input
+                    type="search"
+                    placeholder="Search brand, dish, 'jain snacks', 'palm oil free chips'..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="earthy-input"
+                    style={{
+                      height: "56px", width: "100%",
+                      paddingLeft: "48px", paddingRight: query ? "48px" : "16px",
+                      fontSize: "1rem",
+                    }}
+                    aria-label="Search products"
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery("")}
+                      style={{
+                        position: "absolute", right: "12px",
+                        top: "50%", transform: "translateY(-50%)",
+                        background: "none", border: "none",
+                        color: "var(--stone)", cursor: "pointer",
+                        padding: "4px", borderRadius: "50%",
+                        minWidth: "32px", minHeight: "32px",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}
+                      aria-label="Clear search"
+                    >
+                      <X size={16} strokeWidth={1.5} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Item count line — small muted, sentence case */}
+                {!loading && (
+                  <p style={{
+                    marginTop: "var(--s-1)",
+                    fontSize: "var(--fs-small)",
+                    color: "var(--stone)",
+                  }}>
+                    Showing {displayedSnacks.length} of {filtered.length} products
+                  </p>
+                )}
+              </div>
+
+              {/* Right Column: Hero Photo */}
+              <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                <img
+                  src="/images/hero.jpg"
+                  alt="Assorted Indian snacks and dishes layout"
+                  loading="eager"
+                  width="560"
+                  height="373"
                   style={{
-                    position: "absolute", right: "12px",
-                    top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none",
-                    color: "var(--stone)", cursor: "pointer",
-                    padding: "4px", borderRadius: "50%",
-                    minWidth: "32px", minHeight: "32px",
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "100%",
+                    maxHeight: "420px",
+                    objectFit: "cover",
+                    borderRadius: "var(--r-lg)",
+                    filter: "saturate(.85) contrast(.96)",
+                    border: "1px solid var(--hairline)",
                   }}
-                  aria-label="Clear search"
-                >
-                  <X size={16} strokeWidth={1.5} />
-                </button>
-              )}
             </div>
 
             {/* Item count line — small muted, sentence case */}
