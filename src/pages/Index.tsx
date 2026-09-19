@@ -530,21 +530,9 @@ const HomePage = () => {
                     filter: "saturate(.85) contrast(.96)",
                     border: "1px solid var(--hairline)",
                   }}
+                />
+              </div>
             </div>
-
-            {/* Item count line — small muted, sentence case */}
-            {!loading && (
-              <p style={{
-                marginTop: "var(--s-1)",
-                fontSize: "var(--fs-small)",
-                color: "var(--stone)",
-                fontWeight: 400,
-              }}>
-                {filtered.length === snacks.length
-                  ? `${snacks.length.toLocaleString()} products verified`
-                  : `${filtered.length.toLocaleString()} of ${snacks.length.toLocaleString()} products`}
-              </p>
-            )}
           </div>
         </section>
 
