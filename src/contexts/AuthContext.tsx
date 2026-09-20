@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   signUpWithEmail: (email: string, password: string, name?: string) => Promise<{ error: Error | null }>;
   signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   authModalOpen: boolean;
   setAuthModalOpen: (open: boolean) => void;
@@ -72,6 +73,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const signInWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+    return { error };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
@@ -84,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         signUpWithEmail,
         signInWithEmail,
+        signInWithGoogle,
         signOut,
         authModalOpen,
         setAuthModalOpen,
