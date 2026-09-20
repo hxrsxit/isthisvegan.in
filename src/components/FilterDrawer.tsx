@@ -84,6 +84,9 @@ interface FilterDrawerProps {
   onFilterChange: (newFilters: FilterState) => void;
   availableBrands: string[];
   totalResultsCount: number;
+  snacks?: any[];
+  activePreset?: string;
+  query?: string;
   triggerClassName?: string;
 }
 
@@ -92,6 +95,9 @@ export function FilterDrawer({
   onFilterChange,
   availableBrands,
   totalResultsCount,
+  snacks = [],
+  activePreset = "All",
+  query = "",
   triggerClassName,
 }: FilterDrawerProps) {
   const [open, setOpen] = useState(false);
@@ -101,6 +107,123 @@ export function FilterDrawer({
   React.useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
+
+  // Compute real-time live result count as user toggles filters in the drawer
+  const liveCount = useMemo(() => {
+    if (!snacks || snacks.length === 0) return totalResultsCount;
+
+    let base = snacks;
+
+    if (activePreset !== "All") {
+      base = base.filter((s) => {
+        const dietaryBadges: string[] = Array.isArray(s.dietary_compatibility)
+          ? s.dietary_compatibility
+          : typeof s.dietary_compatibility === "string"
+          ? JSON.parse(s.dietary_compatibility || "[]")
+          : [];
+        const metadata = typeof s.product_metadata === "string"
+          ? JSON.parse(s.product_metadata || "{}")
+          : s.product_metadata || {};
+        const pClass = (s.product_class || "").toLowerCase();
+        const fType = (s.food_type || "").toLowerCase();
+        const sType = (s.sub_type || "").toLowerCase();
+
+        switch (activePreset) {
+          case "Vegan":
+            return s.is_vegan === true;
+          case "Jain-Friendly":
+            return dietaryBadges.some((b) => b.toLowerCase().includes("jain"));
+          case "Gluten-Free":
+            return dietaryBadges.some((b) => b.toLowerCase().includes("gluten"));
+          case "Palm-oil-free":
+            return (
+              dietaryBadges.some((b) => b.toLowerCase().includes("palm")) ||
+              metadata.ethical_flags?.palm_oil_free === true
+            );
+          case "Healthy":
+            return (
+              metadata.health_tier?.startsWith("1") ||
+              metadata.health_tier?.startsWith("2")
+            );
+          case "Street-Food":
+            return (
+              pClass.includes("street") ||
+              fType.includes("street") ||
+              sType.includes("street") ||
+              metadata.packaging_status === "Street-Food"
+            );
+          case "Savory":
+            return pClass.includes("food") || fType.includes("snack");
+          case "Sweets":
+            return (
+              fType.includes("dessert") ||
+              sType.includes("sweet") ||
+              sType.includes("chocolate")
+            );
+          default:
+            return true;
+        }
+      });
+    }
+
+    if (localFilters.status === "vegan") {
+      base = base.filter((s) => s.is_vegan === true);
+    } else if (localFilters.status === "non-vegan") {
+      base = base.filter((s) => s.is_vegan === false);
+    }
+
+    if (localFilters.productClasses.length > 0) {
+      base = base.filter((s) =>
+        s.product_class && localFilters.productClasses.includes(s.product_class)
+      );
+    }
+
+    if (localFilters.foodTypes.length > 0) {
+      base = base.filter((s) =>
+        s.food_type && localFilters.foodTypes.includes(s.food_type)
+      );
+    }
+
+    if (localFilters.subTypes.length > 0) {
+      base = base.filter((s) =>
+        s.sub_type && localFilters.subTypes.includes(s.sub_type)
+      );
+    }
+
+    if (localFilters.dietary.length > 0) {
+      base = base.filter((s) => {
+        const badges: string[] = (Array.isArray(s.dietary_compatibility)
+          ? s.dietary_compatibility
+          : typeof s.dietary_compatibility === "string"
+          ? JSON.parse(s.dietary_compatibility || "[]")
+          : []).map((b: string) => b.toLowerCase());
+        return localFilters.dietary.every((d) =>
+          badges.some((b) => b.includes(d.toLowerCase()))
+        );
+      });
+    }
+
+    if (localFilters.excludeAllergens.length > 0) {
+      base = base.filter((s) => {
+        const allergens: string[] = (Array.isArray(s.allergens_list)
+          ? s.allergens_list
+          : typeof s.allergens_list === "string"
+          ? JSON.parse(s.allergens_list || "[]")
+          : []).map((a: string) => a.toLowerCase());
+        return !localFilters.excludeAllergens.some((ex) =>
+          allergens.some((a) => a.includes(ex.toLowerCase()))
+        );
+      });
+    }
+
+    if (localFilters.brands.length > 0) {
+      base = base.filter(
+        (s) => s.brand && localFilters.brands.includes(s.brand.trim())
+      );
+    }
+
+    return base.length;
+  }, [snacks, activePreset, localFilters, totalResultsCount]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -145,8 +268,8 @@ export function FilterDrawer({
       <SheetTrigger asChild>
         <Button
           variant="outline"
-          className={`relative inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
-            triggerClassName || "w-32 sm:w-40"
+          className={`relative inline-flex h-11 sm:h-12 items-center justify-center gap-2 rounded-xl border-[#e3e7e2] bg-white px-3 sm:px-4 font-sans-ui text-xs font-semibold text-[#1c211e] shadow-2xs hover:bg-[#f0f3ef] hover:border-[#354338]/40 shrink-0 ${
+            triggerClassName || ""
           }`}
         >
           <Filter size={15} className="text-[#354338]" />
@@ -396,7 +519,7 @@ export function FilterDrawer({
             onClick={handleApply}
             className="flex-1 rounded-xl bg-[#354338] text-white hover:bg-[#28332a] font-sans-ui text-xs font-semibold h-11"
           >
-            Show {totalResultsCount} Results
+            Show {liveCount} Results
           </Button>
         </SheetFooter>
       </SheetContent>

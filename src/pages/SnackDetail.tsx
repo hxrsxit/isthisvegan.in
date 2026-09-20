@@ -12,6 +12,8 @@ import {
   Sparkles,
   AlertCircle,
   CheckCircle2,
+  LogIn,
+  User as UserIcon,
 } from "lucide-react";
 import {
   Snack,
@@ -26,6 +28,7 @@ import { landingTheme } from "@/lib/theme";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { Helmet } from "react-helmet-async";
 import SnackCard from "@/components/SnackCard";
+import { useAuth } from "@/contexts/AuthContext";
 
 const FLAG_REASONS = [
   "Contains Milk Solids / Dairy",
@@ -38,6 +41,7 @@ const FLAG_REASONS = [
 const SnackDetail = () => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
+  const { user, openAuthModal } = useAuth();
   const [snack, setSnack] = useState<Snack | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,10 +67,15 @@ const SnackDetail = () => {
     Array<{ author: string; text: string; date: string }>
   >([]);
   const [newComment, setNewComment] = useState("");
-  const [authorName, setAuthorName] = useState("");
 
   useEffect(() => {
     if (!slug) return;
+
+    // Check if user has already voted on this device
+    const localVoted = localStorage.getItem(`isthisvegan_voted_${slug}`);
+    if (localVoted === "upvote") {
+      setHasUpvoted(true);
+    }
 
     const fetchSnack = async () => {
       setLoading(true);
@@ -89,6 +98,49 @@ const SnackDetail = () => {
           item.user_poll_stats,
           { upvotes_as_vegan: 0, reports_as_non_vegan: 0, total_comments: 0 }
         );
+
+        // Fetch Supabase flags count if product_flags table exists
+        try {
+          const { data: flagsData } = await supabase
+            .from("product_flags")
+            .select("flag_type")
+            .eq("snack_slug", slug);
+
+          if (flagsData && flagsData.length > 0) {
+            const extraUpvotes = flagsData.filter((f: any) => f.flag_type === "upvote_vegan").length;
+            const extraReports = flagsData.filter((f: any) => f.flag_type === "report_non_vegan").length;
+            initialStats.upvotes_as_vegan += extraUpvotes;
+            initialStats.reports_as_non_vegan += extraReports;
+          }
+        } catch {
+          // Fallback gracefully if product_flags table isn't created yet
+        }
+
+        // Fetch Supabase comments if product_comments table exists
+        try {
+          const { data: commentsData } = await supabase
+            .from("product_comments")
+            .select("*")
+            .eq("snack_slug", slug)
+            .order("created_at", { ascending: false });
+
+          if (commentsData && commentsData.length > 0) {
+            const parsedComments = commentsData.map((c: any) => ({
+              author: c.author_name || "Community Member",
+              text: c.comment_text,
+              date: new Date(c.created_at).toLocaleDateString("en-IN", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+            }));
+            setComments(parsedComments);
+            initialStats.total_comments = parsedComments.length;
+          }
+        } catch {
+          // Fallback gracefully if product_comments table isn't created yet
+        }
+
         setPollStats(initialStats);
 
         // Fetch smart alternatives if item is non-vegan
@@ -169,22 +221,51 @@ const SnackDetail = () => {
     setLoadingAlternatives(false);
   };
 
-  const handleUpvote = () => {
-    if (hasUpvoted) return;
+  const handleUpvote = async () => {
+    if (hasUpvoted || !slug) return;
     setHasUpvoted(true);
+    localStorage.setItem(`isthisvegan_voted_${slug}`, "upvote");
     setPollStats((prev) => ({
       ...prev,
       upvotes_as_vegan: prev.upvotes_as_vegan + 1,
     }));
+
+    // Record flag in Supabase (Public / Guest allowed)
+    try {
+      await supabase.from("product_flags").insert({
+        snack_slug: slug,
+        flag_type: "upvote_vegan",
+        user_id: user?.id || null,
+      });
+    } catch {
+      // Graceful fallback
+    }
   };
 
-  const handleFlagSubmit = (e: React.FormEvent) => {
+  const handleFlagSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!slug) return;
+
     setFlagSubmitted(true);
+    localStorage.setItem(`isthisvegan_voted_${slug}`, "flag");
     setPollStats((prev) => ({
       ...prev,
       reports_as_non_vegan: prev.reports_as_non_vegan + 1,
     }));
+
+    // Record flag in Supabase (Public / Guest allowed)
+    try {
+      await supabase.from("product_flags").insert({
+        snack_slug: slug,
+        flag_type: "report_non_vegan",
+        reason: selectedFlagReason,
+        details: flagDetails,
+        user_id: user?.id || null,
+      });
+    } catch {
+      // Graceful fallback
+    }
+
     setTimeout(() => {
       setShowFlagModal(false);
       setFlagSubmitted(false);
@@ -192,13 +273,19 @@ const SnackDetail = () => {
     }, 1800);
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!user) {
+      openAuthModal();
+      return;
+    }
+    if (!newComment.trim() || !slug) return;
 
+    const author = user.user_metadata?.full_name || user.email?.split("@")[0] || "Community Member";
+    const text = newComment.trim();
     const entry = {
-      author: authorName.trim() || "Community Member",
-      text: newComment.trim(),
+      author,
+      text,
       date: new Date().toLocaleDateString("en-IN", {
         month: "short",
         day: "numeric",
@@ -212,6 +299,18 @@ const SnackDetail = () => {
       total_comments: prev.total_comments + 1,
     }));
     setNewComment("");
+
+    // Persist comment to Supabase (Logged-in users only)
+    try {
+      await supabase.from("product_comments").insert({
+        snack_slug: slug,
+        user_id: user.id,
+        author_name: author,
+        comment_text: text,
+      });
+    } catch {
+      // Graceful fallback
+    }
   };
 
   if (loading) {
@@ -306,8 +405,8 @@ const SnackDetail = () => {
         {/* Master Verdict Banner */}
         <div
           className={`mb-8 rounded-2xl border p-6 md:p-8 shadow-xs ${snack.is_vegan
-              ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
-              : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
+            ? "border-[#b2c2b5] bg-[#e6ece7] text-[#1c211e]"
+            : "border-[#e5c5bd] bg-[#f9eee9] text-[#1c211e]"
             }`}
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -327,7 +426,7 @@ const SnackDetail = () => {
                   className={`inline-block font-mono-data text-xs font-bold uppercase tracking-wider ${snack.is_vegan ? "text-[#2c3d31]" : "text-[#7d3c34]"
                     }`}
                 >
-                  {snack.is_vegan ? "100% Plant-Based Verdict" : "Non-Vegan Alert"}
+                  {snack.is_vegan ? "100% Plant-Based" : "Non-Vegan Alert"}
                 </span>
                 <h1 className="font-serif-fraunces text-2xl md:text-4xl font-bold tracking-tight text-[#1c211e]">
                   {snack.name}
@@ -594,8 +693,8 @@ const SnackDetail = () => {
                 onClick={handleUpvote}
                 disabled={hasUpvoted}
                 className={`flex items-center gap-1.5 rounded-full px-4 py-2 font-sans-ui text-xs font-semibold transition-all ${hasUpvoted
-                    ? "bg-[#354338] text-white"
-                    : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
+                  ? "bg-[#354338] text-white"
+                  : "bg-[#e6ece7] text-[#2c3d31] hover:bg-[#d8e4da]"
                   }`}
               >
                 <ThumbsUp size={13} />
@@ -612,31 +711,51 @@ const SnackDetail = () => {
             </div>
           </div>
 
-          {/* Add Comment Form */}
-          <form onSubmit={handleAddComment} className="mb-6 space-y-3">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                placeholder="Your Name (Optional)"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                className="sm:w-1/3 rounded-xl border border-[#e3e7e2] bg-[#f8f7f4] px-3.5 py-2.5 text-xs font-sans-ui text-[#1c211e]"
-              />
-              <input
-                type="text"
-                placeholder="Share ingredient update or verification comment..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                className="sm:w-2/3 rounded-xl border border-[#e3e7e2] bg-[#f8f7f4] px-3.5 py-2.5 text-xs font-sans-ui text-[#1c211e]"
-              />
+          {/* Comment Area */}
+          {user ? (
+            <form onSubmit={handleAddComment} className="mb-6 space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <UserIcon size={14} className="text-[#354338]" />
+                <span className="font-sans-ui text-xs font-semibold text-[#1c211e]">
+                  Posting as {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="Share ingredient update or verification note..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="w-full rounded-xl border border-[#e3e7e2] bg-[#f8f7f4] px-3.5 py-2.5 text-xs font-sans-ui text-[#1c211e] focus:border-[#354338] focus:outline-hidden"
+                />
+                <button
+                  type="submit"
+                  className="rounded-full bg-[#354338] px-5 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a] shrink-0 cursor-pointer transition-colors"
+                >
+                  Post Comment
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="mb-6 p-4 rounded-xl bg-[#f8f7f4] border border-[#e3e7e2] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+              <div>
+                <p className="font-sans-ui text-xs font-semibold text-[#1c211e]">
+                  Log in to post comments & verification notes
+                </p>
+                <p className="font-sans-ui text-[11px] text-[#5a655c]">
+                  Flagging & voting are open to everyone, but comments require a free account.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#354338] px-4 py-2 font-sans-ui text-xs font-semibold text-white shadow-xs hover:bg-[#2d3a30] shrink-0 cursor-pointer transition-colors"
+              >
+                <LogIn size={13} />
+                Log In / Sign Up
+              </button>
             </div>
-            <button
-              type="submit"
-              className="rounded-full bg-[#354338] px-5 py-2.5 font-sans-ui text-xs font-semibold text-white hover:bg-[#28332a]"
-            >
-              Post Comment
-            </button>
-          </form>
+          )}
 
           {/* Comments List */}
           {comments.length > 0 ? (

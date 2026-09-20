@@ -1,9 +1,10 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "@/components/Logo";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -15,6 +16,9 @@ const navLinks = [
 const Header = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { user, openAuthModal, signOut } = useAuth();
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Member";
 
   return (
     <motion.header
@@ -29,20 +33,44 @@ const Header = () => {
       >
         <Logo showText size={36} textClassName="text-[#1c211e] font-black-mango font-bold text-xl tracking-wide" />
 
-        <div className="hidden items-center gap-1 rounded-full border border-[#e3e7e2] bg-white p-1 shadow-xs md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
-                location.pathname === link.to
-                  ? "bg-[#354338] text-white shadow-xs"
-                  : "text-[#5a655c] hover:bg-[#f0f3ef] hover:text-[#1c211e]"
-              }`}
+        <div className="hidden items-center gap-3 md:flex">
+          <div className="flex items-center gap-1 rounded-full border border-[#e3e7e2] bg-white p-1 shadow-xs">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`rounded-full px-4 py-1.5 font-sans-ui text-xs font-semibold tracking-wide transition-all ${
+                  location.pathname === link.to
+                    ? "bg-[#354338] text-white shadow-xs"
+                    : "text-[#5a655c] hover:bg-[#f0f3ef] hover:text-[#1c211e]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {user ? (
+            <div className="flex items-center gap-2 rounded-full border border-[#e3e7e2] bg-white px-3 py-1 shadow-xs font-sans-ui text-xs text-[#1c211e]">
+              <UserIcon size={14} className="text-[#354338]" />
+              <span className="font-semibold max-w-[120px] truncate">{userName}</span>
+              <button
+                onClick={signOut}
+                title="Sign Out"
+                className="ml-1 text-[#5a655c] hover:text-[#7d3c34] transition-colors cursor-pointer"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={openAuthModal}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#354338] px-4 py-1.5 font-sans-ui text-xs font-semibold text-white shadow-xs hover:bg-[#2d3a30] transition-colors cursor-pointer"
             >
-              {link.label}
-            </Link>
-          ))}
+              <LogIn size={14} />
+              Sign In
+            </button>
+          )}
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
@@ -70,6 +98,38 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+
+              <div className="mt-6 pt-6 border-t border-[#e3e7e2]">
+                {user ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-[#1c211e]">
+                      <UserIcon size={16} className="text-[#354338]" />
+                      <span>{userName}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setOpen(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#e3e7e2] bg-white py-2.5 text-xs font-semibold text-[#7d3c34]"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      openAuthModal();
+                      setOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#354338] py-2.5 text-xs font-semibold text-white shadow-xs"
+                  >
+                    <LogIn size={16} />
+                    Sign In / Register
+                  </button>
+                )}
+              </div>
             </nav>
           </SheetContent>
         </Sheet>

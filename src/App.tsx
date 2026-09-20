@@ -12,6 +12,8 @@ import About from "./pages/About";
 import JoinUs from "./pages/JoinUs";
 import NotFound from "./pages/NotFound";
 import Landing from "./pages/Landing";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 
 const queryClient = new QueryClient();
 
@@ -24,15 +26,16 @@ const AppRoutes = () => {
       {!isLanding && <Header />}
       <main className={!isLanding ? "pt-6 md:pt-8" : ""}>
         <Routes>
-        <Route path="/landing" element={<Landing />} />
-        <Route path="/" element={<Index />} />
-        <Route path="/snack/:slug" element={<SnackDetail />} />
-        <Route path="/go-vegan" element={<GoVegan />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/join-us" element={<JoinUs />} />
-        <Route path="*" element={<NotFound />} />
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/snack/:slug" element={<SnackDetail />} />
+          <Route path="/go-vegan" element={<GoVegan />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/join-us" element={<JoinUs />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      <AuthModal />
     </>
   );
 };
@@ -41,11 +44,13 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>
