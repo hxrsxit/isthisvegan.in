@@ -151,11 +151,10 @@ export const AuthModal: React.FC = () => {
               setMode("signin");
               setErrorMsg(null);
             }}
-            className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition-all ${
-              mode === "signin"
+            className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition-all ${mode === "signin"
                 ? "bg-[#354338] text-white shadow-xs"
                 : "text-[#5a655c] hover:text-[#1c211e]"
-            }`}
+              }`}
           >
             Sign In
           </button>
@@ -165,11 +164,10 @@ export const AuthModal: React.FC = () => {
               setMode("signup");
               setErrorMsg(null);
             }}
-            className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition-all ${
-              mode === "signup"
+            className={`flex-1 rounded-full py-1.5 text-xs font-semibold transition-all ${mode === "signup"
                 ? "bg-[#354338] text-white shadow-xs"
                 : "text-[#5a655c] hover:text-[#1c211e]"
-            }`}
+              }`}
           >
             Create Account
           </button>
